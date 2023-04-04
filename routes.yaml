@@ -1,0 +1,7 @@
+app_name: rea-api.ch.gov.uk
+group: api
+
+weight: 90
+routes:
+  1: ^/transactions/(.*)/registered-email-address
+  2:  ^/registered-email-address/healthcheck
