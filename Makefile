@@ -1,4 +1,4 @@
-artifact_name       := rea-api.ch.gov.uk
+artifact_name       := rea.api.ch.gov.uk
 version             := "unversioned"
 
 .PHONY: all

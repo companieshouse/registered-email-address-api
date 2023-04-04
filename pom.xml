@@ -7,9 +7,9 @@
         <artifactId>companies-house-spring-boot-parent</artifactId>
         <version>1.5.0-rc1</version> <!-- lookup parent from repository -->
     </parent>
-    <artifactId>rea-api.ch.gov.uk</artifactId>
+    <artifactId>rea.api.ch.gov.uk</artifactId>
     <version>unversioned</version>
-    <name>rea-api.ch.gov.uk</name>
+    <name>rea.api.ch.gov.uk</name>
     <description>API for the registered email address servuce</description>
     <properties>
         <java.version>11</java.version>

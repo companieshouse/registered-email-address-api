@@ -3,7 +3,7 @@
 
 #!/bin/bash
 #
-# Start script for rea-api.ch.gov.uk
+# Start script for rea.api.ch.gov.uk
 
 export APP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROXY_ARGS=""
@@ -30,4 +30,4 @@ else
 
 fi
 
-exec java ${JAVA_MEM_ARGS} -jar ${PROXY_ARGS} -Dserver.port="${PORT}" -Dspring.data.mongodb.uri="$MONGODB_URL" "${APP_DIR}/rea-api.ch.gov.uk.jar"
+exec java ${JAVA_MEM_ARGS} -jar ${PROXY_ARGS} -Dserver.port="${PORT}" -Dspring.data.mongodb.uri="$MONGODB_URL" "${APP_DIR}/rea.api.ch.gov.uk.jar"
