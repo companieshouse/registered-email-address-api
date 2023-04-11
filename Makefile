@@ -1,4 +1,4 @@
-artifact_name       := rea.api.ch.gov.uk
+artifact_name       := registered-email-address-api
 version             := "unversioned"
 
 .PHONY: all

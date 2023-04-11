@@ -21,7 +21,7 @@ public class RegisteredEmailAddressControllerTest {
 
     @Test
     public void testCreateNewSubmissionTest() throws Exception {
-        this.mvc.perform(get("/registered-email-address/test"))
+        this.mvc.perform(get("/registered-email-address/healthcheck"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Registered Email Address Service is Healthy"));
     }
