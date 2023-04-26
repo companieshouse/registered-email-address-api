@@ -11,6 +11,7 @@ public class RegisteredEmailAddressController {
     @GetMapping("/registered-email-address/healthcheck")
     public ResponseEntity<String> getHealthCheck() {
         return ResponseEntity.ok().body("Registered Email Address Service is Healthy");
+
     }
 
 }
