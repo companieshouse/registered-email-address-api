@@ -66,6 +66,11 @@
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.7.0</version>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
