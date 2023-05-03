@@ -37,6 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RegisteredEmailAddressControllerTest {
 
 
+    //TODO test broken as TransactionInterceptor methods are not being mocked
+
     //TODO - introduce test containers
 
     @Mock
