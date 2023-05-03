@@ -112,7 +112,6 @@ public class RegisteredEmailAddressService {
                                                           String loggingContext) throws ServiceException {
 
         transaction.setResources(Collections.singletonMap(submissionUri, resource));
-
         transactionService.updateTransaction(transaction, loggingContext);
     }
 

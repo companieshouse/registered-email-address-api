@@ -28,12 +28,6 @@ public class RegisteredEmailAddressController {
         this.registeredEmailAddressService = registeredEmailAddressService;
     }
 
-    @GetMapping("/registered-email-address/healthcheck")
-    public ResponseEntity<String> getHealthCheck() {
-        return ResponseEntity.ok().body("Registered Email Address Service is Healthy");
-
-    }
-
     @PostMapping("/transactions/{" + TRANSACTION_ID_KEY + "}/registered-email-address")
     public ResponseEntity<Object> createRegisteredEmailAddress(
             @RequestAttribute("transaction") Transaction transaction,

@@ -5,17 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.registeredemailaddressapi.client.ApiClientService;
-import uk.gov.companieshouse.registeredemailaddressapi.controller.RegisteredEmailAddressController;
 import uk.gov.companieshouse.registeredemailaddressapi.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
@@ -25,11 +24,10 @@ import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionServic
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,35 +35,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RegisteredEmailAddressControllerTest {
 
 
-    //TODO test broken as TransactionInterceptor methods are not being mocked
-
     //TODO - introduce test containers
 
-    @Mock
-    TransactionService transactionService;
+    @MockBean
+    protected TransactionService transactionService;
+    @InjectMocks
+    protected TransactionInterceptor transactionInterceptor;
 
-    @Mock
+    @MockBean
     RegisteredEmailAddressRepository registeredEmailAddressRepository;
 
     @Autowired
     private MockMvc mvc;
 
-    @Test
-    public void HealthCheckEndpointTest() throws Exception {
-        this.mvc.perform(get("/registered-email-address/healthcheck"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Registered Email Address Service is Healthy"));
-    }
 
+
+    @BeforeEach
+    void setUp() throws Exception {
+
+    }
 
     @Test
     public void testCreateRegisteredEmailAddressSuccessTest() throws Exception {
-
-        String id = UUID.randomUUID().toString();
         Transaction transaction = new Transaction();
+        String id = UUID.randomUUID().toString();
         transaction.setId(id);
-        when(transactionService.getTransaction(anyString(), anyString(), anyString()))
-                .thenReturn(new Transaction());
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
 
         when(registeredEmailAddressRepository.insert(any(RegisteredEmailAddressDAO.class)))
                 .thenReturn(getRegisteredEmailAddressDAO());
@@ -73,29 +68,26 @@ public class RegisteredEmailAddressControllerTest {
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         registeredEmailAddressDTO.setRegisteredEmailAddress("Test@Test.com");
 
-        this.mvc.perform(post("/transactions/" + id + "/registered-email-address")
-                        .contentType("application/json")
-                        .header("ERIC-Identity", "123")
-                        .header("X-Request-Id", "123456")
-                        .content(writeToJson(registeredEmailAddressDTO))
-                )
+        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456").content(writeToJson(registeredEmailAddressDTO)))
 
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(status().isCreated()).andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.registered_email_address").value("Test@Test.com"));
     }
 
     @Test
     public void testCreateRegisteredEmailAddressFailureTest() throws Exception {
-
+        Transaction transaction = new Transaction();
+        String id = UUID.randomUUID().toString();
+        transaction.setId(id);
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
 
-        this.mvc.perform(post("/registered-email-address/transactions/123456/registered-email-address")
-                        .contentType("application/json")
-                        .header("ERIC-Identity", "123")
+        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456")
-                        .content(writeToJson(registeredEmailAddressDTO))
-                )
+                        .content(writeToJson(registeredEmailAddressDTO)))
 
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0]")
@@ -104,16 +96,19 @@ public class RegisteredEmailAddressControllerTest {
 
     @Test
     public void testCreateRegisteredEmailAddressRegexFailureTest() throws Exception {
+        Transaction transaction = new Transaction();
+        String id = UUID.randomUUID().toString();
+        transaction.setId(id);
 
         RegisteredEmailAddressDTO registeredEmailAddress = new RegisteredEmailAddressDTO();
         registeredEmailAddress.setRegisteredEmailAddress("223j&kg");
 
-        this.mvc.perform(post("/registered-email-address/transactions/123456/registered-email-address")
-                        .contentType("application/json")
-                        .header("ERIC-Identity", "123")
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+
+        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456")
-                        .content(writeToJson(registeredEmailAddress))
-                )
+                        .content(writeToJson(registeredEmailAddress)))
 
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0]")
