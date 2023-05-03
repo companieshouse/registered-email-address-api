@@ -1,4 +1,5 @@
 package uk.gov.companieshouse.registeredemailaddressapi.utils;
+
 public class Constants {
 
     private Constants() {
@@ -21,7 +22,6 @@ public class Constants {
     public static final String TRANSACTIONS_PRIVATE_API_PREFIX = "/private/transactions/";
 
     public static final String TRANSACTIONS_PUBLIC_API_PREFIX = "/transactions/";
-
 
 
     // Filings

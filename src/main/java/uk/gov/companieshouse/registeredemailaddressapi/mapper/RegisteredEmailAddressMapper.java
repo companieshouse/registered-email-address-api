@@ -10,7 +10,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmail
 @Mapper(componentModel = "spring")
 public interface RegisteredEmailAddressMapper {
 
-      RegisteredEmailAddressDTO daoToDto(RegisteredEmailAddressDAO registeredEmailAddressDAO);
+    RegisteredEmailAddressDTO daoToDto(RegisteredEmailAddressDAO registeredEmailAddressDAO);
 
-      RegisteredEmailAddressDAO dtoToDao(RegisteredEmailAddress registeredEmailAddressDTO);
+    RegisteredEmailAddressDAO dtoToDao(RegisteredEmailAddress registeredEmailAddressDTO);
 }

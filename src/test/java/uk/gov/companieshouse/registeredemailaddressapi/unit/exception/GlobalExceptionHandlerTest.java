@@ -68,10 +68,10 @@ class GlobalExceptionHandlerTest {
                     logMapCaptor.capture()), times(1));
 
             Map<String, Object> logMap = logMapCaptor.getValue();
-            String stackTraceString = (String)logMap.get("stackTrace");
+            String stackTraceString = (String) logMap.get("stackTrace");
             assertTrue(stackTraceString.contains("exception message \\n"));
 
-            String rootCauseString = (String)logMap.get("rootCause");
+            String rootCauseString = (String) logMap.get("rootCause");
             assertTrue(rootCauseString.contains("root cause \\n"));
         }
     }
@@ -94,10 +94,10 @@ class GlobalExceptionHandlerTest {
                     logMapCaptor.capture()), times(1));
 
             Map<String, Object> logMap = logMapCaptor.getValue();
-            String stackTraceString = (String)logMap.get("stackTrace");
+            String stackTraceString = (String) logMap.get("stackTrace");
             assertEquals(20, stackTraceString.length());
 
-            String rootCauseString = (String)logMap.get("rootCause");
+            String rootCauseString = (String) logMap.get("rootCause");
             assertEquals(20, rootCauseString.length());
         }
     }

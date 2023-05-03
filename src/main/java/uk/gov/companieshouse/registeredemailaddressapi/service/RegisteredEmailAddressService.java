@@ -40,13 +40,13 @@ public class RegisteredEmailAddressService {
     public RegisteredEmailAddressDTO createRegisteredEmailAddress(Transaction transaction,
                                                                   RegisteredEmailAddress registeredEmailAddressDTO,
 
-                                               String requestId,
-                                               String userId) throws ServiceException {
+                                                                  String requestId,
+                                                                  String userId) throws ServiceException {
 
         ApiLogger.debugContext(requestId, " -  createRegisteredEmailAddress(...)");
 
         RegisteredEmailAddressDAO registeredEmailAddressDAO = registeredEmailAddressMapper
-                                                                .dtoToDao(registeredEmailAddressDTO);
+                .dtoToDao(registeredEmailAddressDTO);
 
         ApiLogger.debugContext(requestId, " -  insert registered email address into DB");
 
@@ -54,24 +54,24 @@ public class RegisteredEmailAddressService {
         RegisteredEmailAddressDAO createdRegisteredEmailAddress = registeredEmailAddressRepository
                 .insert(registeredEmailAddressDAO);
 
-        final String registeredEmailAddressId = createdRegisteredEmailAddress.getId();
-        final String transactionUri = generateTransactionUri(transaction.getId(), registeredEmailAddressId);
-        updateRegisteredEmailAddressWithMetaData(createdRegisteredEmailAddress, transactionUri, requestId, userId);
+        final String submissionId = createdRegisteredEmailAddress.getId();
+        final String submissionUri = generateTransactionUri(transaction.getId(), submissionId);
+        updateRegisteredEmailAddressWithMetaData(createdRegisteredEmailAddress, submissionUri, requestId, userId);
 
         // create the Resource to be added to the Transaction (includes various links to the resource)
-        Resource registeredEmailAddressResource = createRegisteredEmailAddressTransactionResource(transactionUri);
+        Resource registeredEmailAddressResource = createRegisteredEmailAddressTransactionResource(submissionUri);
 //
 //        // Update company name set on the transaction and add a link to newly created Registered Email address
 //        // submission (aka resource) to the transaction (and potentially also a link for the 'resume' journey)
         updateTransactionWithLinksAndCompanyName(transaction,
-                transactionUri, registeredEmailAddressResource, requestId);
+                submissionUri, registeredEmailAddressResource, requestId);
 //
-//        ApiLogger.infoContext(requestId, String.format("Overseas Entity Submission created for transaction id: %s with overseas-entity submission id: %s, schema version %s",
-//                transaction.getId(), insertedSubmission.getId(), overseasEntitySubmissionDao.getSchemaVersion()));
+        ApiLogger.infoContext(requestId, String.format("Registered Email address Submission created for transaction id: %s with registered email address submission id: %s",
+                transaction.getId(), submissionId));
 
         ApiLogger.debugContext(requestId, " -  registered email address into DB success");
 
-        return  registeredEmailAddressMapper
+        return registeredEmailAddressMapper
                 .daoToDto(createdRegisteredEmailAddress);
 
 
@@ -83,9 +83,9 @@ public class RegisteredEmailAddressService {
     }
 
     private void updateRegisteredEmailAddressWithMetaData(RegisteredEmailAddressDAO submission,
-                                                            String submissionUri,
-                                                            String requestId,
-                                                            String userId) {
+                                                          String submissionUri,
+                                                          String requestId,
+                                                          String userId) {
         submission.setLinks(Collections.singletonMap(LINK_SELF, submissionUri));
         submission.setCreatedAt(LocalDateTime.now());
         submission.setHttpRequestId(requestId);
@@ -94,13 +94,13 @@ public class RegisteredEmailAddressService {
         registeredEmailAddressRepository.save(submission);
     }
 
-    private Resource createRegisteredEmailAddressTransactionResource(String transactionsUri) {
+    private Resource createRegisteredEmailAddressTransactionResource(String submissionUri) {
         var overseasEntityResource = new Resource();
         overseasEntityResource.setKind(FILING_KIND_OVERSEAS_ENTITY);
 
         Map<String, String> linksMap = new HashMap<>();
-        linksMap.put("resource", transactionsUri);
-        linksMap.put("validation_status", transactionsUri + VALIDATION_STATUS_URI_SUFFIX);
+        linksMap.put("resource", submissionUri);
+        linksMap.put("validation_status", submissionUri + VALIDATION_STATUS_URI_SUFFIX);
 
         overseasEntityResource.setLinks(linksMap);
         return overseasEntityResource;

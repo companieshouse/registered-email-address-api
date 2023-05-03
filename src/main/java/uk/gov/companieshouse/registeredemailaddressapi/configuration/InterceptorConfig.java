@@ -16,7 +16,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
 
     static final String[] USER_AUTH_ENDPOINTS = {
-      TRANSACTIONS
+            TRANSACTIONS
     };
 
     static final String[] INTERNAL_AUTH_ENDPOINTS = {};
@@ -25,10 +25,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private TransactionInterceptor transactionInterceptor;
 
 
-
     /**
      * Setup the interceptors to run against endpoints when the endpoints are called
      * Interceptors are executed in the order they are added to the registry
+     *
      * @param registry The spring interceptor registry
      */
     @Override
@@ -37,20 +37,15 @@ public class InterceptorConfig implements WebMvcConfigurer {
     }
 
 
-
     /**
      * Interceptor to get transaction and put in request for endpoints that require a transaction
+     *
      * @param registry The spring interceptor registry
      */
     private void addTransactionInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(transactionInterceptor)
                 .addPathPatterns(TRANSACTIONS);
     }
-
-
-
-
-
 
 
 }

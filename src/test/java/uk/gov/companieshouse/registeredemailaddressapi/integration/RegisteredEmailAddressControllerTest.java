@@ -21,7 +21,9 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
+
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -69,7 +71,7 @@ public class RegisteredEmailAddressControllerTest {
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         registeredEmailAddressDTO.setRegisteredEmailAddress("Test@Test.com");
 
-        this.mvc.perform(post("/transactions/"+ id +"/registered-email-address")
+        this.mvc.perform(post("/transactions/" + id + "/registered-email-address")
                         .contentType("application/json")
                         .header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456")
@@ -86,17 +88,17 @@ public class RegisteredEmailAddressControllerTest {
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
 
-            this.mvc.perform(post("/registered-email-address/transactions/123456/registered-email-address")
-                            .contentType("application/json")
-                            .header("ERIC-Identity", "123")
-                            .header("X-Request-Id", "123456")
-                            .content(writeToJson(registeredEmailAddressDTO))
-                    )
+        this.mvc.perform(post("/registered-email-address/transactions/123456/registered-email-address")
+                        .contentType("application/json")
+                        .header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456")
+                        .content(writeToJson(registeredEmailAddressDTO))
+                )
 
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.errors[0]")
-                            .value("registered_email_address must not be blank"));
-        }
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]")
+                        .value("registered_email_address must not be blank"));
+    }
 
     @Test
     public void testCreateRegisteredEmailAddressRegexFailureTest() throws Exception {
@@ -117,19 +119,19 @@ public class RegisteredEmailAddressControllerTest {
     }
 
 
-
-    private RegisteredEmailAddressDAO getRegisteredEmailAddressDAO(){
+    private RegisteredEmailAddressDAO getRegisteredEmailAddressDAO() {
         RegisteredEmailAddressDAO registeredEmailAddressDAO = new RegisteredEmailAddressDAO();
         registeredEmailAddressDAO.setId(UUID.randomUUID().toString());
         registeredEmailAddressDAO.setRegisteredEmailAddress("Test@Test.com");
         return registeredEmailAddressDAO;
     }
+
     private String writeToJson(Object object) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer();
-        return  ow.writeValueAsString(object);
+        return ow.writeValueAsString(object);
 
     }
 

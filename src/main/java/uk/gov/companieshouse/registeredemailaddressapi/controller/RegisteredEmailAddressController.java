@@ -22,22 +22,24 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 public class RegisteredEmailAddressController {
 
     private final RegisteredEmailAddressService registeredEmailAddressService;
+
     @Autowired
     public RegisteredEmailAddressController(RegisteredEmailAddressService registeredEmailAddressService) {
         this.registeredEmailAddressService = registeredEmailAddressService;
     }
+
     @GetMapping("/registered-email-address/healthcheck")
     public ResponseEntity<String> getHealthCheck() {
         return ResponseEntity.ok().body("Registered Email Address Service is Healthy");
 
     }
 
-    @PostMapping("/transactions/{"+TRANSACTION_ID_KEY+"}/registered-email-address")
+    @PostMapping("/transactions/{" + TRANSACTION_ID_KEY + "}/registered-email-address")
     public ResponseEntity<Object> createRegisteredEmailAddress(
             @RequestAttribute("transaction") Transaction transaction,
             @Valid @RequestBody RegisteredEmailAddress registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
-            @RequestHeader(value = ERIC_IDENTITY) String userId)  {
+            @RequestHeader(value = ERIC_IDENTITY) String userId) {
 
         try {
 
@@ -58,8 +60,7 @@ public class RegisteredEmailAddressController {
 
             return ResponseEntity.created(URI.create(response.getId())).body(response);
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return (ResponseEntity<Object>) ResponseEntity.internalServerError();
         }
 

@@ -42,12 +42,14 @@ public class GlobalExceptionHandler {
         errors.put("errors", errorsList);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex, WebRequest webRequest) {
         logException(ex, webRequest);
         return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    private void logException(Exception ex, WebRequest webRequest){
+
+    private void logException(Exception ex, WebRequest webRequest) {
         String context = webRequest.getHeader(ERIC_REQUEST_ID_KEY);
         String sanitisedExceptionMessage = truncate(Encode.forJava(ex.getMessage()));
         String sanitisedStackTrace = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ex)));
@@ -61,6 +63,7 @@ public class GlobalExceptionHandler {
         ApiLogger.errorContext(context, sanitisedExceptionMessage, null, logMap);
 
     }
+
     private String truncate(String input) {
         return StringUtils.truncate(input, truncationLength);
     }

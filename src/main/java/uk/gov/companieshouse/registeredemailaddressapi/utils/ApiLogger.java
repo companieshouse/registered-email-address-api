@@ -12,7 +12,8 @@ public class ApiLogger {
 
     public static final String APP_NAMESPACE = "registered-email-address-api";
 
-    private ApiLogger() {}
+    private ApiLogger() {
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(APP_NAMESPACE);
 
@@ -70,7 +71,7 @@ public class ApiLogger {
      * @return A cloned copy of the map data
      */
     private static Map<String, Object> cloneMapData(Map<String, Object> dataMap) {
-        if(dataMap == null) {
+        if (dataMap == null) {
             dataMap = new HashMap<String, Object>();
         }
         Map<String, Object> clonedMapData = new HashMap<String, Object>();
