@@ -3,6 +3,7 @@ package uk.gov.companieshouse.registeredemailaddressapi.utils;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
+import uk.gov.companieshouse.registeredemailaddressapi.RegisteredEmailAddressApiApplication;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,12 +11,10 @@ import java.util.Map;
 @Component
 public class ApiLogger {
 
-    public static final String APP_NAMESPACE = "registered-email-address-api";
-
     private ApiLogger() {
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(APP_NAMESPACE);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegisteredEmailAddressApiApplication.REA_APP_NAMESPACE);
 
     public static void debug(String message, Map<String, Object> dataMap) {
         LOGGER.debug(message, cloneMapData(dataMap));

@@ -1,24 +1,21 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddress;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
-
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
 @Service
@@ -28,8 +25,6 @@ public class RegisteredEmailAddressService {
 
     private final TransactionService transactionService;
 
-
-    @Autowired
     public RegisteredEmailAddressService(RegisteredEmailAddressMapper registeredEmailAddressMapper, RegisteredEmailAddressRepository registeredEmailAddressRepository, TransactionService transactionService) {
         this.registeredEmailAddressMapper = registeredEmailAddressMapper;
         this.registeredEmailAddressRepository = registeredEmailAddressRepository;
@@ -37,7 +32,7 @@ public class RegisteredEmailAddressService {
 
     }
 
-    public RegisteredEmailAddressDTO createRegisteredEmailAddress(Transaction transaction,
+    public ResponseEntity<Object> createRegisteredEmailAddress(Transaction transaction,
                                                                   RegisteredEmailAddress registeredEmailAddressDTO,
 
                                                                   String requestId,
@@ -71,10 +66,10 @@ public class RegisteredEmailAddressService {
 
         ApiLogger.debugContext(requestId, " -  registered email address into DB success");
 
-        return registeredEmailAddressMapper
+        var emailAddressMapper = registeredEmailAddressMapper
                 .daoToDto(createdRegisteredEmailAddress);
 
-
+        return ResponseEntity.created(URI.create(emailAddressMapper.getId())).body(emailAddressMapper);
     }
 
 

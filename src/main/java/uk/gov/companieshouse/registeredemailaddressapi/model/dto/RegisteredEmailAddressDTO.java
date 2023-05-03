@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-
-import java.util.Date;
 import java.util.Map;
 
 

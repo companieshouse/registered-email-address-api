@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -18,7 +17,6 @@ public class TransactionService {
 
     private final ApiClientService apiClientService;
 
-    @Autowired
     public TransactionService(ApiClientService apiClientService) {
         this.apiClientService = apiClientService;
     }

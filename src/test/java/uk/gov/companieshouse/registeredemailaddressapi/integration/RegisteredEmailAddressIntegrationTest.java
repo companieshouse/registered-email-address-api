@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
@@ -29,26 +30,32 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class RegisteredEmailAddressControllerTest {
-
+public class RegisteredEmailAddressIntegrationTest {
 
     //TODO - introduce test containers
 
     @MockBean
     protected TransactionService transactionService;
+
+    @MockBean
+    protected RegisteredEmailAddressRepository registeredEmailAddressRepository;
+
+    @MockBean
+    protected HttpServletRequest mockHttpServletRequest;
+
+    @MockBean
+    protected UserAuthenticationInterceptor userAuthenticationInterceptor;
+
     @InjectMocks
     protected TransactionInterceptor transactionInterceptor;
 
-    @MockBean
-    RegisteredEmailAddressRepository registeredEmailAddressRepository;
-
     @Autowired
     private MockMvc mvc;
-
-
 
     @BeforeEach
     void setUp() throws Exception {
@@ -60,10 +67,11 @@ public class RegisteredEmailAddressControllerTest {
         Transaction transaction = new Transaction();
         String id = UUID.randomUUID().toString();
         transaction.setId(id);
-        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
 
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
         when(registeredEmailAddressRepository.insert(any(RegisteredEmailAddressDAO.class)))
                 .thenReturn(getRegisteredEmailAddressDAO());
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         registeredEmailAddressDTO.setRegisteredEmailAddress("Test@Test.com");
@@ -71,7 +79,6 @@ public class RegisteredEmailAddressControllerTest {
         this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456").content(writeToJson(registeredEmailAddressDTO)))
-
                 .andExpect(status().isCreated()).andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.registered_email_address").value("Test@Test.com"));
     }
@@ -81,8 +88,11 @@ public class RegisteredEmailAddressControllerTest {
         Transaction transaction = new Transaction();
         String id = UUID.randomUUID().toString();
         transaction.setId(id);
+
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
 
         this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
@@ -104,6 +114,7 @@ public class RegisteredEmailAddressControllerTest {
         registeredEmailAddress.setRegisteredEmailAddress("223j&kg");
 
         when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
 
         this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
@@ -132,5 +143,8 @@ public class RegisteredEmailAddressControllerTest {
 
     }
 
+    private Boolean returnTrue() {
+        return true;
+    }
 
 }
