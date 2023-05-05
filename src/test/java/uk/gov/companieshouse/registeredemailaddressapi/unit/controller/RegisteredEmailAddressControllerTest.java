@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.registeredemailaddressapi.controller;
+package uk.gov.companieshouse.registeredemailaddressapi.unit.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,11 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.registeredemailaddressapi.controller.RegisteredEmailAddressController;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 
 import java.net.URI;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -23,13 +25,13 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressControllerTest {
 
-    private static final ResponseEntity<Object> CREATED_SUCCESS_RESPONSE = ResponseEntity.created(URI.create("URI")).body("Created");
+    private RegisteredEmailAddressDTO registeredEmailAddressDTO;
     private static final ResponseEntity<Object> ERROR_RESPONSE = ResponseEntity.internalServerError().build();
     private static final String REQUEST_ID = "bswi3nj8jjn";
     private static final String USER_ID = "7272838";
     private static final String EMAIL_ADDRESS = "Test@Test.com";
     private static final String UNEXPECTED_ERROR = "UNEXPCTED ERROR - EXITING...";
-    
+
     @Mock
     private RegisteredEmailAddressService registeredEmailAddressService;
 
@@ -39,8 +41,6 @@ class RegisteredEmailAddressControllerTest {
     @InjectMocks
     private RegisteredEmailAddressController registeredEmailAddressController;
 
-    private RegisteredEmailAddressDTO registeredEmailAddressDTO;
-
     @BeforeEach
     void init() {
         registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
@@ -49,12 +49,15 @@ class RegisteredEmailAddressControllerTest {
 
     @Test
     void testCreateRegisteredEmailAddressSuccessTest() throws ServiceException {
+
+        registeredEmailAddressDTO.setId(UUID.randomUUID().toString());
+
         when(this.registeredEmailAddressService.createRegisteredEmailAddress(
             transaction,
             registeredEmailAddressDTO,
             REQUEST_ID,
             USER_ID)
-        ).thenReturn(CREATED_SUCCESS_RESPONSE);
+        ).thenReturn(registeredEmailAddressDTO);
 
         var createRegisteredEmailAddressResponse = registeredEmailAddressController.createRegisteredEmailAddress(
             transaction,
@@ -64,7 +67,7 @@ class RegisteredEmailAddressControllerTest {
         );
 
         assertEquals(HttpStatus.CREATED.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
-        assertEquals(CREATED_SUCCESS_RESPONSE, createRegisteredEmailAddressResponse);
+        assertEquals(registeredEmailAddressDTO, createRegisteredEmailAddressResponse.getBody());
 
         verify(registeredEmailAddressService).createRegisteredEmailAddress(
                 transaction,

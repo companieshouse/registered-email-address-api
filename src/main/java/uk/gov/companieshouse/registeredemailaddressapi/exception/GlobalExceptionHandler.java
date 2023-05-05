@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -44,6 +43,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex, WebRequest webRequest) {
         logException(ex, webRequest);
+
         return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

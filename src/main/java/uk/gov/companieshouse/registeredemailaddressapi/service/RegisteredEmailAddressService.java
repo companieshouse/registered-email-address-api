@@ -1,17 +1,14 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddress;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
-
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +19,6 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 public class RegisteredEmailAddressService {
     private final RegisteredEmailAddressMapper registeredEmailAddressMapper;
     private final RegisteredEmailAddressRepository registeredEmailAddressRepository;
-
     private final TransactionService transactionService;
 
     public RegisteredEmailAddressService(RegisteredEmailAddressMapper registeredEmailAddressMapper, RegisteredEmailAddressRepository registeredEmailAddressRepository, TransactionService transactionService) {
@@ -32,13 +28,20 @@ public class RegisteredEmailAddressService {
 
     }
 
-    public ResponseEntity<Object> createRegisteredEmailAddress(Transaction transaction,
-                                                                  RegisteredEmailAddress registeredEmailAddressDTO,
+    public RegisteredEmailAddressDTO createRegisteredEmailAddress(Transaction transaction,
+                                                                  RegisteredEmailAddressDTO registeredEmailAddressDTO,
 
                                                                   String requestId,
                                                                   String userId) throws ServiceException {
 
         ApiLogger.debugContext(requestId, " -  createRegisteredEmailAddress(...)");
+
+        if (hasExistingREASubmission(transaction)) {
+
+            throw new ServiceException(
+                    String.format("Transaction id: %s has an existing Registered Email Address submission",
+                            transaction.getId()));
+        }
 
         RegisteredEmailAddressDAO registeredEmailAddressDAO = registeredEmailAddressMapper
                 .dtoToDao(registeredEmailAddressDTO);
@@ -58,7 +61,7 @@ public class RegisteredEmailAddressService {
 //
 //        // Update company name set on the transaction and add a link to newly created Registered Email address
 //        // submission (aka resource) to the transaction (and potentially also a link for the 'resume' journey)
-        updateTransactionWithLinksAndCompanyName(transaction,
+        updateTransactionWithLinks(transaction,
                 submissionUri, registeredEmailAddressResource, requestId);
 //
         ApiLogger.infoContext(requestId, String.format("Registered Email address Submission created for transaction id: %s with registered email address submission id: %s",
@@ -66,10 +69,18 @@ public class RegisteredEmailAddressService {
 
         ApiLogger.debugContext(requestId, " -  registered email address into DB success");
 
-        var emailAddressMapper = registeredEmailAddressMapper
+        return registeredEmailAddressMapper
                 .daoToDto(createdRegisteredEmailAddress);
 
-        return ResponseEntity.created(URI.create(emailAddressMapper.getId())).body(emailAddressMapper);
+
+    }
+
+    private boolean hasExistingREASubmission(Transaction transaction) {
+        if (transaction.getResources() != null) {
+            return transaction.getResources().entrySet().stream().anyMatch(resourceEntry ->
+                    FILING_KIND_REGISTERED_EMAIL_ADDRESS.equals(resourceEntry.getValue().getKind()));
+        }
+        return false;
     }
 
 
@@ -91,7 +102,7 @@ public class RegisteredEmailAddressService {
 
     private Resource createRegisteredEmailAddressTransactionResource(String submissionUri) {
         var overseasEntityResource = new Resource();
-        overseasEntityResource.setKind(FILING_KIND_OVERSEAS_ENTITY);
+        overseasEntityResource.setKind(FILING_KIND_REGISTERED_EMAIL_ADDRESS);
 
         Map<String, String> linksMap = new HashMap<>();
         linksMap.put("resource", submissionUri);
@@ -101,10 +112,10 @@ public class RegisteredEmailAddressService {
         return overseasEntityResource;
     }
 
-    private void updateTransactionWithLinksAndCompanyName(Transaction transaction,
-                                                          String submissionUri,
-                                                          Resource resource,
-                                                          String loggingContext) throws ServiceException {
+    private void updateTransactionWithLinks(Transaction transaction,
+                                            String submissionUri,
+                                            Resource resource,
+                                            String loggingContext) throws ServiceException {
 
         transaction.setResources(Collections.singletonMap(submissionUri, resource));
         transactionService.updateTransaction(transaction, loggingContext);

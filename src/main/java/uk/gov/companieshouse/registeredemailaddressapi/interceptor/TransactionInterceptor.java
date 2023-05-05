@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.interceptor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,12 +16,12 @@ import java.util.Map;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
-
 @Component
 public class TransactionInterceptor implements HandlerInterceptor {
 
     private final TransactionService transactionService;
 
+    @Autowired
     public TransactionInterceptor(TransactionService transactionService) {
         this.transactionService = transactionService;
     }

@@ -25,7 +25,7 @@ public class Constants {
 
 
     // Filings
-    public static final String FILING_KIND_OVERSEAS_ENTITY = "overseas-entity";
+    public static final String FILING_KIND_REGISTERED_EMAIL_ADDRESS = "registered-email-address";
     public static final String LINK_SELF = "self";
     public static final String LINK_RESOURCE = "resource";
 

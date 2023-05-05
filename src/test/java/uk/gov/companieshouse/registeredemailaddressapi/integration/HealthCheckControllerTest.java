@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.registeredemailaddressapi.controller;
+package uk.gov.companieshouse.registeredemailaddressapi.integration;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class HealthCheckControllerTest {
     @Autowired
     private MockMvc mvc;
+
     @Test
     public void HealthCheckEndpointTest() throws Exception {
         this.mvc.perform(get("/registered-email-address/healthcheck"))

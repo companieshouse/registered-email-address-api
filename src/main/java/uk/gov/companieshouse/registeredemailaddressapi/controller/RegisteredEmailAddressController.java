@@ -4,11 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddress;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
@@ -32,7 +33,7 @@ public class RegisteredEmailAddressController {
     @PostMapping("/transactions/{" + TRANSACTION_ID_KEY + "}/registered-email-address")
     public ResponseEntity<Object> createRegisteredEmailAddress(
             @RequestAttribute("transaction") Transaction transaction,
-            @Valid @RequestBody RegisteredEmailAddress registeredEmailAddressDto,
+            @Valid @RequestBody RegisteredEmailAddressDTO registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
             @RequestHeader(value = ERIC_IDENTITY) String userId) {
 
@@ -44,13 +45,16 @@ public class RegisteredEmailAddressController {
             //TODO - Add validation here
 
             ApiLogger.infoContext(requestId, REA_REQUEST, logMap);
-            
-            return this.registeredEmailAddressService.createRegisteredEmailAddress(
-                    transaction,
-                    registeredEmailAddressDto,
-                    requestId,
-                    userId
-            );
+
+            RegisteredEmailAddressDTO registeredEmailAddress = this.registeredEmailAddressService
+                    .createRegisteredEmailAddress(
+                            transaction,
+                            registeredEmailAddressDto,
+                            requestId,
+                            userId);
+
+            return ResponseEntity.created(URI.create(registeredEmailAddress.getId())).body(registeredEmailAddress);
+
         } catch (Exception e) {
             ApiLogger.errorContext(requestId, SUBMISSION_ERROR, e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
