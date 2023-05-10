@@ -17,7 +17,7 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TR
 
 /**
  * An abstract class which can be extended by request interceptors to implement specific behaviour, based on the status
- * of the transaction associated with the Overseas Entity submission.
+ * of the transaction associated with the Registered Email Address submission.
  * <p/>
  * Note that a transaction object instance is expected to already be present in the request attributes. Any concrete
  * implementations must therefore run after the <code>TransactionInterceptor</code> has completed.

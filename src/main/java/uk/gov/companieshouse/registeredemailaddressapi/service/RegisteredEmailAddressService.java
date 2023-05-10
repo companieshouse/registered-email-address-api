@@ -101,15 +101,15 @@ public class RegisteredEmailAddressService {
     }
 
     private Resource createRegisteredEmailAddressTransactionResource(String submissionUri) {
-        var overseasEntityResource = new Resource();
-        overseasEntityResource.setKind(FILING_KIND_REGISTERED_EMAIL_ADDRESS);
+        var registeredEmailAddressResource = new Resource();
+        registeredEmailAddressResource.setKind(FILING_KIND_REGISTERED_EMAIL_ADDRESS);
 
         Map<String, String> linksMap = new HashMap<>();
         linksMap.put("resource", submissionUri);
         linksMap.put("validation_status", submissionUri + VALIDATION_STATUS_URI_SUFFIX);
 
-        overseasEntityResource.setLinks(linksMap);
-        return overseasEntityResource;
+        registeredEmailAddressResource.setLinks(linksMap);
+        return registeredEmailAddressResource;
     }
 
     private void updateTransactionWithLinks(Transaction transaction,
