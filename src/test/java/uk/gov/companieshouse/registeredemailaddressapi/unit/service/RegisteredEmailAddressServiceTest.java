@@ -23,6 +23,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import static java.lang.String.format;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.any;
@@ -80,7 +81,7 @@ class RegisteredEmailAddressServiceTest {
         verify(registeredEmailAddressMapper, times(1)).dtoToDao(any());
         verify(transactionService, times(1)).updateTransaction(transactionApiCaptor.capture(), any());
 
-        String submissionUri = String.format("/transactions/%s/registered-email-address/%s", transaction.getId(),
+        String submissionUri = String.format("/transactions/%s/registered-email-address", transaction.getId(),
                 registeredEmailAddressDAO.getId());
 
         Transaction transactionSent = transactionApiCaptor.getValue();
@@ -180,7 +181,7 @@ class RegisteredEmailAddressServiceTest {
         try {
             registeredEmailAddressService.getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID);
         } catch (Exception ex) {
-            assertEquals("Registered Email Address has not been created", ex.getMessage());
+            assertEquals(format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID), ex.getMessage());
         }
 
         verify(registeredEmailAddressRepository, times(1)).findByTransactionId(TRANSACTION_ID);

@@ -1,6 +1,9 @@
 package uk.gov.companieshouse.registeredemailaddressapi.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -22,7 +25,10 @@ public class RegisteredEmailAddressDTO {
     private String kind;
     @JsonProperty("links")
     private Map<String, String> links;
-
+    @JsonIgnore
+    public boolean isForUpdate() {
+        return StringUtils.isNotBlank(registeredEmailAddress);
+    }
     public String getId() {
         return id;
     }

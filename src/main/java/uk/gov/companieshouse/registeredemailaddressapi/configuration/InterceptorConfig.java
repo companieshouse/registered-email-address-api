@@ -17,7 +17,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.interceptor.FilingInterce
 @ComponentScan("uk.gov.companieshouse.api.interceptor")
 public class InterceptorConfig implements WebMvcConfigurer {
     static final String TRANSACTIONS = "/transactions/**";
-    static final String FILINGS = "/private/**/filings";
+    static final String FILINGS = "/private/transactions/**/filings";
 
     static final String[] USER_AUTH_ENDPOINTS = {
             TRANSACTIONS
@@ -86,7 +86,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
      */
     private void addTransactionInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(transactionInterceptor)
-                .addPathPatterns(TRANSACTIONS);
+                .addPathPatterns(TRANSACTIONS, FILINGS);
     }
 
      /**

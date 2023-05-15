@@ -68,7 +68,6 @@ public class RegisteredEmailAddressController {
             ApiLogger.errorContext(requestId, SUBMISSION_ERROR, e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @GetMapping("/validation-status")

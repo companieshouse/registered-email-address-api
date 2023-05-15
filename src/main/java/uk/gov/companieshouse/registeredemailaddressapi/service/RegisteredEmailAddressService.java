@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
@@ -26,6 +27,7 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.VA
 
 @Service
 public class RegisteredEmailAddressService {
+
     private final RegisteredEmailAddressMapper registeredEmailAddressMapper;
     private final RegisteredEmailAddressRepository registeredEmailAddressRepository;
     private final TransactionService transactionService;
@@ -71,7 +73,7 @@ public class RegisteredEmailAddressService {
 
         // create the Resource to be added to the Transaction (includes various links to the resource)
         Resource registeredEmailAddressResource = createRegisteredEmailAddressTransactionResource(submissionUri);
-
+        
         // Update company name set on the transaction and add a link to newly created Registered Email address
         // submission (aka resource) to the transaction (and potentially also a link for the 'resume' journey)
         updateTransactionWithLinks(transaction,
@@ -84,8 +86,6 @@ public class RegisteredEmailAddressService {
 
         return registeredEmailAddressMapper
                 .daoToDto(createdRegisteredEmailAddress);
-
-
     }
 
     public ValidationStatusResponse getValidationStatus(String transactionId, String requestId) throws SubmissionNotFoundException {
@@ -122,7 +122,6 @@ public class RegisteredEmailAddressService {
         }
         return false;
     }
-
 
     private String generateTransactionUri(String transactionId, String submissionId) {
         return format(TRANSACTION_URI_PATTERN, transactionId, submissionId);
@@ -161,6 +160,17 @@ public class RegisteredEmailAddressService {
         transactionService.updateTransaction(transaction, loggingContext);
     }
 
+    public Optional<RegisteredEmailAddressDTO> getRegisteredEmailAddressSubmission(String submissionId) {
+        var submission = registeredEmailAddressRepository.findById(submissionId);
+        if (submission.isPresent()) {
+            var registeredEmailAddressSubmissionDao = submission.get();
+            ApiLogger.info(String.format("%s: Registered Email Address Submission found. About to return", registeredEmailAddressSubmissionDao.getId()));
+            var dto = registeredEmailAddressMapper.daoToDto(registeredEmailAddressSubmissionDao);
+            return Optional.of(dto);
+        } else {
+            return Optional.empty();
+        }
+    }
 }
 
 
