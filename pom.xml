@@ -26,6 +26,8 @@
         <structured-logging.version>1.9.14</structured-logging.version>
         <log4j.version>2.17.2</log4j.version>
         <org.mapstruct.version>1.5.0.RC1</org.mapstruct.version>
+        <test-containers.version>1.16.3</test-containers.version>
+        <rest-service-common-library-version>0.0.5</rest-service-common-library-version>
     </properties>
     <profiles>
         <profile>
@@ -97,6 +99,11 @@
             <version>${api-security-java.version}</version>
         </dependency>
         <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>rest-service-common-library</artifactId>
+            <version>${rest-service-common-library-version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.7.0</version>
@@ -111,14 +118,33 @@
             <artifactId>encoder</artifactId>
             <version>1.2.3</version>
         </dependency>
-
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${test-containers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
+            <version>${test-containers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${test-containers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.sonarsource.scanner.maven</groupId>
             <artifactId>sonar-maven-plugin</artifactId>

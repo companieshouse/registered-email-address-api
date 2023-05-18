@@ -16,8 +16,8 @@ To checkout and build the service:
 3. Run ./bin/chs-dev development enable registered-email-address-api (this will allow you to make changes).
 4. Run docker using "tilt up" in the docker-chs-development directory.
 5. Use spacebar in the command line to open tilt window - wait for registered-email-address-api to become green.
-6. Open your browser and go to page http://chs.local/register-an-overseas-entity
-7. If you are using the api directly, then use this url: http://chs.local/registered-email-address
+6. Open your browser and go to page http://chs.local/register-email-address
+7. If you are using the api directly, then use this url: http://api.chs.local/registered-email-address
 
 These instructions are for a local docker environment.
 
