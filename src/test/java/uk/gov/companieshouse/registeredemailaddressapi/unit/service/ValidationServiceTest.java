@@ -3,13 +3,10 @@ package uk.gov.companieshouse.registeredemailaddressapi.unit.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
-import uk.gov.companieshouse.registeredemailaddressapi.client.ApiClientService;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService;
-import uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -22,15 +19,7 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUt
 @ExtendWith(MockitoExtension.class)
 class ValidationServiceTest {
 
-    private static final String TRANSACTION_ID = UUID.randomUUID().toString();
     private static final String REQUEST_ID = UUID.randomUUID().toString();
-
-    @Mock
-    private ApiClientService apiClientService;
-
-    @Mock
-    private ValidationUtils validationUtils;
-
 
     @InjectMocks
     private ValidationService validationService;

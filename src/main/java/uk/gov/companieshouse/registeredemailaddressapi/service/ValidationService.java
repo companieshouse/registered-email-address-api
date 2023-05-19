@@ -4,10 +4,8 @@ import com.google.gson.GsonBuilder;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
-import uk.gov.companieshouse.registeredemailaddressapi.client.ApiClientService;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
-import uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils;
 import uk.gov.companieshouse.service.rest.err.Errors;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.isNotNull;
@@ -15,17 +13,6 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUt
 
 @Service
 public class ValidationService {
-
-    private final ApiClientService apiClientService;
-
-    private final ValidationUtils validationUtils;
-
-
-    public ValidationService(ApiClientService apiClientService, ValidationUtils validationUtils) {
-        this.apiClientService = apiClientService;
-        this.validationUtils = validationUtils;
-    }
-
 
     public ValidationStatusResponse validateRegisteredEmailAddress(RegisteredEmailAddressDAO registeredEmailAddress,
                                                                    String requestId) {
