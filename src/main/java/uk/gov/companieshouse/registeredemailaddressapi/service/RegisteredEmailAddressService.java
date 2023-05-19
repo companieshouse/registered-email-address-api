@@ -88,8 +88,6 @@ public class RegisteredEmailAddressService {
         try {
             var registeredEmailAddress = registeredEmailAddressRepository
                     .findByTransactionId(transactionId);
-            ApiLogger.debugContext(requestId, String.format("Registered Email Address found for Transaction %s.",
-                    transactionId ));
             return validationService.validateRegisteredEmailAddress(registeredEmailAddress, requestId);
         } catch (Exception ex) {
             var message = String.format("Registered Email Address for TransactionId : %s Not Found",
