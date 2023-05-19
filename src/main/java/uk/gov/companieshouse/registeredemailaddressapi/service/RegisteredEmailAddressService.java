@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
@@ -53,6 +54,7 @@ public class RegisteredEmailAddressService {
                 .dtoToDao(registeredEmailAddressDTO);
 
         registeredEmailAddressDAO.setTransactionId(transaction.getId());
+        registeredEmailAddressDAO.setEtag(GenerateEtagUtil.generateEtag());
 
         ApiLogger.debugContext(requestId, " -  insert registered email address into DB");
 
