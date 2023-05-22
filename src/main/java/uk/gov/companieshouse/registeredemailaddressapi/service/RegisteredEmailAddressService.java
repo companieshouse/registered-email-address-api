@@ -18,7 +18,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
+import static java.lang.String.format;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_SELF;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_URI_PATTERN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.VALIDATION_STATUS_URI_SUFFIX;
 
 @Service
 public class RegisteredEmailAddressService {
@@ -46,7 +50,7 @@ public class RegisteredEmailAddressService {
         if (hasExistingREASubmission(transaction)) {
 
             throw new ServiceException(
-                    String.format("Transaction id: %s has an existing Registered Email Address submission",
+                    format("Transaction id: %s has an existing Registered Email Address submission",
                             transaction.getId()));
         }
 
@@ -73,7 +77,7 @@ public class RegisteredEmailAddressService {
         updateTransactionWithLinks(transaction,
                 submissionUri, registeredEmailAddressResource, requestId);
 
-        ApiLogger.infoContext(requestId, String.format("Registered Email address Submission created for transaction id: %s with registered email address submission id: %s",
+        ApiLogger.infoContext(requestId, format("Registered Email address Submission created for transaction id: %s with registered email address submission id: %s",
                 transaction.getId(), submissionId));
 
         ApiLogger.debugContext(requestId, " -  registered email address into DB success");
@@ -90,12 +94,25 @@ public class RegisteredEmailAddressService {
                     .findByTransactionId(transactionId);
             return validationService.validateRegisteredEmailAddress(registeredEmailAddress, requestId);
         } catch (Exception ex) {
-            var message = String.format("Registered Email Address for TransactionId : %s Not Found",
+            var message = format("Registered Email Address for TransactionId : %s Not Found",
                     transactionId);
-            ApiLogger.errorContext(requestId, message , ex);
+            ApiLogger.errorContext(requestId, message, ex);
             throw new SubmissionNotFoundException(message, ex);
 
         }
+    }
+
+    public String getRegisteredEmailAddress(String transactionId, String requestId) throws SubmissionNotFoundException {
+        var registeredEmailAddress = registeredEmailAddressRepository.findByTransactionId(transactionId);
+
+        if (registeredEmailAddress == null) {
+            var message = format("Registered Email Address for TransactionId : %s Not Found", transactionId);
+            throw new SubmissionNotFoundException(message);
+        }
+
+        ApiLogger.debugContext(requestId, format("Registered Email Address found for Transaction %s.", transactionId));
+
+        return registeredEmailAddress.getRegisteredEmailAddress();
     }
 
     private boolean hasExistingREASubmission(Transaction transaction) {
@@ -108,7 +125,7 @@ public class RegisteredEmailAddressService {
 
 
     private String generateTransactionUri(String transactionId, String submissionId) {
-        return String.format(TRANSACTION_URI_PATTERN, transactionId, submissionId);
+        return format(TRANSACTION_URI_PATTERN, transactionId, submissionId);
     }
 
     private void updateRegisteredEmailAddressWithMetaData(RegisteredEmailAddressDAO submission,

@@ -2,7 +2,14 @@ package uk.gov.companieshouse.registeredemailaddressapi.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
@@ -14,7 +21,10 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_IDENTITY;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_ID_KEY;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_KEY;
 
 @RestController
 @RequestMapping("/transactions/{" + TRANSACTION_ID_KEY + "}/registered-email-address")
@@ -80,4 +90,20 @@ public class RegisteredEmailAddressController {
 
     }
 
+    @GetMapping
+    public ResponseEntity<String> getRegisteredEmailAddress(
+            @PathVariable(TRANSACTION_ID_KEY) String transactionId,
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) throws SubmissionNotFoundException {
+
+        ApiLogger.debugContext(requestId, "Called getRegisteredEmailAddress(...)");
+
+        var logMap = new HashMap<String, Object>();
+        logMap.put(TRANSACTION_ID_KEY, transactionId);
+
+        ApiLogger.infoContext(requestId, "Calling service to get the registered email address", logMap);
+
+        String registeredEmailAddress = registeredEmailAddressService.getRegisteredEmailAddress(transactionId, requestId);
+
+        return ResponseEntity.ok().body(registeredEmailAddress);
+    }
 }

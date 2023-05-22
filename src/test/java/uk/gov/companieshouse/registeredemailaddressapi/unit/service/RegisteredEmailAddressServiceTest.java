@@ -25,7 +25,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
 
 @ExtendWith(MockitoExtension.class)
@@ -104,8 +107,7 @@ class RegisteredEmailAddressServiceTest {
                     registeredEmailAddressDTO,
                     REQUEST_ID,
                     USER_ID);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             assertEquals(e.getMessage(),
                     String.format("Transaction id: %s has an existing Registered Email Address submission",
                             TRANSACTION_ID));
@@ -143,8 +145,7 @@ class RegisteredEmailAddressServiceTest {
 
             ValidationStatusResponse response = registeredEmailAddressService
                     .getValidationStatus(TRANSACTION_ID, REQUEST_ID);
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             assertEquals(String.format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID), ex.getMessage());
 
         }
@@ -152,6 +153,37 @@ class RegisteredEmailAddressServiceTest {
         verify(registeredEmailAddressRepository, times(1)).findByTransactionId(TRANSACTION_ID);
         verify(validationService, times(0)).validateRegisteredEmailAddress(any(), any());
 
+    }
+
+    @Test
+    void getRegisteredEmailAddressIsSuccessful() throws SubmissionNotFoundException {
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = buildRegisteredEmailAddressDAO();
+        ValidationStatusResponse validationStatusResponse = new ValidationStatusResponse();
+        validationStatusResponse.setValid(true);
+
+        when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID))
+                .thenReturn(registeredEmailAddressDAO);
+
+        String response = registeredEmailAddressService
+                .getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID);
+
+        assertEquals("test@Test.com", response);
+
+        verify(registeredEmailAddressRepository).findByTransactionId(TRANSACTION_ID);
+    }
+
+    @Test
+    void getRegisteredEmailAddressIsUnSuccessfulREANotCreated() {
+        when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID))
+                .thenReturn(null);
+
+        try {
+            registeredEmailAddressService.getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID);
+        } catch (Exception ex) {
+            assertEquals("Registered Email Address has not been created", ex.getMessage());
+        }
+
+        verify(registeredEmailAddressRepository, times(1)).findByTransactionId(TRANSACTION_ID);
     }
 
     private Transaction buildTransaction() {
