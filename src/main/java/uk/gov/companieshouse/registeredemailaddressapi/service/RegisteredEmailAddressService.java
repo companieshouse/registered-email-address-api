@@ -1,18 +1,23 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
 @Service
@@ -20,11 +25,13 @@ public class RegisteredEmailAddressService {
     private final RegisteredEmailAddressMapper registeredEmailAddressMapper;
     private final RegisteredEmailAddressRepository registeredEmailAddressRepository;
     private final TransactionService transactionService;
+    private final ValidationService validationService;
 
-    public RegisteredEmailAddressService(RegisteredEmailAddressMapper registeredEmailAddressMapper, RegisteredEmailAddressRepository registeredEmailAddressRepository, TransactionService transactionService) {
+    public RegisteredEmailAddressService(RegisteredEmailAddressMapper registeredEmailAddressMapper, RegisteredEmailAddressRepository registeredEmailAddressRepository, TransactionService transactionService, ValidationService validationService) {
         this.registeredEmailAddressMapper = registeredEmailAddressMapper;
         this.registeredEmailAddressRepository = registeredEmailAddressRepository;
         this.transactionService = transactionService;
+        this.validationService = validationService;
 
     }
 
@@ -46,8 +53,10 @@ public class RegisteredEmailAddressService {
         RegisteredEmailAddressDAO registeredEmailAddressDAO = registeredEmailAddressMapper
                 .dtoToDao(registeredEmailAddressDTO);
 
-        ApiLogger.debugContext(requestId, " -  insert registered email address into DB");
+        registeredEmailAddressDAO.setTransactionId(transaction.getId());
+        registeredEmailAddressDAO.setEtag(GenerateEtagUtil.generateEtag());
 
+        ApiLogger.debugContext(requestId, " -  insert registered email address into DB");
 
         RegisteredEmailAddressDAO createdRegisteredEmailAddress = registeredEmailAddressRepository
                 .insert(registeredEmailAddressDAO);
@@ -58,12 +67,12 @@ public class RegisteredEmailAddressService {
 
         // create the Resource to be added to the Transaction (includes various links to the resource)
         Resource registeredEmailAddressResource = createRegisteredEmailAddressTransactionResource(submissionUri);
-//
-//        // Update company name set on the transaction and add a link to newly created Registered Email address
-//        // submission (aka resource) to the transaction (and potentially also a link for the 'resume' journey)
+
+        // Update company name set on the transaction and add a link to newly created Registered Email address
+        // submission (aka resource) to the transaction (and potentially also a link for the 'resume' journey)
         updateTransactionWithLinks(transaction,
                 submissionUri, registeredEmailAddressResource, requestId);
-//
+
         ApiLogger.infoContext(requestId, String.format("Registered Email address Submission created for transaction id: %s with registered email address submission id: %s",
                 transaction.getId(), submissionId));
 
@@ -75,10 +84,24 @@ public class RegisteredEmailAddressService {
 
     }
 
+    public ValidationStatusResponse getValidationStatus(String transactionId, String requestId) throws SubmissionNotFoundException {
+        try {
+            var registeredEmailAddress = registeredEmailAddressRepository
+                    .findByTransactionId(transactionId);
+            return validationService.validateRegisteredEmailAddress(registeredEmailAddress, requestId);
+        } catch (Exception ex) {
+            var message = String.format("Registered Email Address for TransactionId : %s Not Found",
+                    transactionId);
+            ApiLogger.errorContext(requestId, message , ex);
+            throw new SubmissionNotFoundException(message, ex);
+
+        }
+    }
+
     private boolean hasExistingREASubmission(Transaction transaction) {
         if (transaction.getResources() != null) {
             return transaction.getResources().entrySet().stream().anyMatch(resourceEntry ->
-                    FILING_KIND_REGISTERED_EMAIL_ADDRESS.equals(resourceEntry.getValue().getKind()));
+                    FILING_KIND.equals(resourceEntry.getValue().getKind()));
         }
         return false;
     }
@@ -102,7 +125,7 @@ public class RegisteredEmailAddressService {
 
     private Resource createRegisteredEmailAddressTransactionResource(String submissionUri) {
         var registeredEmailAddressResource = new Resource();
-        registeredEmailAddressResource.setKind(FILING_KIND_REGISTERED_EMAIL_ADDRESS);
+        registeredEmailAddressResource.setKind(FILING_KIND);
 
         Map<String, String> linksMap = new HashMap<>();
         linksMap.put("resource", submissionUri);

@@ -12,6 +12,8 @@ public class RegisteredEmailAddressDAO {
 
     @Id
     private String id;
+    @Field("transaction_id")
+    private String transactionId;
     @Field("registered_email_address")
     private String registeredEmailAddress;
     @Field("created_at")
@@ -37,6 +39,14 @@ public class RegisteredEmailAddressDAO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public String getRegisteredEmailAddress() {

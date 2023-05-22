@@ -26,6 +26,9 @@
         <structured-logging.version>1.9.14</structured-logging.version>
         <log4j.version>2.17.2</log4j.version>
         <org.mapstruct.version>1.5.0.RC1</org.mapstruct.version>
+        <test-containers.version>1.16.3</test-containers.version>
+        <rest-service-common-library-version>0.0.5</rest-service-common-library-version>
+        <api-helper-java-library-version>1.4.5</api-helper-java-library-version>
     </properties>
     <profiles>
         <profile>
@@ -97,6 +100,16 @@
             <version>${api-security-java.version}</version>
         </dependency>
         <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>rest-service-common-library</artifactId>
+            <version>${rest-service-common-library-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>api-helper-java</artifactId>
+            <version>${api-helper-java-library-version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.7.0</version>
@@ -111,8 +124,6 @@
             <artifactId>encoder</artifactId>
             <version>1.2.3</version>
         </dependency>
-
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

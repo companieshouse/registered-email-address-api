@@ -9,13 +9,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +26,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND_REGISTERED_EMAIL_ADDRESS;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
 
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressServiceTest {
@@ -44,6 +47,9 @@ class RegisteredEmailAddressServiceTest {
 
     @Mock
     private RegisteredEmailAddressRepository registeredEmailAddressRepository;
+
+    @Mock
+    private ValidationService validationService;
 
     @InjectMocks
     private RegisteredEmailAddressService registeredEmailAddressService;
@@ -87,7 +93,7 @@ class RegisteredEmailAddressServiceTest {
 
         Transaction transaction = buildTransaction();
         Resource resource = new Resource();
-        resource.setKind(FILING_KIND_REGISTERED_EMAIL_ADDRESS);
+        resource.setKind(FILING_KIND);
         Map<String, Resource> resourceMap = new HashMap<>();
         resourceMap.put("test", resource);
         transaction.setResources(resourceMap);
@@ -104,6 +110,47 @@ class RegisteredEmailAddressServiceTest {
                     String.format("Transaction id: %s has an existing Registered Email Address submission",
                             TRANSACTION_ID));
         }
+
+    }
+
+    @Test
+    void getValidationStatusIsSuccessful() throws SubmissionNotFoundException {
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = buildRegisteredEmailAddressDAO();
+        ValidationStatusResponse validationStatusResponse = new ValidationStatusResponse();
+        validationStatusResponse.setValid(true);
+
+        when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID))
+                .thenReturn(registeredEmailAddressDAO);
+        when(validationService.validateRegisteredEmailAddress(registeredEmailAddressDAO, REQUEST_ID))
+                .thenReturn(validationStatusResponse);
+
+        ValidationStatusResponse response = registeredEmailAddressService
+                .getValidationStatus(TRANSACTION_ID, REQUEST_ID);
+
+        assertEquals(true, response.isValid());
+        assertEquals(null, response.getValidationStatusError());
+
+        verify(registeredEmailAddressRepository, times(1)).findByTransactionId(TRANSACTION_ID);
+        verify(validationService, times(1)).validateRegisteredEmailAddress(registeredEmailAddressDAO, REQUEST_ID);
+    }
+
+    @Test
+    void getValidationStatusIsUnSuccessful() {
+        when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID))
+                .thenThrow(new NullPointerException());
+
+        try {
+
+            ValidationStatusResponse response = registeredEmailAddressService
+                    .getValidationStatus(TRANSACTION_ID, REQUEST_ID);
+        }
+        catch (Exception ex){
+            assertEquals(String.format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID), ex.getMessage());
+
+        }
+
+        verify(registeredEmailAddressRepository, times(1)).findByTransactionId(TRANSACTION_ID);
+        verify(validationService, times(0)).validateRegisteredEmailAddress(any(), any());
 
     }
 

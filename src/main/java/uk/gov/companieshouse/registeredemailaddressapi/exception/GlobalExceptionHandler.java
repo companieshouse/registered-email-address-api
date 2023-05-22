@@ -40,11 +40,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
+    @ExceptionHandler(SubmissionNotFoundException.class)
+    public ResponseEntity<Object> handleSubmissionException(Exception ex, WebRequest webRequest) {
+        logException(ex, webRequest);
+
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<Object> handleServiceException(Exception ex, WebRequest webRequest) {
+        logException(ex, webRequest);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex, WebRequest webRequest) {
         logException(ex, webRequest);
 
-        return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     private void logException(Exception ex, WebRequest webRequest) {
