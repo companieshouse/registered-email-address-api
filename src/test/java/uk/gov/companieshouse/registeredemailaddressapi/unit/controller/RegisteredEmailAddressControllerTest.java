@@ -54,17 +54,17 @@ class RegisteredEmailAddressControllerTest {
         registeredEmailAddressDTO.setId(UUID.randomUUID().toString());
 
         when(this.registeredEmailAddressService.createRegisteredEmailAddress(
-            transaction,
-            registeredEmailAddressDTO,
-            REQUEST_ID,
-            USER_ID)
+                transaction,
+                registeredEmailAddressDTO,
+                REQUEST_ID,
+                USER_ID)
         ).thenReturn(registeredEmailAddressDTO);
 
         var createRegisteredEmailAddressResponse = registeredEmailAddressController.createRegisteredEmailAddress(
-            transaction,
-            registeredEmailAddressDTO,
-            REQUEST_ID,
-            USER_ID
+                transaction,
+                registeredEmailAddressDTO,
+                REQUEST_ID,
+                USER_ID
         );
 
         assertEquals(HttpStatus.CREATED.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
@@ -80,17 +80,17 @@ class RegisteredEmailAddressControllerTest {
     @Test
     void testCreateRegisteredEmailAddressErrorTest() throws ServiceException {
         when(this.registeredEmailAddressService.createRegisteredEmailAddress(
-            transaction,
-            registeredEmailAddressDTO,
-            REQUEST_ID,
-            USER_ID)
+                transaction,
+                registeredEmailAddressDTO,
+                REQUEST_ID,
+                USER_ID)
         ).thenThrow(new RuntimeException(UNEXPECTED_ERROR));
 
         var createRegisteredEmailAddressResponse = registeredEmailAddressController.createRegisteredEmailAddress(
-            transaction,
-            registeredEmailAddressDTO,
-            REQUEST_ID,
-            USER_ID
+                transaction,
+                registeredEmailAddressDTO,
+                REQUEST_ID,
+                USER_ID
         );
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
@@ -111,7 +111,7 @@ class RegisteredEmailAddressControllerTest {
         registeredEmailAddressDTO.setId(UUID.randomUUID().toString());
 
         when(this.registeredEmailAddressService
-                        .getValidationStatus(TRANSACTION_ID, REQUEST_ID)).thenReturn(validationStatusResponse);
+                .getValidationStatus(TRANSACTION_ID, REQUEST_ID)).thenReturn(validationStatusResponse);
 
         var response = registeredEmailAddressController.getValidationStatus(
                 TRANSACTION_ID,
@@ -125,4 +125,20 @@ class RegisteredEmailAddressControllerTest {
                 TRANSACTION_ID, REQUEST_ID);
     }
 
+    @Test
+    void testGetRegisteredEmailAddressTest() throws SubmissionNotFoundException {
+        when(this.registeredEmailAddressService
+                .getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID)).thenReturn("test@Test.com");
+
+        var response = registeredEmailAddressController.getRegisteredEmailAddress(
+                TRANSACTION_ID,
+                REQUEST_ID
+        );
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals("test@Test.com", response.getBody());
+
+        verify(registeredEmailAddressService).getRegisteredEmailAddress(
+                TRANSACTION_ID, REQUEST_ID);
+    }
 }
