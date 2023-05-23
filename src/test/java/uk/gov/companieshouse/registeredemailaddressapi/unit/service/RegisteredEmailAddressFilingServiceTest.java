@@ -36,14 +36,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.COMPANY_NUMBER;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND_REGISTERED_EMAIL_ADDRESS;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
 
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressFilingServiceTest {
     
     private static final String TEST_EMAIL = "test@Test.com";
     private static final String TEST_COMPANY_NUMBER = "000987699";
-    private static final String ERIC_REQUEST_ID = "1234567890";
     private static final String REA_FILING_DESCRIPTION_IDENTIFIER = "Registered Email Address Filing Description Id";
     private static final String REA_FILING_DESCRIPTION = "Registered Email Address Filing Description with registration date {date}";
     private static final String REA_UPDATE_FILING_DESCRIPTION = "Registered Email Address Filing update statement made {date}";
@@ -97,13 +96,13 @@ class RegisteredEmailAddressFilingServiceTest {
         when(registeredEmailAddressService.getRegisteredEmailAddressSubmission(SUBMISSION_ID)).thenReturn(Optional.of(buildRegisteredEmailAddressDTO()));
         when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID)).thenReturn(buildRegisteredEmailAddressDAO());
 
-        FilingApi registeredEmailAddressFiling = registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction, ERIC_REQUEST_ID);
+        FilingApi registeredEmailAddressFiling = registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction);
 
         verify(localDateSupplier, times(1)).get();
-        assertEquals(FILING_KIND_REGISTERED_EMAIL_ADDRESS, registeredEmailAddressFiling.getKind());
+        assertEquals(FILING_KIND, registeredEmailAddressFiling.getKind());
         assertEquals(REA_FILING_DESCRIPTION_IDENTIFIER, registeredEmailAddressFiling.getDescriptionIdentifier());
         assertEquals("Registered Email Address Filing update statement made 26 March 2023", registeredEmailAddressFiling.getDescription());   
-        assertEquals(TEST_EMAIL, registeredEmailAddressFiling.getData().get(FILING_KIND_REGISTERED_EMAIL_ADDRESS));
+        assertEquals(TEST_EMAIL, registeredEmailAddressFiling.getData().get(FILING_KIND));
         assertEquals(TEST_COMPANY_NUMBER, registeredEmailAddressFiling.getData().get(COMPANY_NUMBER));
     }
 
@@ -115,7 +114,7 @@ class RegisteredEmailAddressFilingServiceTest {
 
         var submissionNotFoundException = assertThrows(
             SubmissionNotFoundException.class,
-            () -> registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction, ERIC_REQUEST_ID)
+            () -> registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction)
         );
 
         assertTrue(submissionNotFoundException.getMessage()

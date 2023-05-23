@@ -68,7 +68,7 @@ public class RegisteredEmailAddressService {
                 .insert(registeredEmailAddressDAO);
 
         final String submissionId = createdRegisteredEmailAddress.getId();
-        final String submissionUri = generateTransactionUri(transaction.getId(), submissionId);
+        final String submissionUri = generateTransactionUri(transaction.getId());
         updateRegisteredEmailAddressWithMetaData(createdRegisteredEmailAddress, submissionUri, requestId, userId);
 
         // create the Resource to be added to the Transaction (includes various links to the resource)
@@ -123,8 +123,8 @@ public class RegisteredEmailAddressService {
         return false;
     }
 
-    private String generateTransactionUri(String transactionId, String submissionId) {
-        return format(TRANSACTION_URI_PATTERN, transactionId, submissionId);
+    private String generateTransactionUri(String transactionId) {
+        return format(TRANSACTION_URI_PATTERN, transactionId);
     }
 
     private void updateRegisteredEmailAddressWithMetaData(RegisteredEmailAddressDAO submission,

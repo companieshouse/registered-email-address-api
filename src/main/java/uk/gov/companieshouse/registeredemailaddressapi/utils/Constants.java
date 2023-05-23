@@ -11,11 +11,9 @@ public class Constants {
 
     // Request attribute names
     public static final String TRANSACTION_KEY = "transaction";
-    public static final String REGISTERED_EMAIL_ADDRESS_KEY = "transaction";
 
     // URI path attributes
     public static final String TRANSACTION_ID_KEY = "transaction_id";
-    public static final String REGISTERED_EMAIL_ADDRESS_ID_KEY = "registered_email_address_id";
 
     // URIs
     public static final String TRANSACTION_URI_PATTERN = "/transactions/%s/registered-email-address";
@@ -27,7 +25,6 @@ public class Constants {
 
     // Filings
     public static final String FILING_KIND = "registered-email-address";
-    public static final String FILING_KIND_REGISTERED_EMAIL_ADDRESS = "registered-email-address";
     public static final String COMPANY_NUMBER = "company_number";
     public static final String LINK_SELF = "self";
     public static final String LINK_RESOURCE = "resource";

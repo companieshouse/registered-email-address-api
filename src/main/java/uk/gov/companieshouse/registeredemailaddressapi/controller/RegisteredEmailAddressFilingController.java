@@ -23,7 +23,7 @@ public class RegisteredEmailAddressFilingController {
     private static final String GET_REA_FILINGS = "- Get REA filings request - ";
 
     @Autowired
-    private RegisteredEmailAddressFilingService registeredEmailAddressFilingService;
+    private final RegisteredEmailAddressFilingService registeredEmailAddressFilingService;
 
     public RegisteredEmailAddressFilingController(RegisteredEmailAddressFilingService registeredEmailAddressFilingService) {
         this.registeredEmailAddressFilingService = registeredEmailAddressFilingService;
@@ -32,16 +32,15 @@ public class RegisteredEmailAddressFilingController {
     @GetMapping("/private/transactions/{" + TRANSACTION_ID_KEY + "}/registered-email-address/filings")
     public ResponseEntity<FilingApi[]> getRegisteredEmailAddressFilings(
             @RequestAttribute(TRANSACTION_KEY) Transaction transaction,
-            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
             @PathVariable(TRANSACTION_ID_KEY) String transactionId) {
 
-        HashMap<String, Object> logMap = new HashMap<String, Object>();
+        HashMap<String, Object> logMap = new HashMap<>();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
 
         try {
             ApiLogger.infoContext(transactionId, GET_REA_FILINGS, logMap);
 
-            FilingApi registeredEmailAddressFilings = registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction, requestId);
+            FilingApi registeredEmailAddressFilings = registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction);
 
             return ResponseEntity.ok(new FilingApi[]{registeredEmailAddressFilings});
         } catch (SubmissionNotFoundException e) {

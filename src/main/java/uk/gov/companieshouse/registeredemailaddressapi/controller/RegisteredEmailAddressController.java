@@ -49,7 +49,7 @@ public class RegisteredEmailAddressController {
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
             @RequestHeader(value = ERIC_IDENTITY) String userId) {
 
-        HashMap<String, Object> logMap = new HashMap<String, Object>();
+        HashMap<String, Object> logMap = new HashMap<>();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
 
         try {

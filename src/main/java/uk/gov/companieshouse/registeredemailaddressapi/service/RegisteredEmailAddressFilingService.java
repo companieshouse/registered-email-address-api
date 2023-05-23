@@ -21,13 +21,12 @@ import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmai
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.COMPANY_NUMBER;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_ID_KEY;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.DATE_FORMATTER_PATTERN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND_REGISTERED_EMAIL_ADDRESS;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
 
 @Service
 public class RegisteredEmailAddressFilingService {
     
     // class constants
-    private static final String NOT_FOUND_ERROR = "Registered Email Address for TransactionId : %s Not Found";
     private static final String SERVICE_EXCEPTION = "Empty data set returned when generating filing for %s";
     private static final String DEBUG_MESSAGE     = "Submission data has been set on filing";
     private static final String DATE_PLACEHOLDER  = "{date}";
@@ -54,15 +53,15 @@ public class RegisteredEmailAddressFilingService {
         this.dateNowSupplier = dateNowSupplier;
     }
 
-    public FilingApi generateRegisteredEmailAddressFilings(Transaction transaction, String requestId)
+    public FilingApi generateRegisteredEmailAddressFilings(Transaction transaction)
         throws SubmissionNotFoundException {       
         var filing = new FilingApi();
-        filing.setKind(FILING_KIND_REGISTERED_EMAIL_ADDRESS);
-        setRegisteredEmailAddressFilingData(filing, transaction, requestId);
+        filing.setKind(FILING_KIND);
+        setRegisteredEmailAddressFilingData(filing, transaction);
         return filing;
     }
 
-    private void setRegisteredEmailAddressFilingData(FilingApi filing, Transaction transaction, String requestId)
+    private void setRegisteredEmailAddressFilingData(FilingApi filing, Transaction transaction)
         throws SubmissionNotFoundException {
         var transactionId = transaction.getId();
         var logMap = new HashMap<String, Object>();
@@ -89,9 +88,9 @@ public class RegisteredEmailAddressFilingService {
                                 format(SERVICE_EXCEPTION, registeredEmailAddressId)));
 
         if (Objects.isNull(registeredEmailAddressSubmission.getRegisteredEmailAddress())) {
-            data.put(FILING_KIND_REGISTERED_EMAIL_ADDRESS, null);
+            data.put(FILING_KIND, null);
         } else {
-            data.put(FILING_KIND_REGISTERED_EMAIL_ADDRESS, registeredEmailAddressSubmission.getRegisteredEmailAddress());
+            data.put(FILING_KIND, registeredEmailAddressSubmission.getRegisteredEmailAddress());
         }
         ApiLogger.debug(DEBUG_MESSAGE, logMap);
         return registeredEmailAddressSubmission;

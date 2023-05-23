@@ -22,11 +22,10 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
-public class RegisteredEmailAddressControllerFilingTest {
+public class RegisteredEmailAddressFilingControllerTest {
     
     private static final String FILING_DESCRIPTION = "registered email address test filing";
     private static final String TEST_COMPANY_NUMBER = "000987699";
-    private static final String ERIC_REQUEST_ID = "1234567890";
     private static final String TRANSACTION_ID = UUID.randomUUID().toString();
     private static final String SUBMISSION_ID = UUID.randomUUID().toString();
 
@@ -50,11 +49,10 @@ public class RegisteredEmailAddressControllerFilingTest {
     void testCreateRegisteredEmailAddressSuccessTest() throws SubmissionNotFoundException {
        // mocking
        FilingApi filing = buildFiling();
-       when(registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction, ERIC_REQUEST_ID)).thenReturn(buildFiling());
+       when(registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction)).thenReturn(buildFiling());
 
         var createRegisteredEmailAddressFilingResponse = registeredEmailAddressFilingController.getRegisteredEmailAddressFilings(
             transaction,
-            ERIC_REQUEST_ID,
             SUBMISSION_ID
         );
 
@@ -66,11 +64,10 @@ public class RegisteredEmailAddressControllerFilingTest {
 
     @Test
     void testGCreateRegisteredEmailAddressSubmissionNotFound() throws SubmissionNotFoundException {
-        when(registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction, ERIC_REQUEST_ID)).thenThrow(SubmissionNotFoundException.class);
+        when(registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction)).thenThrow(SubmissionNotFoundException.class);
 
         var createRegisteredEmailAddressFilingResponse = registeredEmailAddressFilingController.getRegisteredEmailAddressFilings(
             transaction,
-            ERIC_REQUEST_ID,
             SUBMISSION_ID
         );
 
