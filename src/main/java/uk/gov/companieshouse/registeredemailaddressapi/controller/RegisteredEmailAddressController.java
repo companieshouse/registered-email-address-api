@@ -49,7 +49,7 @@ public class RegisteredEmailAddressController {
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
             @RequestHeader(value = ERIC_IDENTITY) String userId) {
 
-        HashMap<String, Object> logMap = new HashMap<String, Object>();
+        HashMap<String, Object> logMap = new HashMap<>();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
 
         try {
@@ -68,7 +68,6 @@ public class RegisteredEmailAddressController {
             ApiLogger.errorContext(requestId, SUBMISSION_ERROR, e, logMap);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @GetMapping("/validation-status")
