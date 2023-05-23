@@ -19,10 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_SELF;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_URI_PATTERN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.VALIDATION_STATUS_URI_SUFFIX;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
 @Service
 public class RegisteredEmailAddressService {
@@ -59,6 +57,7 @@ public class RegisteredEmailAddressService {
 
         registeredEmailAddressDAO.setTransactionId(transaction.getId());
         registeredEmailAddressDAO.setEtag(GenerateEtagUtil.generateEtag());
+        registeredEmailAddressDAO.setCreatedAt(LocalDateTime.now());
 
         ApiLogger.debugContext(requestId, " -  insert registered email address into DB");
 
@@ -88,6 +87,35 @@ public class RegisteredEmailAddressService {
 
     }
 
+    public RegisteredEmailAddressDTO updateRegisteredEmailAddress(Transaction transaction,
+                                                                  RegisteredEmailAddressDTO registeredEmailAddressDTO,
+                                                                  String requestId,
+                                                                  String userId) throws ServiceException {
+
+        ApiLogger.debugContext(requestId, " -  updateRegisteredEmailAddress(...)");
+            if (transaction.getStatus().equals(OPEN)) {
+                RegisteredEmailAddressDAO registeredEmailAddress = registeredEmailAddressRepository
+                        .findByTransactionId(transaction.getId());
+
+                registeredEmailAddress.setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
+                registeredEmailAddress.setLastModifiedByUserId(userId);
+                registeredEmailAddress.setUpdatedAt(LocalDateTime.now());
+                RegisteredEmailAddressDAO createdRegisteredEmailAddress = registeredEmailAddressRepository
+                        .save(registeredEmailAddress);
+
+                return registeredEmailAddressMapper
+                        .daoToDto(createdRegisteredEmailAddress);
+
+            } else {
+                String message = format("Transaction %s can only be edited when status is %s ",
+                        transaction.getId(),
+                        OPEN);
+                ApiLogger.debugContext(requestId, message);
+                throw new ServiceException(message);
+        }
+
+    }
+
     public ValidationStatusResponse getValidationStatus(String transactionId, String requestId) throws SubmissionNotFoundException {
         try {
             var registeredEmailAddress = registeredEmailAddressRepository
@@ -98,7 +126,6 @@ public class RegisteredEmailAddressService {
                     transactionId);
             ApiLogger.errorContext(requestId, message, ex);
             throw new SubmissionNotFoundException(message, ex);
-
         }
     }
 
@@ -132,11 +159,12 @@ public class RegisteredEmailAddressService {
                                                           String submissionUri,
                                                           String requestId,
                                                           String userId) {
-        submission.setLinks(Collections.singletonMap(LINK_SELF, submissionUri));
-        submission.setCreatedAt(LocalDateTime.now());
-        submission.setHttpRequestId(requestId);
-        submission.setCreatedByUserId(userId);
 
+
+        submission.setLinks(Collections.singletonMap(LINK_SELF, submissionUri));
+        submission.setUpdatedAt(LocalDateTime.now());
+        submission.setHttpRequestId(requestId);
+        submission.setLastModifiedByUserId(userId);
         registeredEmailAddressRepository.save(submission);
     }
 

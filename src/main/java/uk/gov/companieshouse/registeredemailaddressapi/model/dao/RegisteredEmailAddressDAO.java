@@ -26,10 +26,8 @@ public class RegisteredEmailAddressDAO {
     private String kind;
     @Field("links")
     private Map<String, String> links;
-
-    @Field("created_by_user_id")
-    private String createdByUserId;
-
+    @Field("last_modified_by_user_id")
+    private String lastModifiedByUserId;
     @Field("http_request_id")
     private String httpRequestId;
 
@@ -97,12 +95,12 @@ public class RegisteredEmailAddressDAO {
         this.createdAt = createdAt;
     }
 
-    public String getCreatedByUserId() {
-        return createdByUserId;
+    public String getLastModifiedByUserId() {
+        return lastModifiedByUserId;
     }
 
-    public void setCreatedByUserId(String createdByUserId) {
-        this.createdByUserId = createdByUserId;
+    public void setLastModifiedByUserId(String lastModifiedByUserId) {
+        this.lastModifiedByUserId = lastModifiedByUserId;
     }
 
     public String getHttpRequestId() {

@@ -11,9 +11,11 @@ import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
 @Component
@@ -27,7 +29,7 @@ public class TransactionInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
+    public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws IOException {
         final Map<String, String> pathVariables =
                 (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var transactionId = pathVariables.get(TRANSACTION_ID_KEY);
@@ -46,7 +48,8 @@ public class TransactionInterceptor implements HandlerInterceptor {
             return true;
         } catch (Exception e) {
             ApiLogger.errorContext(reqId, "Error retrieving transaction " + transactionId, e, logMap);
-            response.setStatus(500);
+            response.setStatus(SC_NOT_FOUND);
+            response.getWriter().write(e.getMessage());
             return false;
         }
     }
