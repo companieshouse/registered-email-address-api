@@ -20,10 +20,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_SELF;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_URI_PATTERN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.VALIDATION_STATUS_URI_SUFFIX;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
 @Service
 public class RegisteredEmailAddressService {
@@ -50,10 +48,10 @@ public class RegisteredEmailAddressService {
         ApiLogger.debugContext(requestId, " -  createRegisteredEmailAddress(...)");
 
         if (hasExistingREASubmission(transaction)) {
-
-            throw new ServiceException(
-                    format("Transaction id: %s has an existing Registered Email Address submission",
-                            transaction.getId()));
+            String message = format("Transaction id: %s has an existing Registered Email Address submission",
+                    transaction.getId());
+            ApiLogger.infoContext(requestId, message);
+            throw new ServiceException(message);
         }
 
         RegisteredEmailAddressDAO registeredEmailAddressDAO = registeredEmailAddressMapper
@@ -61,6 +59,7 @@ public class RegisteredEmailAddressService {
 
         registeredEmailAddressDAO.setTransactionId(transaction.getId());
         registeredEmailAddressDAO.setEtag(GenerateEtagUtil.generateEtag());
+        registeredEmailAddressDAO.setCreatedAt(LocalDateTime.now());
 
         ApiLogger.debugContext(requestId, " -  insert registered email address into DB");
 
@@ -88,6 +87,33 @@ public class RegisteredEmailAddressService {
                 .daoToDto(createdRegisteredEmailAddress);
     }
 
+    public RegisteredEmailAddressDTO updateRegisteredEmailAddress(Transaction transaction,
+                                                                  RegisteredEmailAddressDTO registeredEmailAddressDTO,
+                                                                  String requestId,
+                                                                  String userId) throws ServiceException, SubmissionNotFoundException {
+
+        ApiLogger.debugContext(requestId, " -  updateRegisteredEmailAddress(...)");
+            if (transaction.getStatus() != null && transaction.getStatus().equals(OPEN)) {
+                RegisteredEmailAddressDAO registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
+                registeredEmailAddress.setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
+                registeredEmailAddress.setLastModifiedByUserId(userId);
+                registeredEmailAddress.setUpdatedAt(LocalDateTime.now());
+                RegisteredEmailAddressDAO createdRegisteredEmailAddress = registeredEmailAddressRepository
+                        .save(registeredEmailAddress);
+
+                return registeredEmailAddressMapper
+                        .daoToDto(createdRegisteredEmailAddress);
+
+            } else {
+                String message = format("Transaction %s can only be edited when status is %s ",
+                        transaction.getId(),
+                        OPEN);
+                ApiLogger.infoContext(requestId, message);
+                throw new ServiceException(message);
+        }
+
+    }
+
     public ValidationStatusResponse getValidationStatus(String transactionId, String requestId) throws SubmissionNotFoundException {
         try {
             var registeredEmailAddress = registeredEmailAddressRepository
@@ -98,11 +124,17 @@ public class RegisteredEmailAddressService {
                     transactionId);
             ApiLogger.errorContext(requestId, message, ex);
             throw new SubmissionNotFoundException(message, ex);
-
         }
     }
 
     public String getRegisteredEmailAddress(String transactionId, String requestId) throws SubmissionNotFoundException {
+        var registeredEmailAddress = getRegisteredEmailAddressDAO(transactionId, requestId);
+        return registeredEmailAddress.getRegisteredEmailAddress();
+    }
+
+
+
+    private RegisteredEmailAddressDAO getRegisteredEmailAddressDAO(String transactionId, String requestId) throws SubmissionNotFoundException {
         var registeredEmailAddress = registeredEmailAddressRepository.findByTransactionId(transactionId);
 
         if (registeredEmailAddress == null) {
@@ -112,9 +144,21 @@ public class RegisteredEmailAddressService {
 
         ApiLogger.debugContext(requestId, format("Registered Email Address found for Transaction %s.", transactionId));
 
-        return registeredEmailAddress.getRegisteredEmailAddress();
+        return registeredEmailAddress;
+    }
+    public Optional<RegisteredEmailAddressDTO> getRegisteredEmailAddressSubmission(String submissionId) {
+        var submission = registeredEmailAddressRepository.findById(submissionId);
+        if (submission.isPresent()) {
+            var registeredEmailAddressSubmissionDao = submission.get();
+            ApiLogger.info(String.format("%s: Registered Email Address Submission found. About to return", registeredEmailAddressSubmissionDao.getId()));
+            var dto = registeredEmailAddressMapper.daoToDto(registeredEmailAddressSubmissionDao);
+            return Optional.of(dto);
+        } else {
+            return Optional.empty();
+        }
     }
 
+    //Private Methods
     private boolean hasExistingREASubmission(Transaction transaction) {
         if (transaction.getResources() != null) {
             return transaction.getResources().entrySet().stream().anyMatch(resourceEntry ->
@@ -131,11 +175,12 @@ public class RegisteredEmailAddressService {
                                                           String submissionUri,
                                                           String requestId,
                                                           String userId) {
-        submission.setLinks(Collections.singletonMap(LINK_SELF, submissionUri));
-        submission.setCreatedAt(LocalDateTime.now());
-        submission.setHttpRequestId(requestId);
-        submission.setCreatedByUserId(userId);
 
+
+        submission.setLinks(Collections.singletonMap(LINK_SELF, submissionUri));
+        submission.setUpdatedAt(LocalDateTime.now());
+        submission.setHttpRequestId(requestId);
+        submission.setLastModifiedByUserId(userId);
         registeredEmailAddressRepository.save(submission);
     }
 
@@ -160,17 +205,6 @@ public class RegisteredEmailAddressService {
         transactionService.updateTransaction(transaction, loggingContext);
     }
 
-    public Optional<RegisteredEmailAddressDTO> getRegisteredEmailAddressSubmission(String submissionId) {
-        var submission = registeredEmailAddressRepository.findById(submissionId);
-        if (submission.isPresent()) {
-            var registeredEmailAddressSubmissionDao = submission.get();
-            ApiLogger.info(String.format("%s: Registered Email Address Submission found. About to return", registeredEmailAddressSubmissionDao.getId()));
-            var dto = registeredEmailAddressMapper.daoToDto(registeredEmailAddressSubmissionDao);
-            return Optional.of(dto);
-        } else {
-            return Optional.empty();
-        }
-    }
 }
 
 

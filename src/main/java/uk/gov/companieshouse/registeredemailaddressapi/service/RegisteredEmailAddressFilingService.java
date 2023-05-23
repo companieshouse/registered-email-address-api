@@ -1,27 +1,24 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
-import java.util.Objects;
-import java.util.Map;
-import java.util.Optional;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.function.Supplier;
-import java.time.format.DateTimeFormatter;
-import static java.lang.String.format;
-
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
+import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
-import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
+import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.COMPANY_NUMBER;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_ID_KEY;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.DATE_FORMATTER_PATTERN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import static java.lang.String.format;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
 @Service
 public class RegisteredEmailAddressFilingService {

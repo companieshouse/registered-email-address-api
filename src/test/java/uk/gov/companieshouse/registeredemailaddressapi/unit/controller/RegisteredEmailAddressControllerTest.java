@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.controller.RegisteredEmailAddressController;
@@ -26,13 +25,10 @@ import static org.mockito.Mockito.when;
 class RegisteredEmailAddressControllerTest {
 
     private RegisteredEmailAddressDTO registeredEmailAddressDTO;
-    private static final ResponseEntity<Object> ERROR_RESPONSE = ResponseEntity.internalServerError().build();
     private static final String REQUEST_ID = UUID.randomUUID().toString();
     private static final String TRANSACTION_ID = UUID.randomUUID().toString();
     private static final String USER_ID = UUID.randomUUID().toString();
     private static final String EMAIL_ADDRESS = "Test@Test.com";
-    private static final String UNEXPECTED_ERROR = "UNEXPCTED ERROR - EXITING...";
-
     @Mock
     private RegisteredEmailAddressService registeredEmailAddressService;
 
@@ -78,25 +74,28 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testCreateRegisteredEmailAddressErrorTest() throws ServiceException {
-        when(this.registeredEmailAddressService.createRegisteredEmailAddress(
+    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, SubmissionNotFoundException {
+
+        registeredEmailAddressDTO.setId(UUID.randomUUID().toString());
+
+        when(this.registeredEmailAddressService.updateRegisteredEmailAddress(
                 transaction,
                 registeredEmailAddressDTO,
                 REQUEST_ID,
                 USER_ID)
-        ).thenThrow(new RuntimeException(UNEXPECTED_ERROR));
+        ).thenReturn(registeredEmailAddressDTO);
 
-        var createRegisteredEmailAddressResponse = registeredEmailAddressController.createRegisteredEmailAddress(
+        var createRegisteredEmailAddressResponse = registeredEmailAddressController.updateRegisteredEmailAddress(
                 transaction,
                 registeredEmailAddressDTO,
                 REQUEST_ID,
                 USER_ID
         );
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
-        assertEquals(ERROR_RESPONSE, createRegisteredEmailAddressResponse);
+        assertEquals(HttpStatus.OK.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
+        assertEquals(registeredEmailAddressDTO, createRegisteredEmailAddressResponse.getBody());
 
-        verify(registeredEmailAddressService).createRegisteredEmailAddress(
+        verify(registeredEmailAddressService).updateRegisteredEmailAddress(
                 transaction,
                 registeredEmailAddressDTO,
                 REQUEST_ID,

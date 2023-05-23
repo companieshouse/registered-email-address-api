@@ -69,6 +69,6 @@ class TransactionInterceptorTest {
         when(transactionService.getTransaction(TX_ID, PASSTHROUGH_HEADER, LOGGING_CONTEXT)).thenThrow(ServiceException.class);
 
         assertFalse(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
-        assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,  mockHttpServletResponse.getStatus());
+        assertEquals(HttpServletResponse.SC_NOT_FOUND,  mockHttpServletResponse.getStatus());
     }
 }

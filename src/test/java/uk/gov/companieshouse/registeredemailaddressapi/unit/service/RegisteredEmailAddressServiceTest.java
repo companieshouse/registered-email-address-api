@@ -20,16 +20,16 @@ import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAd
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import static java.lang.String.format;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,9 +39,6 @@ class RegisteredEmailAddressServiceTest {
     private static final String USER_ID = UUID.randomUUID().toString();
     private static final String SUBMISSION_ID = UUID.randomUUID().toString();
     private static final String TRANSACTION_ID = UUID.randomUUID().toString();
-
-    private RegisteredEmailAddressDTO submissionDao = new RegisteredEmailAddressDTO();
-    private RegisteredEmailAddressDAO submissionDto = new RegisteredEmailAddressDAO();
 
     @Mock
     private TransactionService transactionService;
@@ -81,8 +78,7 @@ class RegisteredEmailAddressServiceTest {
         verify(registeredEmailAddressMapper, times(1)).dtoToDao(any());
         verify(transactionService, times(1)).updateTransaction(transactionApiCaptor.capture(), any());
 
-        String submissionUri = String.format("/transactions/%s/registered-email-address", transaction.getId(),
-                registeredEmailAddressDAO.getId());
+        String submissionUri = String.format("/transactions/%s/registered-email-address", transaction.getId());
 
         Transaction transactionSent = transactionApiCaptor.getValue();
         assertEquals(submissionUri, transactionSent.getResources().get(submissionUri).getLinks().get("resource"));
@@ -104,16 +100,66 @@ class RegisteredEmailAddressServiceTest {
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
         try {
-            RegisteredEmailAddressDTO response = registeredEmailAddressService.createRegisteredEmailAddress(transaction,
+            registeredEmailAddressService.createRegisteredEmailAddress(transaction,
                     registeredEmailAddressDTO,
                     REQUEST_ID,
                     USER_ID);
+            fail();
         } catch (Exception e) {
             assertEquals(e.getMessage(),
                     String.format("Transaction id: %s has an existing Registered Email Address submission",
                             TRANSACTION_ID));
         }
 
+    }
+
+    @Test
+    void testUpdateRegisteredEmailAddressIsSuccessful() throws ServiceException, SubmissionNotFoundException {
+        Transaction transaction = buildTransaction();
+        transaction.setStatus(OPEN);
+
+        String newEmail = "Update@Test.com";
+
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = buildRegisteredEmailAddressDAO();
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
+        registeredEmailAddressDTO.setRegisteredEmailAddress(newEmail);
+
+        when(registeredEmailAddressRepository.findByTransactionId(transaction.getId())).thenReturn(registeredEmailAddressDAO);
+        registeredEmailAddressDAO.setUpdatedAt(LocalDateTime.now());
+        registeredEmailAddressDAO.setRegisteredEmailAddress(newEmail);
+        when(registeredEmailAddressRepository.save(registeredEmailAddressDAO)).thenReturn(registeredEmailAddressDAO);
+        when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressDTO);
+
+        RegisteredEmailAddressDTO response = registeredEmailAddressService.updateRegisteredEmailAddress(transaction,
+                registeredEmailAddressDTO,
+                REQUEST_ID,
+                USER_ID);
+
+        assertEquals(SUBMISSION_ID, response.getId());
+        assertEquals(newEmail, response.getRegisteredEmailAddress());
+
+        verify(registeredEmailAddressMapper, times(1)).daoToDto(any());
+    }
+
+
+    @Test
+    void testUpdateRegisteredEmailAddressIsUnSuccessful() {
+        Transaction transaction = buildTransaction();
+        transaction.setStatus(CLOSED);
+
+        try {
+            registeredEmailAddressService.updateRegisteredEmailAddress(transaction,
+                    buildRegisteredEmailAddressDTO(),
+                    REQUEST_ID,
+                    USER_ID);
+            fail();
+        } catch (Exception e) {
+            assertEquals(e.getMessage(),
+                    format("Transaction %s can only be edited when status is %s ",
+                            transaction.getId(),
+                            OPEN));
+
+        }
     }
 
     @Test
@@ -130,11 +176,13 @@ class RegisteredEmailAddressServiceTest {
         ValidationStatusResponse response = registeredEmailAddressService
                 .getValidationStatus(TRANSACTION_ID, REQUEST_ID);
 
-        assertEquals(true, response.isValid());
-        assertEquals(null, response.getValidationStatusError());
+        assertTrue(response.isValid());
+        assertNull(response.getValidationStatusError());
 
-        verify(registeredEmailAddressRepository, times(1)).findByTransactionId(TRANSACTION_ID);
-        verify(validationService, times(1)).validateRegisteredEmailAddress(registeredEmailAddressDAO, REQUEST_ID);
+        verify(registeredEmailAddressRepository, times(1))
+                .findByTransactionId(TRANSACTION_ID);
+        verify(validationService, times(1))
+                .validateRegisteredEmailAddress(registeredEmailAddressDAO, REQUEST_ID);
     }
 
     @Test
@@ -143,11 +191,12 @@ class RegisteredEmailAddressServiceTest {
                 .thenThrow(new NullPointerException());
 
         try {
-
-            ValidationStatusResponse response = registeredEmailAddressService
+            registeredEmailAddressService
                     .getValidationStatus(TRANSACTION_ID, REQUEST_ID);
+            fail();
         } catch (Exception ex) {
-            assertEquals(String.format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID), ex.getMessage());
+            assertEquals(String.format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID),
+                    ex.getMessage());
 
         }
 
@@ -180,6 +229,7 @@ class RegisteredEmailAddressServiceTest {
 
         try {
             registeredEmailAddressService.getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID);
+            fail();
         } catch (Exception ex) {
             assertEquals(format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID), ex.getMessage());
         }
@@ -204,6 +254,7 @@ class RegisteredEmailAddressServiceTest {
         RegisteredEmailAddressDAO registeredEmailAddressDAO = new RegisteredEmailAddressDAO();
         registeredEmailAddressDAO.setRegisteredEmailAddress("test@Test.com");
         registeredEmailAddressDAO.setId(SUBMISSION_ID);
+        registeredEmailAddressDAO.setTransactionId(TRANSACTION_ID);
         return registeredEmailAddressDAO;
     }
 
