@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class InterceptorConfigTest {
 
     static final String TRANSACTIONS = "/transactions/**";
-    static final String FILINGS = "/private/**/filings";
+    static final String FILINGS = "/private/transactions/**/filings";
 
     static final String[] USER_AUTH_ENDPOINTS = {
             TRANSACTIONS
@@ -71,7 +71,7 @@ public class InterceptorConfigTest {
 
         // Transaction interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(transactionInterceptor);
-        inOrder.verify(interceptorRegistration).addPathPatterns(TRANSACTIONS);
+        inOrder.verify(interceptorRegistration).addPathPatterns(TRANSACTIONS, FILINGS);
 
         // User authentication interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(userAuthenticationInterceptor);

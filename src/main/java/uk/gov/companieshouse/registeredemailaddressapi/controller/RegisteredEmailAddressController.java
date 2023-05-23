@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.controller;
 
 import com.google.api.client.util.Maps;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -22,10 +21,6 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 @RequestMapping("/transactions/{" + TRANSACTION_ID_KEY + "}/registered-email-address")
 public class RegisteredEmailAddressController {
 
-    // error constant(s)
-    private static final String SUBMISSION_ERROR = "Error Creating registered email address Submission";
-
-    // controller logging constant(s)
     private static final String REA_REQUEST = "- Create registered email address request - ";
 
     private final RegisteredEmailAddressService registeredEmailAddressService;
@@ -39,12 +34,11 @@ public class RegisteredEmailAddressController {
             @RequestAttribute(TRANSACTION_KEY) Transaction transaction,
             @Valid @RequestBody RegisteredEmailAddressDTO registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
-            @RequestHeader(value = ERIC_IDENTITY) String userId) {
+            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException {
 
-        HashMap<String, Object> logMap = new HashMap<String, Object>();
+        HashMap<String, Object> logMap = new HashMap<>();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
 
-        try {
             ApiLogger.infoContext(requestId, REA_REQUEST, logMap);
 
             RegisteredEmailAddressDTO registeredEmailAddress = this.registeredEmailAddressService
@@ -56,11 +50,6 @@ public class RegisteredEmailAddressController {
 
             return ResponseEntity.created(URI.create(registeredEmailAddress.getId())).body(registeredEmailAddress);
 
-        } catch (Exception e) {
-            ApiLogger.errorContext(requestId, SUBMISSION_ERROR, e, logMap);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
     }
 
     @PutMapping()
@@ -68,7 +57,7 @@ public class RegisteredEmailAddressController {
             @RequestAttribute(TRANSACTION_KEY) Transaction transaction,
             @Valid @RequestBody RegisteredEmailAddressDTO registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
-            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException {
+            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, SubmissionNotFoundException {
 
         HashMap<String, Object> logMap = Maps.newHashMap();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
