@@ -1,7 +1,7 @@
 # registered-email-address-api
 
 ### Overview
-API for Registered Email Address - provides functionality for changing and retrieving a company's registered email address
+API for Registered Email Address - provides functionality for changing and retrieving a company's registered email address 
 
 ### Requirements
 In order to run the service locally you will need the following:
