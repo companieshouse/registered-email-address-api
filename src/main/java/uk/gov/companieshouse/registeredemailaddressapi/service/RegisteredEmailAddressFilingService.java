@@ -85,9 +85,9 @@ public class RegisteredEmailAddressFilingService {
                                 format(SERVICE_EXCEPTION, registeredEmailAddressId)));
 
         if (Objects.isNull(registeredEmailAddressSubmission.getRegisteredEmailAddress())) {
-            data.put(FILING_KIND, null);
+            data.put(REGISTERED_EMAIL_ADDRESS, null);
         } else {
-            data.put(FILING_KIND, registeredEmailAddressSubmission.getRegisteredEmailAddress());
+            data.put(REGISTERED_EMAIL_ADDRESS, registeredEmailAddressSubmission.getRegisteredEmailAddress());
         }
         ApiLogger.debug(DEBUG_MESSAGE, logMap);
         return registeredEmailAddressSubmission;
