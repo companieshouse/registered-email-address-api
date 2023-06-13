@@ -2,41 +2,33 @@ package uk.gov.companieshouse.registeredemailaddressapi.unit.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
-
-import static org.mockito.Mockito.*;
-
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
-import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
-import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressFilingService;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
-
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
-import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
-import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
+import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
+import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressFilingService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.springframework.test.util.ReflectionTestUtils;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.COMPANY_NUMBER;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressFilingServiceTest {
@@ -102,7 +94,7 @@ class RegisteredEmailAddressFilingServiceTest {
         assertEquals(FILING_KIND, registeredEmailAddressFiling.getKind());
         assertEquals(REA_FILING_DESCRIPTION_IDENTIFIER, registeredEmailAddressFiling.getDescriptionIdentifier());
         assertEquals("Registered Email Address Filing update statement made 26 March 2023", registeredEmailAddressFiling.getDescription());   
-        assertEquals(TEST_EMAIL, registeredEmailAddressFiling.getData().get(FILING_KIND));
+        assertEquals(TEST_EMAIL, registeredEmailAddressFiling.getData().get(REGISTERED_EMAIL_ADDRESS));
         assertEquals(TEST_COMPANY_NUMBER, registeredEmailAddressFiling.getData().get(COMPANY_NUMBER));
     }
 
