@@ -22,7 +22,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_ID_KEY;
 
-@Component
+@Component("UserAuthenticationInterceptor")
 public class UserAuthenticationInterceptor implements HandlerInterceptor {
 
     /**
@@ -41,8 +41,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         logMap.put(TRANSACTION_ID_KEY, transactionId);
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
 
-        // skip token permission checks if an api key is used, api key elevated privileges are checked in other interceptors
-        // inside company accounts and abridged accounts api services
+        // skip token permission checks if an api key is used
         if (SecurityConstants.API_KEY_IDENTITY_TYPE.equals(AuthorisationUtil.getAuthorisedIdentityType(request))) {
             ApiLogger.debugContext(reqId, "UserAuthenticationInterceptor skipping token permission checks for api key request", logMap);
             return true;
@@ -52,16 +51,16 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         final var tokenPermissions = getTokenPermissions(request)
                 .orElseThrow(() -> new IllegalStateException("UserAuthenticationInterceptor - TokenPermissions object not present in request"));
 
-        // Check the user has the company_incorporation=create permission
-        boolean hasCompanyIncorporationCreatePermission = tokenPermissions.hasPermission(Key.COMPANY_INCORPORATION, Value.CREATE);
+        // Check the user has the company_rea=update permission
+        boolean hasCompanyRegisteredEmailAddressUpdatePermission = tokenPermissions.hasPermission(Key.COMPANY_REA_UPDATE, Value.UPDATE);
 
         var authInfoMap = new HashMap<String, Object>();
         authInfoMap.put(TRANSACTION_ID_KEY, transactionId);
         authInfoMap.put("request_method", request.getMethod());
-        authInfoMap.put("has_company_incorporation_create_permission", hasCompanyIncorporationCreatePermission);
+        authInfoMap.put("has_company_registered_email_address_update_permission", hasCompanyRegisteredEmailAddressUpdatePermission);
 
-        if (hasCompanyIncorporationCreatePermission) {
-            ApiLogger.debugContext(reqId, "UserAuthenticationInterceptor authorised with company_incorporation=create permission",
+        if (hasCompanyRegisteredEmailAddressUpdatePermission) {
+            ApiLogger.debugContext(reqId, "UserAuthenticationInterceptor authorised with company_rea=update permission",
                     authInfoMap);
             return true;
         }

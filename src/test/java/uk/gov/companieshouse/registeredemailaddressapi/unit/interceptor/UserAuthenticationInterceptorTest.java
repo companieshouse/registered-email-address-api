@@ -53,7 +53,7 @@ class UserAuthenticationInterceptorTest {
         Object mockHandler = new Object();
 
         when(mockHttpServletRequest.getAttribute(TOKEN_PERMISSIONS)).thenReturn(mockTokenPermissions);
-        when(mockTokenPermissions.hasPermission(Permission.Key.COMPANY_INCORPORATION, Permission.Value.CREATE)).thenReturn(true);
+        when(mockTokenPermissions.hasPermission(Permission.Key.COMPANY_REA_UPDATE, Permission.Value.UPDATE)).thenReturn(true);
 
         var result = userAuthenticationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
         assertTrue(result);
@@ -66,7 +66,7 @@ class UserAuthenticationInterceptorTest {
         Object mockHandler = new Object();
 
         when(mockHttpServletRequest.getAttribute(TOKEN_PERMISSIONS)).thenReturn(mockTokenPermissions);
-        when(mockTokenPermissions.hasPermission(Permission.Key.COMPANY_INCORPORATION, Permission.Value.CREATE)).thenReturn(false);
+        when(mockTokenPermissions.hasPermission(Permission.Key.COMPANY_REA_UPDATE, Permission.Value.UPDATE)).thenReturn(false);
 
         var result = userAuthenticationInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
         assertFalse(result);
