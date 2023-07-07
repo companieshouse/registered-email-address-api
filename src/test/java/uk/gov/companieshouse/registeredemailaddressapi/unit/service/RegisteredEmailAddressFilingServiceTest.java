@@ -12,9 +12,12 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressData;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressFilingService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
@@ -32,7 +35,9 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressFilingServiceTest {
-    
+
+    Helper helper = new Helper();
+
     private static final String TEST_EMAIL = "test@Test.com";
     private static final String TEST_COMPANY_NUMBER = "000987699";
     private static final String REA_FILING_DESCRIPTION_IDENTIFIER = "Registered Email Address Filing Description Id";
@@ -83,9 +88,11 @@ class RegisteredEmailAddressFilingServiceTest {
 
     @Test
     void testRegisteredEmailAddressFilingFilingReturnedSuccessfully() throws SubmissionNotFoundException, IOException, URIValidationException {
+        RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO =
+                helper.generateRegisteredEmailAddressResponseDTO(TEST_EMAIL, UUID.randomUUID().toString());
         // mocking
         when(localDateSupplier.get()).thenReturn(FILING_DUMMY_DATE);
-        when(registeredEmailAddressService.getRegisteredEmailAddressSubmission(SUBMISSION_ID)).thenReturn(Optional.of(buildRegisteredEmailAddressDTO()));
+        when(registeredEmailAddressService.getRegisteredEmailAddressSubmission(SUBMISSION_ID)).thenReturn(Optional.of(registeredEmailAddressResponseDTO));
         when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID)).thenReturn(buildRegisteredEmailAddressDAO());
 
         FilingApi registeredEmailAddressFiling = registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction);
@@ -128,9 +135,11 @@ class RegisteredEmailAddressFilingServiceTest {
     }
 
     private RegisteredEmailAddressDAO buildRegisteredEmailAddressDAO() {
-        RegisteredEmailAddressDAO registeredEmailAddressDAO = new RegisteredEmailAddressDAO();
-        registeredEmailAddressDAO.setRegisteredEmailAddress(TEST_EMAIL);
-        registeredEmailAddressDAO.setId(SUBMISSION_ID);
-        return registeredEmailAddressDAO;
+        RegisteredEmailAddressData registeredEmailAddressData =  new RegisteredEmailAddressData();
+        registeredEmailAddressData.setRegisteredEmailAddress(TEST_EMAIL);
+        RegisteredEmailAddressDAO registeredEmailAddress =  new RegisteredEmailAddressDAO();
+        registeredEmailAddress.setData(registeredEmailAddressData);
+        registeredEmailAddress.setId(SUBMISSION_ID);
+        return registeredEmailAddress;
     }
 }

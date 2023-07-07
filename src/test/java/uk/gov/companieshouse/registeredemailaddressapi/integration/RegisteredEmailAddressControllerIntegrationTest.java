@@ -59,7 +59,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
                         .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456").content(helper.writeToJson(registeredEmailAddressDTO)))
                 .andExpect(status().isCreated()).andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.registered_email_address").value("Test@Test.com"));
+                .andExpect(jsonPath("$.data.registered_email_address").value("Test@Test.com"));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
                         .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456").content(helper.writeToJson(registeredEmailAddressDTO)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.registered_email_address").value("UpdateTest@Test.com"));
+                .andExpect(jsonPath("$.data.registered_email_address").value("UpdateTest@Test.com"));
     }
 
     //Test Update End points

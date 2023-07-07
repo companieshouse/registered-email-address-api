@@ -12,7 +12,9 @@ import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse
 import uk.gov.companieshouse.registeredemailaddressapi.controller.RegisteredEmailAddressController;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 
 import java.util.UUID;
@@ -24,7 +26,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressControllerTest {
 
+    Helper helper = new Helper();
+
     private RegisteredEmailAddressDTO registeredEmailAddressDTO;
+
+    private RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO;
     private static final String REQUEST_ID = UUID.randomUUID().toString();
     private static final String TRANSACTION_ID = UUID.randomUUID().toString();
     private static final String USER_ID = UUID.randomUUID().toString();
@@ -40,21 +46,19 @@ class RegisteredEmailAddressControllerTest {
 
     @BeforeEach
     void init() {
-        registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
-        registeredEmailAddressDTO.setRegisteredEmailAddress(EMAIL_ADDRESS);
+        registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(EMAIL_ADDRESS);
+        registeredEmailAddressResponseDTO = helper.generateRegisteredEmailAddressResponseDTO(EMAIL_ADDRESS, USER_ID);
     }
 
     @Test
     void testCreateRegisteredEmailAddressSuccessTest() throws ServiceException {
-
-        registeredEmailAddressDTO.setId(UUID.randomUUID().toString());
 
         when(this.registeredEmailAddressService.createRegisteredEmailAddress(
                 transaction,
                 registeredEmailAddressDTO,
                 REQUEST_ID,
                 USER_ID)
-        ).thenReturn(registeredEmailAddressDTO);
+        ).thenReturn(registeredEmailAddressResponseDTO);
 
         var createRegisteredEmailAddressResponse = registeredEmailAddressController.createRegisteredEmailAddress(
                 transaction,
@@ -64,7 +68,7 @@ class RegisteredEmailAddressControllerTest {
         );
 
         assertEquals(HttpStatus.CREATED.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
-        assertEquals(registeredEmailAddressDTO, createRegisteredEmailAddressResponse.getBody());
+        assertEquals(registeredEmailAddressResponseDTO, createRegisteredEmailAddressResponse.getBody());
 
         verify(registeredEmailAddressService).createRegisteredEmailAddress(
                 transaction,
@@ -76,14 +80,12 @@ class RegisteredEmailAddressControllerTest {
     @Test
     void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, SubmissionNotFoundException {
 
-        registeredEmailAddressDTO.setId(UUID.randomUUID().toString());
-
         when(this.registeredEmailAddressService.updateRegisteredEmailAddress(
                 transaction,
                 registeredEmailAddressDTO,
                 REQUEST_ID,
                 USER_ID)
-        ).thenReturn(registeredEmailAddressDTO);
+        ).thenReturn(registeredEmailAddressResponseDTO);
 
         var createRegisteredEmailAddressResponse = registeredEmailAddressController.updateRegisteredEmailAddress(
                 transaction,
@@ -93,7 +95,7 @@ class RegisteredEmailAddressControllerTest {
         );
 
         assertEquals(HttpStatus.OK.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
-        assertEquals(registeredEmailAddressDTO, createRegisteredEmailAddressResponse.getBody());
+        assertEquals(registeredEmailAddressResponseDTO, createRegisteredEmailAddressResponse.getBody());
 
         verify(registeredEmailAddressService).updateRegisteredEmailAddress(
                 transaction,
@@ -126,16 +128,19 @@ class RegisteredEmailAddressControllerTest {
 
     @Test
     void testGetRegisteredEmailAddressTest() throws SubmissionNotFoundException {
-        when(this.registeredEmailAddressService
-                .getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID)).thenReturn("test@Test.com");
 
-        var response = registeredEmailAddressController.getRegisteredEmailAddress(
+        RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO =
+                helper.generateRegisteredEmailAddressResponseDTO("test@Test.com", UUID.randomUUID().toString());
+        when(this.registeredEmailAddressService
+                .getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID)).thenReturn(registeredEmailAddressResponseDTO);
+
+        var response = registeredEmailAddressController.getRegisteredEmailAddressFilingSubmission(
                 TRANSACTION_ID,
                 REQUEST_ID
         );
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
-        assertEquals("test@Test.com", response.getBody());
+        assertEquals("test@Test.com", response.getBody().getData().getRegisteredEmailAddress());
 
         verify(registeredEmailAddressService).getRegisteredEmailAddress(
                 TRANSACTION_ID, REQUEST_ID);

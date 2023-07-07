@@ -14,16 +14,12 @@ public class RegisteredEmailAddressDAO {
     private String id;
     @Field("transaction_id")
     private String transactionId;
-    @Field("registered_email_address")
-    private String registeredEmailAddress;
+    @Field("data")
+    private RegisteredEmailAddressData data;
     @Field("created_at")
     private LocalDateTime createdAt;
     @Field("updated_at")
     private LocalDateTime updatedAt;
-    @Field("etag")
-    private String etag;
-    @Field("kind")
-    private String kind;
     @Field("links")
     private Map<String, String> links;
     @Field("last_modified_by_user_id")
@@ -47,14 +43,13 @@ public class RegisteredEmailAddressDAO {
         this.transactionId = transactionId;
     }
 
-    public String getRegisteredEmailAddress() {
-        return registeredEmailAddress;
+    public RegisteredEmailAddressData getData() {
+        return data;
     }
 
-    public void setRegisteredEmailAddress(String registeredEmailAddress) {
-        this.registeredEmailAddress = registeredEmailAddress;
+    public void setData(RegisteredEmailAddressData data) {
+        this.data = data;
     }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -65,22 +60,6 @@ public class RegisteredEmailAddressDAO {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public String getEtag() {
-        return etag;
-    }
-
-    public void setEtag(String etag) {
-        this.etag = etag;
-    }
-
-    public String getKind() {
-        return kind;
-    }
-
-    public void setKind(String kind) {
-        this.kind = kind;
     }
 
     public Map<String, String> getLinks() {

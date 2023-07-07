@@ -10,6 +10,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFo
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.util.Map.entry;
 import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
@@ -39,9 +41,8 @@ public class RegisteredEmailAddressService {
 
     }
 
-    public RegisteredEmailAddressDTO createRegisteredEmailAddress(Transaction transaction,
+    public RegisteredEmailAddressResponseDTO createRegisteredEmailAddress(Transaction transaction,
                                                                   RegisteredEmailAddressDTO registeredEmailAddressDTO,
-
                                                                   String requestId,
                                                                   String userId) throws ServiceException {
 
@@ -58,8 +59,9 @@ public class RegisteredEmailAddressService {
                 .dtoToDao(registeredEmailAddressDTO);
 
         registeredEmailAddressDAO.setTransactionId(transaction.getId());
-        registeredEmailAddressDAO.setEtag(GenerateEtagUtil.generateEtag());
+        registeredEmailAddressDAO.getData().setEtag(GenerateEtagUtil.generateEtag());
         registeredEmailAddressDAO.setCreatedAt(LocalDateTime.now());
+        registeredEmailAddressDAO.getData().setKind(FILING_KIND);
 
         ApiLogger.debugContext(requestId, " -  insert registered email address into DB");
 
@@ -83,19 +85,19 @@ public class RegisteredEmailAddressService {
 
         ApiLogger.debugContext(requestId, " -  registered email address into DB success");
 
-        return registeredEmailAddressMapper
-                .daoToDto(createdRegisteredEmailAddress);
+        return registeredEmailAddressMapper.daoToDto(createdRegisteredEmailAddress);
     }
 
-    public RegisteredEmailAddressDTO updateRegisteredEmailAddress(Transaction transaction,
-                                                                  RegisteredEmailAddressDTO registeredEmailAddressDTO,
-                                                                  String requestId,
-                                                                  String userId) throws ServiceException, SubmissionNotFoundException {
+    public RegisteredEmailAddressResponseDTO updateRegisteredEmailAddress(Transaction transaction,
+                                                                          RegisteredEmailAddressDTO registeredEmailAddressDTO,
+                                                                          String requestId,
+                                                                          String userId) throws ServiceException, SubmissionNotFoundException {
 
         ApiLogger.debugContext(requestId, " -  updateRegisteredEmailAddress(...)");
             if (transaction.getStatus() != null && transaction.getStatus().equals(OPEN)) {
                 RegisteredEmailAddressDAO registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
-                registeredEmailAddress.setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
+                registeredEmailAddress.getData()
+                        .setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
                 registeredEmailAddress.setLastModifiedByUserId(userId);
                 registeredEmailAddress.setUpdatedAt(LocalDateTime.now());
                 RegisteredEmailAddressDAO createdRegisteredEmailAddress = registeredEmailAddressRepository
@@ -127,9 +129,9 @@ public class RegisteredEmailAddressService {
         }
     }
 
-    public String getRegisteredEmailAddress(String transactionId, String requestId) throws SubmissionNotFoundException {
-        var registeredEmailAddress = getRegisteredEmailAddressDAO(transactionId, requestId);
-        return registeredEmailAddress.getRegisteredEmailAddress();
+    public RegisteredEmailAddressResponseDTO getRegisteredEmailAddress(String transactionId, String requestId) throws SubmissionNotFoundException {
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = getRegisteredEmailAddressDAO(transactionId, requestId);
+        return  registeredEmailAddressMapper.daoToDto(registeredEmailAddressDAO);
     }
 
 
@@ -146,13 +148,12 @@ public class RegisteredEmailAddressService {
 
         return registeredEmailAddress;
     }
-    public Optional<RegisteredEmailAddressDTO> getRegisteredEmailAddressSubmission(String submissionId) {
+    public Optional<RegisteredEmailAddressResponseDTO> getRegisteredEmailAddressSubmission(String submissionId) {
         var submission = registeredEmailAddressRepository.findById(submissionId);
         if (submission.isPresent()) {
             var registeredEmailAddressSubmissionDao = submission.get();
             ApiLogger.info(String.format("%s: Registered Email Address Submission found. About to return", registeredEmailAddressSubmissionDao.getId()));
-            var dto = registeredEmailAddressMapper.daoToDto(registeredEmailAddressSubmissionDao);
-            return Optional.of(dto);
+            return Optional.of(registeredEmailAddressMapper.daoToDto(registeredEmailAddressSubmissionDao));
         } else {
             return Optional.empty();
         }
@@ -176,8 +177,11 @@ public class RegisteredEmailAddressService {
                                                           String requestId,
                                                           String userId) {
 
-
-        submission.setLinks(Collections.singletonMap(LINK_SELF, submissionUri));
+        Map<String, String> links = Map.ofEntries(
+                entry(LINK_SELF, submissionUri),
+                entry(LINK_VALIDATION, submissionUri + VALIDATION_STATUS_URI_SUFFIX)
+        );
+        submission.setLinks(links);
         submission.setUpdatedAt(LocalDateTime.now());
         submission.setHttpRequestId(requestId);
         submission.setLastModifiedByUserId(userId);
