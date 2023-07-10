@@ -17,7 +17,7 @@ public class ValidationService {
     public ValidationStatusResponse validateRegisteredEmailAddress(RegisteredEmailAddressDAO registeredEmailAddress,
                                                                    String requestId) {
         var errors = new Errors();
-        if (isNotNull(registeredEmailAddress.getRegisteredEmailAddress(),
+        if (isNotNull(registeredEmailAddress.getData(),
                 "registered_email_address",
                 errors,
                 requestId)) {
@@ -25,7 +25,7 @@ public class ValidationService {
             ApiLogger.debugContext(requestId, String.format("Registered Email Address found for Transaction %s.",
                     registeredEmailAddress.getTransactionId() ));
 
-            isValidEmailAddress(registeredEmailAddress.getRegisteredEmailAddress(),
+            isValidEmailAddress(registeredEmailAddress.getData().getRegisteredEmailAddress(),
                     "registered_email_address",
                     errors,
                     requestId);

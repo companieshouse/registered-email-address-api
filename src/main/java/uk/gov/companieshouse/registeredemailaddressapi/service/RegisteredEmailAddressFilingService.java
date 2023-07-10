@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
@@ -68,26 +68,26 @@ public class RegisteredEmailAddressFilingService {
 
         var registeredEmailAddressDAO = registeredEmailAddressRepository.findByTransactionId(transactionId);
 
-        RegisteredEmailAddressDTO dataDto = setRegisteredEmailAddressSubmissionData(registeredEmailAddressData, registeredEmailAddressDAO.getId(), logMap);
+        RegisteredEmailAddressResponseDTO dataDto = setRegisteredEmailAddressSubmissionData(registeredEmailAddressData, registeredEmailAddressDAO.getId(), logMap);
         registeredEmailAddressData.put(COMPANY_NUMBER, transaction.getCompanyNumber());
         filing.setData(registeredEmailAddressData);
         setDescriptionFields(filing, dataDto.isForUpdate());
     }
 
-    private RegisteredEmailAddressDTO setRegisteredEmailAddressSubmissionData(Map<String, Object> data, String registeredEmailAddressId, Map<String, Object> logMap)
+    private RegisteredEmailAddressResponseDTO setRegisteredEmailAddressSubmissionData(Map<String, Object> data, String registeredEmailAddressId, Map<String, Object> logMap)
         throws SubmissionNotFoundException {
-        Optional<RegisteredEmailAddressDTO> submissionOpt =
+        Optional<RegisteredEmailAddressResponseDTO> submissionOpt =
             registeredEmailAddressService.getRegisteredEmailAddressSubmission(registeredEmailAddressId);
 
-        RegisteredEmailAddressDTO registeredEmailAddressSubmission = submissionOpt
+        RegisteredEmailAddressResponseDTO registeredEmailAddressSubmission = submissionOpt
                 .orElseThrow(() ->
                         new SubmissionNotFoundException(
                                 format(SERVICE_EXCEPTION, registeredEmailAddressId)));
 
-        if (Objects.isNull(registeredEmailAddressSubmission.getRegisteredEmailAddress())) {
+        if (Objects.isNull(registeredEmailAddressSubmission.getData().getRegisteredEmailAddress())) {
             data.put(REGISTERED_EMAIL_ADDRESS, null);
         } else {
-            data.put(REGISTERED_EMAIL_ADDRESS, registeredEmailAddressSubmission.getRegisteredEmailAddress());
+            data.put(REGISTERED_EMAIL_ADDRESS, registeredEmailAddressSubmission.getData().getRegisteredEmailAddress());
         }
         ApiLogger.debug(DEBUG_MESSAGE, logMap);
         return registeredEmailAddressSubmission;

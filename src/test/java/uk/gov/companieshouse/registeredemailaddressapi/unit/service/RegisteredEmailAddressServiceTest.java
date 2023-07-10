@@ -14,7 +14,10 @@ import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceExceptio
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressData;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseData;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
@@ -62,13 +65,14 @@ class RegisteredEmailAddressServiceTest {
     void testCreateRegisteredEmailAddressIsSuccessful() throws ServiceException {
         Transaction transaction = buildTransaction();
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
+        RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = buildRegisteredEmailAddressResponsesDTO();
         RegisteredEmailAddressDAO registeredEmailAddressDAO = buildRegisteredEmailAddressDAO();
 
         when(registeredEmailAddressMapper.dtoToDao(any())).thenReturn(registeredEmailAddressDAO);
-        when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressDTO);
+        when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressResponseDTO);
         when(registeredEmailAddressRepository.insert(registeredEmailAddressDAO)).thenReturn(registeredEmailAddressDAO);
 
-        RegisteredEmailAddressDTO response = registeredEmailAddressService.createRegisteredEmailAddress(transaction,
+        RegisteredEmailAddressResponseDTO response = registeredEmailAddressService.createRegisteredEmailAddress(transaction,
                 registeredEmailAddressDTO,
                 REQUEST_ID,
                 USER_ID);
@@ -122,21 +126,23 @@ class RegisteredEmailAddressServiceTest {
 
         RegisteredEmailAddressDAO registeredEmailAddressDAO = buildRegisteredEmailAddressDAO();
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
-        registeredEmailAddressDTO.setRegisteredEmailAddress(newEmail);
+        RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = buildRegisteredEmailAddressResponsesDTO();
+        registeredEmailAddressResponseDTO.getData().setRegisteredEmailAddress(newEmail);
 
         when(registeredEmailAddressRepository.findByTransactionId(transaction.getId())).thenReturn(registeredEmailAddressDAO);
         registeredEmailAddressDAO.setUpdatedAt(LocalDateTime.now());
-        registeredEmailAddressDAO.setRegisteredEmailAddress(newEmail);
+        registeredEmailAddressDAO.getData()
+                .setRegisteredEmailAddress(newEmail);
         when(registeredEmailAddressRepository.save(registeredEmailAddressDAO)).thenReturn(registeredEmailAddressDAO);
-        when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressDTO);
+        when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressResponseDTO);
 
-        RegisteredEmailAddressDTO response = registeredEmailAddressService.updateRegisteredEmailAddress(transaction,
+        RegisteredEmailAddressResponseDTO response = registeredEmailAddressService.updateRegisteredEmailAddress(transaction,
                 registeredEmailAddressDTO,
                 REQUEST_ID,
                 USER_ID);
 
         assertEquals(SUBMISSION_ID, response.getId());
-        assertEquals(newEmail, response.getRegisteredEmailAddress());
+        assertEquals(newEmail, response.getData().getRegisteredEmailAddress());
 
         verify(registeredEmailAddressMapper, times(1)).daoToDto(any());
     }
@@ -208,16 +214,19 @@ class RegisteredEmailAddressServiceTest {
     @Test
     void getRegisteredEmailAddressIsSuccessful() throws SubmissionNotFoundException {
         RegisteredEmailAddressDAO registeredEmailAddressDAO = buildRegisteredEmailAddressDAO();
+        RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = buildRegisteredEmailAddressResponsesDTO();
         ValidationStatusResponse validationStatusResponse = new ValidationStatusResponse();
         validationStatusResponse.setValid(true);
 
         when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID))
                 .thenReturn(registeredEmailAddressDAO);
+        when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressResponseDTO);
 
-        String response = registeredEmailAddressService
+
+        RegisteredEmailAddressResponseDTO response = registeredEmailAddressService
                 .getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID);
 
-        assertEquals("test@Test.com", response);
+        assertEquals("test@Test.com", response.getData().getRegisteredEmailAddress());
 
         verify(registeredEmailAddressRepository).findByTransactionId(TRANSACTION_ID);
     }
@@ -251,11 +260,23 @@ class RegisteredEmailAddressServiceTest {
     }
 
     private RegisteredEmailAddressDAO buildRegisteredEmailAddressDAO() {
+        RegisteredEmailAddressData registeredEmailAddressData = new RegisteredEmailAddressData();
+        registeredEmailAddressData.setRegisteredEmailAddress("test@Test.com");
+
         RegisteredEmailAddressDAO registeredEmailAddressDAO = new RegisteredEmailAddressDAO();
-        registeredEmailAddressDAO.setRegisteredEmailAddress("test@Test.com");
+        registeredEmailAddressDAO.setData(registeredEmailAddressData);
         registeredEmailAddressDAO.setId(SUBMISSION_ID);
         registeredEmailAddressDAO.setTransactionId(TRANSACTION_ID);
         return registeredEmailAddressDAO;
+    }
+
+    private RegisteredEmailAddressResponseDTO buildRegisteredEmailAddressResponsesDTO() {
+        RegisteredEmailAddressResponseData registeredEmailAddressData = new RegisteredEmailAddressResponseData();
+        registeredEmailAddressData.setRegisteredEmailAddress("test@Test.com");
+        RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = new RegisteredEmailAddressResponseDTO();
+        registeredEmailAddressResponseDTO.setData(registeredEmailAddressData);
+        registeredEmailAddressResponseDTO.setId(SUBMISSION_ID);
+        return registeredEmailAddressResponseDTO;
     }
 
 

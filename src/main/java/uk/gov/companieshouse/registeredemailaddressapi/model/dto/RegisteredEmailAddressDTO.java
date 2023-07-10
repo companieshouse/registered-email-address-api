@@ -1,9 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.apache.commons.lang.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -18,11 +15,6 @@ public class RegisteredEmailAddressDTO {
             message ="registered_email_address must have a valid email format" )
     @JsonProperty("registered_email_address")
     private String registeredEmailAddress;
-
-    @JsonIgnore
-    public boolean isForUpdate() {
-        return StringUtils.isNotBlank(registeredEmailAddress);
-    }
     public String getId() {
         return id;
     }

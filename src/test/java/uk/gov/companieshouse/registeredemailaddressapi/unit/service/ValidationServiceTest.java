@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressData;
 import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService;
 
 import java.util.Arrays;
@@ -25,9 +26,11 @@ class ValidationServiceTest {
     private ValidationService validationService;
 
     @Test
-    void testvalidateRegisteredEmailAddressSuccessful() {
+    void testValidateRegisteredEmailAddressSuccessful() {
+        RegisteredEmailAddressData registeredEmailAddressData =  new RegisteredEmailAddressData();
+        registeredEmailAddressData.setRegisteredEmailAddress("Test@Test.com");
         RegisteredEmailAddressDAO registeredEmailAddress =  new RegisteredEmailAddressDAO();
-        registeredEmailAddress.setRegisteredEmailAddress("Test@Test.com");
+        registeredEmailAddress.setData(registeredEmailAddressData);
 
         ValidationStatusResponse response = validationService.validateRegisteredEmailAddress(registeredEmailAddress, REQUEST_ID);
 
@@ -38,7 +41,7 @@ class ValidationServiceTest {
     @Test
     void testvalidateOfEmptyRegisteredEmailAddress() {
         RegisteredEmailAddressDAO registeredEmailAddress =  new RegisteredEmailAddressDAO();
-        registeredEmailAddress.setRegisteredEmailAddress(null);
+        registeredEmailAddress.setData(null);
 
         ValidationStatusResponse response = validationService.validateRegisteredEmailAddress(registeredEmailAddress, REQUEST_ID);
 
@@ -50,8 +53,10 @@ class ValidationServiceTest {
 
     @Test
     void testvalidateOfInvalidRegisteredEmailAddress() {
+        RegisteredEmailAddressData registeredEmailAddressData =  new RegisteredEmailAddressData();
+        registeredEmailAddressData.setRegisteredEmailAddress("234$@3df");
         RegisteredEmailAddressDAO registeredEmailAddress =  new RegisteredEmailAddressDAO();
-        registeredEmailAddress.setRegisteredEmailAddress("234$@3df");
+        registeredEmailAddress.setData(registeredEmailAddressData);
 
         ValidationStatusResponse response = validationService.validateRegisteredEmailAddress(registeredEmailAddress, REQUEST_ID);
 
