@@ -42,7 +42,6 @@ public class Helper {
         registeredEmailAddressData.setRegisteredEmailAddress(email);
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO =  new RegisteredEmailAddressResponseDTO();
         registeredEmailAddressResponseDTO.setData(registeredEmailAddressData);
-        registeredEmailAddressResponseDTO.setTransactionId(transactionId);
         registeredEmailAddressResponseDTO.setId(UUID.randomUUID().toString());
         return registeredEmailAddressResponseDTO;
     }

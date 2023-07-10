@@ -276,7 +276,6 @@ class RegisteredEmailAddressServiceTest {
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = new RegisteredEmailAddressResponseDTO();
         registeredEmailAddressResponseDTO.setData(registeredEmailAddressData);
         registeredEmailAddressResponseDTO.setId(SUBMISSION_ID);
-        registeredEmailAddressResponseDTO.setTransactionId(TRANSACTION_ID);
         return registeredEmailAddressResponseDTO;
     }
 
