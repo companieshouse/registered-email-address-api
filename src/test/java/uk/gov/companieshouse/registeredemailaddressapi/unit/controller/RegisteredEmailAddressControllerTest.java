@@ -109,8 +109,6 @@ class RegisteredEmailAddressControllerTest {
         ValidationStatusResponse validationStatusResponse = new ValidationStatusResponse();
         validationStatusResponse.setValid(true);
 
-        registeredEmailAddressDTO.setId(UUID.randomUUID().toString());
-
         when(this.registeredEmailAddressService
                 .getValidationStatus(TRANSACTION_ID, REQUEST_ID)).thenReturn(validationStatusResponse);
 

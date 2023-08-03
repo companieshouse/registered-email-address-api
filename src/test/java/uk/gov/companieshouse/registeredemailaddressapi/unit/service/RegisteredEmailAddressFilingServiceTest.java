@@ -103,6 +103,7 @@ class RegisteredEmailAddressFilingServiceTest {
         assertEquals("Registered Email Address Filing update statement made 26 March 2023", registeredEmailAddressFiling.getDescription());   
         assertEquals(TEST_EMAIL, registeredEmailAddressFiling.getData().get(REGISTERED_EMAIL_ADDRESS));
         assertEquals(TEST_COMPANY_NUMBER, registeredEmailAddressFiling.getData().get(COMPANY_NUMBER));
+        assertEquals(true, registeredEmailAddressFiling.getData().get(ACCEPT_EMAIL_STATEMENT));
     }
 
     @Test
@@ -130,7 +131,6 @@ class RegisteredEmailAddressFilingServiceTest {
     private RegisteredEmailAddressDTO buildRegisteredEmailAddressDTO() {
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         registeredEmailAddressDTO.setRegisteredEmailAddress(TEST_EMAIL);
-        registeredEmailAddressDTO.setId(SUBMISSION_ID);
         return registeredEmailAddressDTO;
     }
 

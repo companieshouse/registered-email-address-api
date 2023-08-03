@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class RegisteredEmailAddressData {
     @Field("registered_email_address")
     private String registeredEmailAddress;
+    @Field("accept_appropriate_email_address_statement")
+    private boolean acceptAppropriateEmailAddressStatement;
     @Field("etag")
     private String etag;
     @Field("kind")
@@ -17,6 +19,15 @@ public class RegisteredEmailAddressData {
     public void setRegisteredEmailAddress(String registeredEmailAddress) {
         this.registeredEmailAddress = registeredEmailAddress;
     }
+
+    public boolean isAcceptAppropriateEmailAddressStatement() {
+        return acceptAppropriateEmailAddressStatement;
+    }
+
+    public void setAcceptAppropriateEmailAddressStatement(boolean acceptAppropriateEmailAddressStatement) {
+        this.acceptAppropriateEmailAddressStatement = acceptAppropriateEmailAddressStatement;
+    }
+
     public String getEtag() {
         return etag;
     }

@@ -7,21 +7,13 @@ import javax.validation.constraints.Pattern;
 
 
 public class RegisteredEmailAddressDTO {
-
-    @JsonProperty("id")
-    private String id;
     @NotBlank(message = "registered_email_address must not be blank")
     @Pattern(regexp = "^.+@.+\\..+$",
             message ="registered_email_address must have a valid email format" )
     @JsonProperty("registered_email_address")
     private String registeredEmailAddress;
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    @JsonProperty("accept_appropriate_email_address_statement")
+    private boolean acceptAppropriateEmailAddressStatement;
 
     public String getRegisteredEmailAddress() {
         return registeredEmailAddress;
@@ -29,6 +21,14 @@ public class RegisteredEmailAddressDTO {
 
     public void setRegisteredEmailAddress(String registeredEmailAddress) {
         this.registeredEmailAddress = registeredEmailAddress;
+    }
+
+    public Boolean getAcceptAppropriateEmailAddressStatement() {
+        return acceptAppropriateEmailAddressStatement;
+    }
+
+    public void setAcceptAppropriateEmailAddressStatement(Boolean acceptAppropriateEmailAddressStatement) {
+        this.acceptAppropriateEmailAddressStatement = acceptAppropriateEmailAddressStatement;
     }
 }
 

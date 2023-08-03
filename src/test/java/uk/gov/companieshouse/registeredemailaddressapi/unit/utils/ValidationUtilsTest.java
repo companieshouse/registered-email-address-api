@@ -12,6 +12,7 @@ import uk.gov.companieshouse.service.rest.err.Errors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.INVALID_EMAIL_ERROR_MESSAGE;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.isValidEmailAddress;
 
 @ExtendWith(MockitoExtension.class)
 public class ValidationUtilsTest {
@@ -51,7 +52,13 @@ public class ValidationUtilsTest {
     @Test
     @DisplayName("Validate Email successfully")
     void validateEmail_Successful() {
-        assertTrue(ValidationUtils.isValidEmailAddress(EMAIL_TEST, DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT));
+        String errMsg = INVALID_EMAIL_ERROR_MESSAGE.replace("%s", DUMMY_PARENT_FIELD);
+        Err err = Err.invalidBodyBuilderWithLocation(DUMMY_PARENT_FIELD).withError(errMsg).build();
+
+        isValidEmailAddress(EMAIL_TEST, DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
+
+        assertEquals(0, errors.size());
+        assertFalse(errors.containsError(err));
     }
 
     @Test
@@ -60,9 +67,8 @@ public class ValidationUtilsTest {
         String errMsg = INVALID_EMAIL_ERROR_MESSAGE.replace("%s", DUMMY_PARENT_FIELD);
         Err err = Err.invalidBodyBuilderWithLocation(DUMMY_PARENT_FIELD).withError(errMsg).build();
 
-        boolean isValidEmail = ValidationUtils.isValidEmailAddress("lorem@ipsum", DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
+        isValidEmailAddress("lorem@ipsum", DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
 
-        assertFalse(isValidEmail);
         assertEquals(1, errors.size());
         assertTrue(errors.containsError(err));
     }

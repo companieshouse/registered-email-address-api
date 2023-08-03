@@ -14,6 +14,7 @@ public interface RegisteredEmailAddressMapper {
     RegisteredEmailAddressResponseDTO daoToDto(RegisteredEmailAddressDAO registeredEmailAddressDAO);
 
     @Mapping(target = "data.registeredEmailAddress", source = "registeredEmailAddress")
+    @Mapping(target = "data.acceptAppropriateEmailAddressStatement", source = "acceptAppropriateEmailAddressStatement")
     RegisteredEmailAddressDAO dtoToDao( RegisteredEmailAddressDTO registeredEmailAddressDTO);
 
 

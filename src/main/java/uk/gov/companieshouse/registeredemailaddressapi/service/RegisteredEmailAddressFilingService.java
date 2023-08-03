@@ -89,6 +89,7 @@ public class RegisteredEmailAddressFilingService {
         } else {
             data.put(REGISTERED_EMAIL_ADDRESS, registeredEmailAddressSubmission.getData().getRegisteredEmailAddress());
         }
+        data.put(ACCEPT_EMAIL_STATEMENT, registeredEmailAddressSubmission.getData().getAcceptAppropriateEmailAddressStatement());
         ApiLogger.debug(DEBUG_MESSAGE, logMap);
         return registeredEmailAddressSubmission;
     }

@@ -255,7 +255,6 @@ class RegisteredEmailAddressServiceTest {
     private RegisteredEmailAddressDTO buildRegisteredEmailAddressDTO() {
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         registeredEmailAddressDTO.setRegisteredEmailAddress("test@Test.com");
-        registeredEmailAddressDTO.setId(SUBMISSION_ID);
         return registeredEmailAddressDTO;
     }
 
