@@ -1,20 +1,22 @@
 package uk.gov.companieshouse.registeredemailaddressapi.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressFilingService;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
-import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 
 import java.util.HashMap;
 
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_KEY;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_ID_KEY;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_KEY;
 
 @RestController
 @RequestMapping()
