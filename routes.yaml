@@ -1,7 +1,7 @@
 app_name: registered-email-address-api
 group: api
 
-weight: 90
+weight: 900
 routes:
   1: ^/transactions/(.*)/registered-email-address
   2: ^/private/transactions/(.*)/registered-email-address/filings

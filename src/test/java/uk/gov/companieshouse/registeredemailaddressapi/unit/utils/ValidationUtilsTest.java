@@ -15,7 +15,7 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUt
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.isValidEmailAddress;
 
 @ExtendWith(MockitoExtension.class)
-public class ValidationUtilsTest {
+class ValidationUtilsTest {
 
 
     private static final String TO_TEST = "toTest";
