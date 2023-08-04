@@ -96,8 +96,20 @@ public class RegisteredEmailAddressService {
         ApiLogger.debugContext(requestId, " -  updateRegisteredEmailAddress(...)");
             if (transaction.getStatus() != null && transaction.getStatus().equals(OPEN)) {
                 RegisteredEmailAddressDAO registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
-                registeredEmailAddress.getData()
-                        .setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
+
+                if(!registeredEmailAddressDTO.getRegisteredEmailAddress().isEmpty()){
+                    registeredEmailAddress.getData()
+                            .setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
+                }
+
+                if(!registeredEmailAddressDTO.isAcceptAppropriateEmailAddressStatement() ==
+                        registeredEmailAddress.getData().isAcceptAppropriateEmailAddressStatement()){
+                    registeredEmailAddress.getData()
+                            .setAcceptAppropriateEmailAddressStatement(registeredEmailAddressDTO.isAcceptAppropriateEmailAddressStatement());
+                }
+
+
+
                 registeredEmailAddress.setLastModifiedByUserId(userId);
                 registeredEmailAddress.setUpdatedAt(LocalDateTime.now());
                 RegisteredEmailAddressDAO createdRegisteredEmailAddress = registeredEmailAddressRepository

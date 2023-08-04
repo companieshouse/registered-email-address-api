@@ -8,8 +8,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 import uk.gov.companieshouse.service.rest.err.Errors;
 
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.isNotNull;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.isValidEmailAddress;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.*;
 
 @Service
 public class ValidationService {
@@ -29,6 +28,12 @@ public class ValidationService {
                     "registered_email_address",
                     errors,
                     requestId);
+
+            isEmailAddressStatementAccepted(registeredEmailAddress.getData().isAcceptAppropriateEmailAddressStatement(),
+                    "accept_appropriate_email_address_statement",
+                    errors,
+                    requestId);
+
 
         }
         return formatValidationStatusResponse(errors, registeredEmailAddress, requestId);

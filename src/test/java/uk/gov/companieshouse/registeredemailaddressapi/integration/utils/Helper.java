@@ -24,12 +24,14 @@ public class Helper {
     public RegisteredEmailAddressDTO generateRegisteredEmailAddressDTO(String email){
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         registeredEmailAddressDTO.setRegisteredEmailAddress(email);
+        registeredEmailAddressDTO.setAcceptAppropriateEmailAddressStatement(true);
         return registeredEmailAddressDTO;
     }
 
     public RegisteredEmailAddressDAO generateRegisteredEmailAddressDAO(String email, String transactionId){
         RegisteredEmailAddressData registeredEmailAddressData =  new RegisteredEmailAddressData();
         registeredEmailAddressData.setRegisteredEmailAddress(email);
+        registeredEmailAddressData.setAcceptAppropriateEmailAddressStatement(true);
         RegisteredEmailAddressDAO registeredEmailAddressDAO =  new RegisteredEmailAddressDAO();
         registeredEmailAddressDAO.setData(registeredEmailAddressData);
         registeredEmailAddressDAO.setTransactionId(transactionId);
@@ -40,6 +42,7 @@ public class Helper {
     public RegisteredEmailAddressResponseDTO generateRegisteredEmailAddressResponseDTO(String email, String transactionId){
         RegisteredEmailAddressResponseData registeredEmailAddressData =  new RegisteredEmailAddressResponseData();
         registeredEmailAddressData.setRegisteredEmailAddress(email);
+        registeredEmailAddressData.setAcceptAppropriateEmailAddressStatement(true);
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO =  new RegisteredEmailAddressResponseDTO();
         registeredEmailAddressResponseDTO.setData(registeredEmailAddressData);
         registeredEmailAddressResponseDTO.setId(UUID.randomUUID().toString());

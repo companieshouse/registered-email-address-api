@@ -11,7 +11,7 @@ public class ValidationUtils {
 
     public static final String NOT_NULL_ERROR_MESSAGE = "%s must not be null";
     public static final String INVALID_EMAIL_ERROR_MESSAGE = "Email address is not in the correct format for %s, like name@example.com";
-
+    public static final String ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE = "The Appropriate Email Address Statement has not been accepted.";
 
     private ValidationUtils() { }
 
@@ -23,7 +23,7 @@ public class ValidationUtils {
         }
         return true;
     }
-    public static boolean isValidEmailAddress(String email, String qualifiedFieldName, Errors errs, String loggingContext) {
+    public static void isValidEmailAddress(String email, String qualifiedFieldName, Errors errs, String loggingContext) {
         var regex = "^.+@.+\\..+$";
         var pattern = Pattern.compile(regex);
         var matcher = pattern.matcher(email);
@@ -31,9 +31,13 @@ public class ValidationUtils {
         if (!matcher.matches()) {
             setErrorMsgToLocation(errs, qualifiedFieldName, String.format(INVALID_EMAIL_ERROR_MESSAGE, qualifiedFieldName));
             ApiLogger.infoContext(loggingContext, "Email address is not in the correct format for " + qualifiedFieldName);
-            return false;
         }
-        return true;
+    }
+    public static void isEmailAddressStatementAccepted(boolean acceptedEmailAddressStatement, String qualifiedFieldName, Errors errs, String loggingContext) {
+        if (!acceptedEmailAddressStatement) {
+            setErrorMsgToLocation(errs, qualifiedFieldName, String.format(ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE, qualifiedFieldName));
+            ApiLogger.infoContext(loggingContext, "The " + qualifiedFieldName + " must be True.");
+        }
     }
 
     public static void setErrorMsgToLocation(Errors errors, String qualifiedFieldName, String msg){

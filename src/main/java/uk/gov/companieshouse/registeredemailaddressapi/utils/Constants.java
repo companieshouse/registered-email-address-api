@@ -28,6 +28,9 @@ public class Constants {
 
     //submissions
     public static final String REGISTERED_EMAIL_ADDRESS = "registered_email_address";
+
+    public static final String ACCEPT_EMAIL_STATEMENT = "accept_appropriate_email_address_statement";
+
     public static final String COMPANY_NUMBER = "company_number";
     public static final String LINK_SELF = "self";
     public static final String LINK_VALIDATION = "validation_status";

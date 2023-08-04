@@ -14,8 +14,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.INVALID_EMAIL_ERROR_MESSAGE;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.NOT_NULL_ERROR_MESSAGE;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.*;
 
 @ExtendWith(MockitoExtension.class)
 class ValidationServiceTest {
@@ -29,6 +28,7 @@ class ValidationServiceTest {
     void testValidateRegisteredEmailAddressSuccessful() {
         RegisteredEmailAddressData registeredEmailAddressData =  new RegisteredEmailAddressData();
         registeredEmailAddressData.setRegisteredEmailAddress("Test@Test.com");
+        registeredEmailAddressData.setAcceptAppropriateEmailAddressStatement(true);
         RegisteredEmailAddressDAO registeredEmailAddress =  new RegisteredEmailAddressDAO();
         registeredEmailAddress.setData(registeredEmailAddressData);
 
@@ -39,7 +39,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    void testvalidateOfEmptyRegisteredEmailAddress() {
+    void testValidateOfEmptyRegisteredEmailAddress() {
         RegisteredEmailAddressDAO registeredEmailAddress =  new RegisteredEmailAddressDAO();
         registeredEmailAddress.setData(null);
 
@@ -63,6 +63,23 @@ class ValidationServiceTest {
         assertEquals(false, response.isValid());
         assertTrue(Arrays.stream(response.getValidationStatusError()).findFirst().get().getError()
                 .contains( String.format(INVALID_EMAIL_ERROR_MESSAGE, "registered_email_address")));
+
+    }
+
+    @Test
+    void testValidateOfFalseAppropriateEmailAddressStatement() {
+        RegisteredEmailAddressData registeredEmailAddressData =  new RegisteredEmailAddressData();
+        registeredEmailAddressData.setRegisteredEmailAddress("Test@Test.com");
+        registeredEmailAddressData.setAcceptAppropriateEmailAddressStatement(false);
+        RegisteredEmailAddressDAO registeredEmailAddress =  new RegisteredEmailAddressDAO();
+        registeredEmailAddress.setData(registeredEmailAddressData);
+
+        ValidationStatusResponse response = validationService.validateRegisteredEmailAddress(registeredEmailAddress, REQUEST_ID);
+
+        assertEquals(false, response.isValid());
+
+        assertTrue(Arrays.stream(response.getValidationStatusError()).findFirst().get().getError()
+                .contains( String.format(ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE, "accept_appropriate_email_address_statement")));
 
     }
 

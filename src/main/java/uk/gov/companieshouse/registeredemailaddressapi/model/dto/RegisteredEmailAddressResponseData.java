@@ -2,21 +2,11 @@ package uk.gov.companieshouse.registeredemailaddressapi.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class RegisteredEmailAddressResponseData {
-    @JsonProperty("registered_email_address")
-    private String registeredEmailAddress;
+public class RegisteredEmailAddressResponseData extends RegisteredEmailAddressDTO {
     @JsonProperty("etag")
     private String etag;
     @JsonProperty("kind")
     private String kind;
-
-    public String getRegisteredEmailAddress() {
-        return registeredEmailAddress;
-    }
-
-    public void setRegisteredEmailAddress(String registeredEmailAddress) {
-        this.registeredEmailAddress = registeredEmailAddress;
-    }
     public String getEtag() {
         return etag;
     }
