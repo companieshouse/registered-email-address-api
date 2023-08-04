@@ -133,6 +133,7 @@ class RegisteredEmailAddressServiceTest {
         registeredEmailAddressDAO.setUpdatedAt(LocalDateTime.now());
         registeredEmailAddressDAO.getData()
                 .setRegisteredEmailAddress(newEmail);
+        registeredEmailAddressDAO.getData().setAcceptAppropriateEmailAddressStatement(false);
         when(registeredEmailAddressRepository.save(registeredEmailAddressDAO)).thenReturn(registeredEmailAddressDAO);
         when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressResponseDTO);
 
@@ -255,13 +256,14 @@ class RegisteredEmailAddressServiceTest {
     private RegisteredEmailAddressDTO buildRegisteredEmailAddressDTO() {
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         registeredEmailAddressDTO.setRegisteredEmailAddress("test@Test.com");
+        registeredEmailAddressDTO.setAcceptAppropriateEmailAddressStatement(true);
         return registeredEmailAddressDTO;
     }
 
     private RegisteredEmailAddressDAO buildRegisteredEmailAddressDAO() {
         RegisteredEmailAddressData registeredEmailAddressData = new RegisteredEmailAddressData();
         registeredEmailAddressData.setRegisteredEmailAddress("test@Test.com");
-
+        registeredEmailAddressData.setAcceptAppropriateEmailAddressStatement(false);
         RegisteredEmailAddressDAO registeredEmailAddressDAO = new RegisteredEmailAddressDAO();
         registeredEmailAddressDAO.setData(registeredEmailAddressData);
         registeredEmailAddressDAO.setId(SUBMISSION_ID);

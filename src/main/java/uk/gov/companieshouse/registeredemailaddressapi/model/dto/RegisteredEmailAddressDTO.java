@@ -23,11 +23,11 @@ public class RegisteredEmailAddressDTO {
         this.registeredEmailAddress = registeredEmailAddress;
     }
 
-    public Boolean getAcceptAppropriateEmailAddressStatement() {
+    public boolean isAcceptAppropriateEmailAddressStatement() {
         return acceptAppropriateEmailAddressStatement;
     }
 
-    public void setAcceptAppropriateEmailAddressStatement(Boolean acceptAppropriateEmailAddressStatement) {
+    public void setAcceptAppropriateEmailAddressStatement(boolean acceptAppropriateEmailAddressStatement) {
         this.acceptAppropriateEmailAddressStatement = acceptAppropriateEmailAddressStatement;
     }
 }
