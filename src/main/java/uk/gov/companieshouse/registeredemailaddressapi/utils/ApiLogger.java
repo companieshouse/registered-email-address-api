@@ -71,9 +71,9 @@ public class ApiLogger {
      */
     private static Map<String, Object> cloneMapData(Map<String, Object> dataMap) {
         if (dataMap == null) {
-            dataMap = new HashMap<String, Object>();
+            dataMap = new HashMap<>();
         }
-        Map<String, Object> clonedMapData = new HashMap<String, Object>();
+        Map<String, Object> clonedMapData = new HashMap<>();
         clonedMapData.putAll(dataMap);
 
         return clonedMapData;

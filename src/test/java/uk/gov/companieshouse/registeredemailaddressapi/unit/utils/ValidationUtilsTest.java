@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.INVALID_EMAIL_ERROR_MESSAGE;
 
 @ExtendWith(MockitoExtension.class)
-public class ValidationUtilsTest {
+class ValidationUtilsTest {
 
 
     private static final String TO_TEST = "toTest";
