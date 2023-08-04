@@ -11,7 +11,7 @@ public class ValidationUtils {
 
     public static final String NOT_NULL_ERROR_MESSAGE = "%s must not be null";
     public static final String INVALID_EMAIL_ERROR_MESSAGE = "Email address is not in the correct format for %s, like name@example.com";
-    public static final String ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE = "The Appropriate Email Address Statement has not been accepted.";
+    public static final String ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE = "You need to accept the registered email address statement.";
 
     private ValidationUtils() { }
 
