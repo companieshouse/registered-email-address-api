@@ -20,7 +20,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class InterceptorConfigTest {
+class InterceptorConfigTest {
 
     static final String TRANSACTIONS = "/transactions/**";
     static final String FILINGS = "/private/transactions/**/filings";

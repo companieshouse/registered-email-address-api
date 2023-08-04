@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
-public class RegisteredEmailAddressFilingControllerTest {
+class RegisteredEmailAddressFilingControllerTest {
     
     private static final String FILING_DESCRIPTION = "registered email address test filing";
     private static final String TEST_COMPANY_NUMBER = "000987699";

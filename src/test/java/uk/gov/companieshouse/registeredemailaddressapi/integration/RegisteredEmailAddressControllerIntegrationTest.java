@@ -25,7 +25,7 @@ import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class RegisteredEmailAddressControllerIntegrationTest {
+class RegisteredEmailAddressControllerIntegrationTest {
 
     Helper helper = new Helper();
 
@@ -43,7 +43,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
 
 
     @Test
-    public void testCreateRegisteredEmailAddressSuccessTest() throws Exception {
+    void testCreateRegisteredEmailAddressSuccessTest() throws Exception {
         String email = "Test@Test.com";
         Transaction transaction = helper.generateTransaction();
         RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(email);
@@ -63,7 +63,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
     }
 
     @Test
-    public void testCreateRegisteredEmailAddressFailureTest() throws Exception {
+    void testCreateRegisteredEmailAddressFailureTest() throws Exception {
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(null);
         Transaction transaction = helper.generateTransaction();
@@ -83,7 +83,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
     }
 
     @Test
-    public void testCreateRegisteredEmailAddressRegexFailureTest() throws Exception {
+    void testCreateRegisteredEmailAddressRegexFailureTest() throws Exception {
         Transaction transaction = helper.generateTransaction();
         RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO("223j&kg");
 
@@ -101,7 +101,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
     }
 
     @Test
-    public void testUpdateRegisteredEmailAddressSuccessfulTest() throws Exception {
+    void testUpdateRegisteredEmailAddressSuccessfulTest() throws Exception {
 
 
         String email = "UpdateTest@Test.com";
@@ -127,7 +127,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
 
     //Test Update End points
     @Test
-    public void testUpdateRegisteredEmailAddressIncorrectStatusTest() throws Exception {
+    void testUpdateRegisteredEmailAddressIncorrectStatusTest() throws Exception {
 
 
         String email = "UpdateTest@Test.com";
@@ -157,7 +157,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
 
     // Test ValidationStatus Endpoints
     @Test
-    public void testGetValidationStatusTest() throws Exception {
+    void testGetValidationStatusTest() throws Exception {
         Transaction transaction = helper.generateTransaction();
         String email = "Test@Test.com";
         RegisteredEmailAddressDAO registeredEmailAddressDAO = helper
@@ -178,7 +178,7 @@ public class RegisteredEmailAddressControllerIntegrationTest {
     }
 
     @Test
-    public void testGetValidationStatusFailureTest() throws Exception {
+    void testGetValidationStatusFailureTest() throws Exception {
         Transaction transaction = helper.generateTransaction();
 
         when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);

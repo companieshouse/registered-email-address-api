@@ -31,9 +31,7 @@ public class GlobalExceptionHandler {
         logException(ex, webRequest);
 
         ArrayList<String> errorsList = new ArrayList<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            errorsList.add(error.getDefaultMessage());
-        });
+        ex.getBindingResult().getAllErrors().forEach( error -> errorsList.add(error.getDefaultMessage()) );
 
         Map<String, ArrayList<String>> errors = new HashMap<>();
         errors.put("errors", errorsList);
@@ -67,7 +65,7 @@ public class GlobalExceptionHandler {
         String sanitisedStackTrace = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ex)));
         String sanitisedRootCause = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex))));
 
-        HashMap<String, Object> logMap = new HashMap<String, Object>();
+        HashMap<String, Object> logMap = new HashMap<>();
         logMap.put("error", ex.getClass());
         logMap.put("stackTrace", sanitisedStackTrace);
         logMap.put("rootCause", sanitisedRootCause);
