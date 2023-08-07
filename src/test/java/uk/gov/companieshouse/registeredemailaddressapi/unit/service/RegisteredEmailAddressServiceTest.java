@@ -116,7 +116,7 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
-            assertEquals(String.format("Transaction id: %s; company %s has no existing Registered Email Address",
+            assertEquals(String.format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                             TRANSACTION_ID, COMPANY_NUMBER), e.getMessage());
         }
 
@@ -214,7 +214,7 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
-            assertEquals(format("Transaction id: %s; company %s has no existing Registered Email Address",
+            assertEquals(format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                     TRANSACTION_ID, COMPANY_NUMBER), e.getMessage());
 
         }

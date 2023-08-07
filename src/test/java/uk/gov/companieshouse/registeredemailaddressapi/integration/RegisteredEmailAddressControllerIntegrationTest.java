@@ -6,20 +6,24 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
 import uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
+import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 
 import static java.lang.String.format;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
 import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
 
@@ -39,6 +43,9 @@ class RegisteredEmailAddressControllerIntegrationTest {
     protected TransactionService transactionService;
 
     @MockBean
+    protected PrivateDataRetrievalService privateDataRetrievalService;
+
+    @MockBean
     protected UserAuthenticationInterceptor userAuthenticationInterceptor;
 
 
@@ -54,6 +61,9 @@ class RegisteredEmailAddressControllerIntegrationTest {
         when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
         when(registeredEmailAddressRepository.insert(any(RegisteredEmailAddressDAO.class)))
                 .thenReturn(registeredEmailAddressDAO);
+
+        RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(email);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(any())).thenReturn(emailResponse);
 
         mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
@@ -103,6 +113,33 @@ class RegisteredEmailAddressControllerIntegrationTest {
     }
 
     @Test
+    void testCreateRegisteredEmailFailureNoExistingEmailAddress() throws Exception {
+        String email = "Test@Test.com";
+        Transaction transaction = helper.generateTransaction();
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(email);
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = helper
+                .generateRegisteredEmailAddressDAO(email, transaction.getId());
+
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(registeredEmailAddressRepository.insert(any(RegisteredEmailAddressDAO.class)))
+                .thenReturn(registeredEmailAddressDAO);
+
+        RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(null);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(any())).thenReturn(emailResponse);
+
+        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456")
+                        .content(helper.writeToJson(registeredEmailAddressDTO)))
+
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Transaction id: ")))
+                .andExpect(content().string(containsString("; company number: ")))
+                .andExpect(content().string(containsString(" has no existing Registered Email Address")));
+    }
+
+    @Test
     void testUpdateRegisteredEmailAddressSuccessfulTest() throws Exception {
 
 
@@ -119,6 +156,9 @@ class RegisteredEmailAddressControllerIntegrationTest {
                 .thenReturn(registeredEmailAddressDAO);
         when(registeredEmailAddressRepository.save(any(RegisteredEmailAddressDAO.class)))
                 .thenReturn(registeredEmailAddressDAO);
+
+        RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(email);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(any())).thenReturn(emailResponse);
 
         mvc.perform(put("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
@@ -157,6 +197,35 @@ class RegisteredEmailAddressControllerIntegrationTest {
                                 transaction.getId())));
     }
 
+
+    @Test
+    void testUpdateRegisteredEmailFailureNoExistingEmailAddress() throws Exception {
+        String email = "UpdateTest@Test.com";
+        Transaction transaction = helper.generateTransaction();
+        transaction.setStatus(OPEN);
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(email);
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = helper
+                .generateRegisteredEmailAddressDAO(email, transaction.getId());
+
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(registeredEmailAddressRepository.findByTransactionId(transaction.getId()))
+                .thenReturn(registeredEmailAddressDAO);
+        when(registeredEmailAddressRepository.save(any(RegisteredEmailAddressDAO.class)))
+                .thenReturn(registeredEmailAddressDAO);
+
+        RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(null);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(any())).thenReturn(emailResponse);
+
+        mvc.perform(put("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456").content(helper.writeToJson(registeredEmailAddressDTO)))
+
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Transaction id: ")))
+                .andExpect(content().string(containsString("; company number: ")))
+                .andExpect(content().string(containsString(" has no existing Registered Email Address")));
+    }
 
 
     // Test ValidationStatus Endpoints

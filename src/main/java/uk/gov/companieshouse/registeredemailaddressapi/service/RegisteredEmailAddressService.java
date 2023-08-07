@@ -57,7 +57,7 @@ public class RegisteredEmailAddressService {
         ApiLogger.debugContext(requestId, " -  createRegisteredEmailAddress(...)");
 
         if (companyHasNoExistingEmailAddress(transaction.getCompanyNumber())) {
-            String message = format("Transaction id: %s; company %s has no existing Registered Email Address",
+            String message = format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                     transaction.getId(), transaction.getCompanyNumber());
             ApiLogger.infoContext(requestId, message);
             throw new ServiceException(message);
@@ -113,7 +113,7 @@ public class RegisteredEmailAddressService {
                 var registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
 
                 if (companyHasNoExistingEmailAddress(transaction.getCompanyNumber())) {
-                    String message = format("Transaction id: %s; company %s has no existing Registered Email Address",
+                    String message = format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                             transaction.getId(), transaction.getCompanyNumber());
                     ApiLogger.infoContext(requestId, message);
                     throw new ServiceException(message);
