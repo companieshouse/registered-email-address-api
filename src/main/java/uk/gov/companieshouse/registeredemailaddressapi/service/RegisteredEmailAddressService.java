@@ -33,6 +33,8 @@ public class RegisteredEmailAddressService {
     private final TransactionService transactionService;
     private final ValidationService validationService;
 
+    private final String REFERENCE = "UpdateRegisteredEmailAddressReference_%s";
+
     public RegisteredEmailAddressService(RegisteredEmailAddressMapper registeredEmailAddressMapper, RegisteredEmailAddressRepository registeredEmailAddressRepository, TransactionService transactionService, ValidationService validationService) {
         this.registeredEmailAddressMapper = registeredEmailAddressMapper;
         this.registeredEmailAddressRepository = registeredEmailAddressRepository;
@@ -74,11 +76,11 @@ public class RegisteredEmailAddressService {
 
         // create the Resource to be added to the Transaction (includes various links to the resource)
         Resource registeredEmailAddressResource = createRegisteredEmailAddressTransactionResource(submissionUri);
-        
+
         // Update company name set on the transaction and add a link to newly created Registered Email address
         // submission (aka resource) to the transaction (and potentially also a link for the 'resume' journey)
         updateTransactionWithLinks(transaction,
-                submissionUri, registeredEmailAddressResource, requestId);
+                submissionUri, registeredEmailAddressResource, requestId, createdRegisteredEmailAddress.getId());
 
         ApiLogger.infoContext(requestId, format("Registered Email address Submission created for transaction id: %s with registered email address submission id: %s",
                 transaction.getId(), submissionId));
@@ -164,7 +166,7 @@ public class RegisteredEmailAddressService {
         var submission = registeredEmailAddressRepository.findById(submissionId);
         if (submission.isPresent()) {
             var registeredEmailAddressSubmissionDao = submission.get();
-            ApiLogger.info(String.format("%s: Registered Email Address Submission found. About to return", registeredEmailAddressSubmissionDao.getId()));
+            ApiLogger.info(format("%s: Registered Email Address Submission found. About to return", registeredEmailAddressSubmissionDao.getId()));
             return Optional.of(registeredEmailAddressMapper.daoToDto(registeredEmailAddressSubmissionDao));
         } else {
             return Optional.empty();
@@ -215,9 +217,11 @@ public class RegisteredEmailAddressService {
     private void updateTransactionWithLinks(Transaction transaction,
                                             String submissionUri,
                                             Resource resource,
-                                            String loggingContext) throws ServiceException {
+                                            String loggingContext,
+                                            String objectId) throws ServiceException {
 
         transaction.setResources(Collections.singletonMap(submissionUri, resource));
+        transaction.setReference(format(REFERENCE, objectId));
         transactionService.updateTransaction(transaction, loggingContext);
     }
 
