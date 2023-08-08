@@ -34,11 +34,6 @@ public class PrivateDataRetrievalService {
                     .execute()
                     .getData();
 
-            if (registeredEmailAddressJson != null && registeredEmailAddressJson.getRegisteredEmailAddress() != null) {
-                ApiLogger.info(String.format("Retrieved registered email address %s for Company Number %s",
-                        registeredEmailAddressJson.getRegisteredEmailAddress(), companyNumber));
-            }
-
             return registeredEmailAddressJson;
         } catch (ApiErrorResponseException e) {
             if (e.getStatusCode() == HttpServletResponse.SC_NOT_FOUND) {

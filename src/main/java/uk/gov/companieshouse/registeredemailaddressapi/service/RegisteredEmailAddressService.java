@@ -180,18 +180,22 @@ public class RegisteredEmailAddressService {
 
     //Private Methods
 
-    private void checkCompanyHasExistingRegisteredEmailAddress(Transaction transaction, String requestId) throws ServiceException {
+    private boolean checkCompanyHasExistingRegisteredEmailAddress(Transaction transaction, String requestId) throws ServiceException {
         ApiLogger.info(String.format("Check Registered Email Address exists for %s", transaction.getCompanyNumber()));
         var registeredEmailAddressJson = privateDataRetrievalService.getRegisteredEmailAddress(transaction.getCompanyNumber());
-        if (registeredEmailAddressJson == null || registeredEmailAddressJson.getRegisteredEmailAddress().isEmpty()
-                || registeredEmailAddressJson.getRegisteredEmailAddress() == null) {
-            String message = format("Transaction id: %s; company number: %s has no existing Registered Email Address",
-                    transaction.getId(), transaction.getCompanyNumber());
-            ApiLogger.infoContext(requestId, message);
-            throw new ServiceException(message);
+
+        if (registeredEmailAddressJson != null && registeredEmailAddressJson.getRegisteredEmailAddress() != null) {
+            if (!registeredEmailAddressJson.getRegisteredEmailAddress().isEmpty()) {
+                ApiLogger.info(String.format("Retrieved registered email address %s for Company Number %s",
+                        registeredEmailAddressJson.getRegisteredEmailAddress(), transaction.getCompanyNumber()));
+                return true;
+            }
         }
-        ApiLogger.info(String.format("Registered Email Address for %s is %s",
-                transaction.getCompanyNumber(), registeredEmailAddressJson.getRegisteredEmailAddress()));
+        String message = format("Transaction id: %s; company number: %s has no existing Registered Email Address",
+                transaction.getId(), transaction.getCompanyNumber());
+        ApiLogger.infoContext(requestId, message);
+        throw new ServiceException(message);
+
     }
     private void checkHasExistingReaSubmisson(Transaction transaction, String requestId) throws ServiceException {
         if(transaction.getResources() != null && transaction.getResources().entrySet().stream().anyMatch(resourceEntry ->
