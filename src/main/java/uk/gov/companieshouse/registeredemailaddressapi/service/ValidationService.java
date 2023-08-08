@@ -52,7 +52,7 @@ public class ValidationService {
         } else {
             ApiLogger.infoContext(requestId, String.format("Validation Unsuccessful for TransactionId %s, return errors",
                     registeredEmailAddress.getTransactionId()));
-            String errorsAsJsonString = convertErrorsToJsonString(validationErrors);
+            var errorsAsJsonString = convertErrorsToJsonString(validationErrors);
             validationStatus.setValid(false);
             var errors = new ValidationStatusError[1];
             var error = new ValidationStatusError();

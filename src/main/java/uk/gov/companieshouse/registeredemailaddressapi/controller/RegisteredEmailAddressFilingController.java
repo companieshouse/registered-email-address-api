@@ -11,7 +11,6 @@ import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import java.util.HashMap;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_KEY;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_ID_KEY;
 
 import org.springframework.beans.factory.annotation.Autowired;

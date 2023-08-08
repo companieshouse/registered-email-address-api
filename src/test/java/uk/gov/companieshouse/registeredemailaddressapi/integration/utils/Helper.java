@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressData;
@@ -20,6 +21,11 @@ public class Helper {
         String id = UUID.randomUUID().toString();
         transaction.setId(id);
         return transaction;
+    }
+    public RegisteredEmailAddressJson generateRegisteredEmailAddressJson(String companyEmail) {
+        RegisteredEmailAddressJson response = new RegisteredEmailAddressJson();
+        response.setRegisteredEmailAddress(companyEmail);
+        return response;
     }
     public RegisteredEmailAddressDTO generateRegisteredEmailAddressDTO(String email){
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
