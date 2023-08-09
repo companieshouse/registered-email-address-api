@@ -36,7 +36,7 @@ public class PrivateDataRetrievalService {
 
             var internalApiClient = apiClientService.getInternalApiClient();
             internalApiClient.setBasePath(oracleQueryApiUrl);
-            RegisteredEmailAddressJson registeredEmailAddressJson = apiClientService.getInternalApiClient()
+            RegisteredEmailAddressJson registeredEmailAddressJson = internalApiClient
                     .privateCompanyResourceHandler()
                     .getCompanyRegisteredEmailAddress(String.format(REGISTERED_EMAIL_ADDRESS_URI_SUFFIX, companyNumber))
                     .execute()
