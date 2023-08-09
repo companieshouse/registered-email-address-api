@@ -21,9 +21,9 @@ public class RegisteredEmailAddressFilingController {
     // controller logging constant(s)
     private static final String GET_REA_FILINGS = "- Get REA filings request - ";
 
-    @Autowired
     private final RegisteredEmailAddressFilingService registeredEmailAddressFilingService;
 
+    @Autowired
     public RegisteredEmailAddressFilingController(RegisteredEmailAddressFilingService registeredEmailAddressFilingService) {
         this.registeredEmailAddressFilingService = registeredEmailAddressFilingService;
     }

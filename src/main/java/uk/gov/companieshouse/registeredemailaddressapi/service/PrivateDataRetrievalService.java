@@ -2,7 +2,10 @@ package uk.gov.companieshouse.registeredemailaddressapi.service;
 
 import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
@@ -10,31 +13,37 @@ import uk.gov.companieshouse.registeredemailaddressapi.client.ApiClientService;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
-@Component
+@Service
 public class PrivateDataRetrievalService {
 
     private static final String COMPANY_NUMBER = "company_number";
-    private final ApiClientService apiClientService;
+    private static final String REGISTERED_EMAIL_ADDRESS_URI_SUFFIX = "/company/%s/registered-email-address";
 
-    public PrivateDataRetrievalService(ApiClientService apiClientService) {
-        this.apiClientService = apiClientService;
-    }
+    @Autowired
+    private ApiClientService apiClientService;
+
+    @Value("${ORACLE_QUERY_API_URL}")
+    private String oracleQueryApiUrl;
 
     public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber)
             throws ServiceException {
 
         var logMap = new HashMap<String, Object>();
-        logMap.put(COMPANY_NUMBER, companyNumber);
-        ApiLogger.info("Retrieving Registered Email Address for Company Number ", logMap);
-
         try {
+            logMap.put(COMPANY_NUMBER, companyNumber);
+            ApiLogger.info("Retrieving Registered Email Address for Company Number ", logMap);
+
+            var internalApiClient = apiClientService.getInternalApiClient();
+            internalApiClient.setBasePath(oracleQueryApiUrl);
             RegisteredEmailAddressJson registeredEmailAddressJson = apiClientService.getInternalApiClient()
                     .privateCompanyResourceHandler()
-                    .getCompanyRegisteredEmailAddress("/company/" + companyNumber + "/registered-email-address")
+                    .getCompanyRegisteredEmailAddress(String.format(REGISTERED_EMAIL_ADDRESS_URI_SUFFIX, companyNumber))
                     .execute()
                     .getData();
 
+            ApiLogger.info("Successfully retrieved Registered Email Address from database", logMap);
             return registeredEmailAddressJson;
+
         } catch (ApiErrorResponseException e) {
             if (e.getStatusCode() == HttpServletResponse.SC_NOT_FOUND) {
                 ApiLogger.info("No Registered EmailAddress found for Company "+companyNumber, logMap);

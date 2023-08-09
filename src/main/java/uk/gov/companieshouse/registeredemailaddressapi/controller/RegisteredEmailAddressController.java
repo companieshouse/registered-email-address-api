@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.registeredemailaddressapi.controller;
 
 import com.google.api.client.util.Maps;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -26,6 +27,7 @@ public class RegisteredEmailAddressController {
 
     private final RegisteredEmailAddressService registeredEmailAddressService;
 
+    @Autowired
     public RegisteredEmailAddressController(RegisteredEmailAddressService registeredEmailAddressService) {
         this.registeredEmailAddressService = registeredEmailAddressService;
     }
