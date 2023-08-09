@@ -91,7 +91,9 @@ class RegisteredEmailAddressServiceTest {
 
         String submissionUri = String.format("/transactions/%s/registered-email-address", transaction.getId());
 
+        String expectedReference = String.format("UpdateRegisteredEmailAddressReference_%s", response.getId());
         Transaction transactionSent = transactionApiCaptor.getValue();
+        assertEquals(expectedReference, transactionSent.getReference());
         assertEquals(submissionUri, transactionSent.getResources().get(submissionUri).getLinks().get("resource"));
         assertEquals(submissionUri + "/validation-status", transactionSent.getResources()
                 .get(submissionUri).getLinks().get("validation_status"));
