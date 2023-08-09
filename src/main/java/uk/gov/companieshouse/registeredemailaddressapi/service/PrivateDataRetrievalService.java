@@ -32,6 +32,7 @@ public class PrivateDataRetrievalService {
         try {
             logMap.put(COMPANY_NUMBER, companyNumber);
             ApiLogger.info("Retrieving Registered Email Address for Company Number ", logMap);
+            ApiLogger.debug("oracleQueryApiUrl : " +  oracleQueryApiUrl, logMap);
 
             var internalApiClient = apiClientService.getInternalApiClient();
             internalApiClient.setBasePath(oracleQueryApiUrl);
@@ -45,6 +46,8 @@ public class PrivateDataRetrievalService {
             return registeredEmailAddressJson;
 
         } catch (ApiErrorResponseException e) {
+            ApiLogger.error("Error Retrieving Registered Email Address for Company ", e, logMap);
+
             if (e.getStatusCode() == HttpServletResponse.SC_NOT_FOUND) {
                 ApiLogger.info("No Registered EmailAddress found for Company "+companyNumber, logMap);
                 return null;
