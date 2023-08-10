@@ -1,6 +1,3 @@
-
-
-
 #!/bin/bash
 #
 # Start script for registered-email-address-api
