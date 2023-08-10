@@ -6,9 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
 import uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
@@ -20,7 +20,6 @@ import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionServic
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -75,7 +74,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
     }
 
     @Test
-    void testCreateRegisteredEmailAddressFailureTest() throws Exception {
+    void testCreateRegisteredEmailAddressEmptyEmailFailureTest() throws Exception {
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(null);
         Transaction transaction = helper.generateTransaction();
@@ -133,12 +132,45 @@ class RegisteredEmailAddressControllerIntegrationTest {
                         .header("X-Request-Id", "123456")
                         .content(helper.writeToJson(registeredEmailAddressDTO)))
 
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isForbidden())
                 .andExpect(content().string(containsString("Transaction id: ")))
                 .andExpect(content().string(containsString("; company number: ")))
                 .andExpect(content().string(containsString(" has no existing Registered Email Address")));
     }
 
+    @Test
+    void testCreateRegisteredEmailFailureSubmissionAlreadyExistsAddress() throws Exception {
+        String email = "Test@Test.com";
+        Transaction transaction = helper.generateTransaction();
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(email);
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = helper
+                .generateRegisteredEmailAddressDAO(email, transaction.getId());
+
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(registeredEmailAddressRepository.insert(any(RegisteredEmailAddressDAO.class)))
+                .thenReturn(registeredEmailAddressDAO);
+
+        RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(email);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(any())).thenReturn(emailResponse);
+
+        // Create an existing submission
+        mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456").content(helper.writeToJson(registeredEmailAddressDTO)));
+
+        // Test the failure case
+        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456")
+                        .content(helper.writeToJson(registeredEmailAddressDTO)))
+
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString("Transaction id: ")))
+                .andExpect(content().string(containsString(" has an existing Registered Email Address submission")));
+    }
+
+    //Test Update End points
     @Test
     void testUpdateRegisteredEmailAddressSuccessfulTest() throws Exception {
 
@@ -169,7 +201,6 @@ class RegisteredEmailAddressControllerIntegrationTest {
 
     }
 
-    //Test Update End points
     @Test
     void testUpdateRegisteredEmailAddressIncorrectStatusTest() throws Exception {
 
@@ -197,6 +228,28 @@ class RegisteredEmailAddressControllerIntegrationTest {
                                 transaction.getId())));
     }
 
+    @Test
+    void testUpdateRegisteredEmailAddressTransactionNotFound() throws Exception {
+
+
+        String email = "UpdateTest@Test.com";
+        String transactionId = "xxxxx-xxxxx-xxxxx";
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(email);
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = helper
+                .generateRegisteredEmailAddressDAO(email, transactionId);
+
+        when(transactionService.getTransaction(any(), any(), any())).thenThrow(new ServiceException("Error Retrieving Transaction " + transactionId));
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(registeredEmailAddressRepository.save(any(RegisteredEmailAddressDAO.class)))
+                .thenReturn(registeredEmailAddressDAO);
+
+        mvc.perform(put("/transactions/" + transactionId + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456").content(helper.writeToJson(registeredEmailAddressDTO)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$")
+                        .value("Error Retrieving Transaction " + transactionId));
+    }
 
     @Test
     void testUpdateRegisteredEmailFailureNoExistingEmailAddress() throws Exception {
@@ -221,7 +274,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
                         .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456").content(helper.writeToJson(registeredEmailAddressDTO)))
 
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isForbidden())
                 .andExpect(content().string(containsString("Transaction id: ")))
                 .andExpect(content().string(containsString("; company number: ")))
                 .andExpect(content().string(containsString(" has no existing Registered Email Address")));

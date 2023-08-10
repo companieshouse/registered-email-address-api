@@ -8,7 +8,9 @@ import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NoExistingEmailAddressException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
@@ -66,7 +68,7 @@ class RegisteredEmailAddressServiceTest {
     private ArgumentCaptor<Transaction> transactionApiCaptor;
 
     @Test
-    void testCreateRegisteredEmailAddressIsSuccessful() throws ServiceException {
+    void testCreateRegisteredEmailAddressIsSuccessful() throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException {
         Transaction transaction = buildTransaction();
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = buildRegisteredEmailAddressResponsesDTO();
@@ -118,6 +120,7 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
+            assertEquals(NoExistingEmailAddressException.class, e.getClass());
             assertEquals(String.format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                             TRANSACTION_ID, COMPANY_NUMBER), e.getMessage());
         }
@@ -146,6 +149,7 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
+            assertEquals(SubmissionAlreadyExistsException.class, e.getClass());
             assertEquals(e.getMessage(),
                     String.format("Transaction id: %s has an existing Registered Email Address submission",
                             TRANSACTION_ID));
@@ -154,7 +158,7 @@ class RegisteredEmailAddressServiceTest {
     }
 
     @Test
-    void testUpdateRegisteredEmailAddressIsSuccessful() throws ServiceException, SubmissionNotFoundException {
+    void testUpdateRegisteredEmailAddressIsSuccessful() throws ServiceException, SubmissionNotFoundException, NoExistingEmailAddressException {
         Transaction transaction = buildTransaction();
         transaction.setStatus(OPEN);
 
@@ -216,6 +220,7 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
+            assertEquals(NoExistingEmailAddressException.class, e.getClass());
             assertEquals(format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                     TRANSACTION_ID, COMPANY_NUMBER), e.getMessage());
 
@@ -234,6 +239,7 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
+            assertEquals(ServiceException.class, e.getClass());
             assertEquals(e.getMessage(),
                     format("Transaction %s can only be edited when status is %s ",
                             transaction.getId(),
@@ -274,9 +280,10 @@ class RegisteredEmailAddressServiceTest {
             registeredEmailAddressService
                     .getValidationStatus(TRANSACTION_ID, REQUEST_ID);
             fail();
-        } catch (Exception ex) {
+        } catch (Exception e) {
+            assertEquals(SubmissionNotFoundException.class, e.getClass());
             assertEquals(String.format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID),
-                    ex.getMessage());
+                    e.getMessage());
 
         }
 
@@ -313,8 +320,9 @@ class RegisteredEmailAddressServiceTest {
         try {
             registeredEmailAddressService.getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID);
             fail();
-        } catch (Exception ex) {
-            assertEquals(format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID), ex.getMessage());
+        } catch (Exception e) {
+            assertEquals(SubmissionNotFoundException.class, e.getClass());
+            assertEquals(format("Registered Email Address for TransactionId : %s Not Found", TRANSACTION_ID), e.getMessage());
         }
 
         verify(registeredEmailAddressRepository, times(1)).findByTransactionId(TRANSACTION_ID);
