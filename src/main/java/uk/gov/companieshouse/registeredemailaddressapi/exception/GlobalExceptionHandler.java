@@ -38,9 +38,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
+    @ExceptionHandler(SubmissionAlreadyExistsException.class)
+    public ResponseEntity<Object> handleSubmissionAlreadyExistsException(Exception ex, WebRequest webRequest) {
+
+        return  ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NoExistingEmailAddressException.class)
+    public ResponseEntity<Object> handleNoExistingEmailAddressException(Exception ex, WebRequest webRequest) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
     @ExceptionHandler(SubmissionNotFoundException.class)
-    public ResponseEntity<Object> handleSubmissionException(Exception ex, WebRequest webRequest) {
-        logException(ex, webRequest);
+    public ResponseEntity<Object> handleSubmissionNotFoundException(Exception ex, WebRequest webRequest) {
 
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
@@ -62,13 +73,13 @@ public class GlobalExceptionHandler {
     private void logException(Exception ex, WebRequest webRequest) {
         String context = webRequest.getHeader(ERIC_REQUEST_ID_KEY);
         String sanitisedExceptionMessage = truncate(Encode.forJava(ex.getMessage()));
-        String sanitisedStackTrace = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ex)));
-        String sanitisedRootCause = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex))));
+        // String sanitisedStackTrace = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ex)));
+        // String sanitisedRootCause = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex))));
 
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put("error", ex.getClass());
-        logMap.put("stackTrace", sanitisedStackTrace);
-        logMap.put("rootCause", sanitisedRootCause);
+        // logMap.put("stackTrace", sanitisedStackTrace);
+        // logMap.put("rootCause", sanitisedRootCause);
 
         ApiLogger.errorContext(context, sanitisedExceptionMessage, null, logMap);
 

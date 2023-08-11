@@ -6,7 +6,9 @@ import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NoExistingEmailAddressException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
@@ -35,7 +37,7 @@ public class RegisteredEmailAddressService {
     private final ValidationService validationService;
     private final PrivateDataRetrievalService privateDataRetrievalService;
 
-    private final String REFERENCE = "UpdateRegisteredEmailAddressReference_%s";
+    private static final String TRANSACTION_REFERENCE_TEMPLATE = "UpdateRegisteredEmailAddressReference_%s";
 
     @Autowired
     public RegisteredEmailAddressService(
@@ -54,13 +56,15 @@ public class RegisteredEmailAddressService {
     public RegisteredEmailAddressResponseDTO createRegisteredEmailAddress(Transaction transaction,
                                                                   RegisteredEmailAddressDTO registeredEmailAddressDTO,
                                                                   String requestId,
-                                                                  String userId) throws ServiceException {
+                                                                  String userId) throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException {
 
         ApiLogger.debugContext(requestId, " -  createRegisteredEmailAddress(...)");
 
+        // Throws NoExistingEmailAddressException
         checkCompanyHasExistingRegisteredEmailAddress(transaction, requestId);
 
-        checkHasExistingReaSubmisson(transaction, requestId);
+        // Throws SubmissionAlreadyExistsException
+        checkHasExistingReaSubmission(transaction, requestId);
 
         var registeredEmailAddressDAO = registeredEmailAddressMapper
                 .dtoToDao(registeredEmailAddressDTO);
@@ -98,12 +102,13 @@ public class RegisteredEmailAddressService {
     public RegisteredEmailAddressResponseDTO updateRegisteredEmailAddress(Transaction transaction,
                                                                           RegisteredEmailAddressDTO registeredEmailAddressDTO,
                                                                           String requestId,
-                                                                          String userId) throws ServiceException, SubmissionNotFoundException {
+                                                                          String userId) throws ServiceException, SubmissionNotFoundException, NoExistingEmailAddressException {
 
         ApiLogger.debugContext(requestId, " -  updateRegisteredEmailAddress(...)");
             if (transaction.getStatus() != null && transaction.getStatus().equals(OPEN)) {
                 var registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
 
+                // Throws NoExistingEmailAddressException
                 checkCompanyHasExistingRegisteredEmailAddress(transaction, requestId);
 
                 if(!registeredEmailAddressDTO.getRegisteredEmailAddress().isEmpty()){
@@ -182,31 +187,31 @@ public class RegisteredEmailAddressService {
 
     //Private Methods
 
-    private boolean checkCompanyHasExistingRegisteredEmailAddress(Transaction transaction, String requestId) throws ServiceException {
-        ApiLogger.info(String.format("Check Registered Email Address exists for %s", transaction.getCompanyNumber()));
+    private void checkCompanyHasExistingRegisteredEmailAddress(Transaction transaction, String requestId) throws ServiceException, NoExistingEmailAddressException {
+        ApiLogger.infoContext(requestId, String.format("Check Registered Email Address exists for %s", transaction.getCompanyNumber()));
         var registeredEmailAddressJson = privateDataRetrievalService.getRegisteredEmailAddress(transaction.getCompanyNumber());
 
-        if (registeredEmailAddressJson != null && registeredEmailAddressJson.getRegisteredEmailAddress() != null) {
-            if (!registeredEmailAddressJson.getRegisteredEmailAddress().isEmpty()) {
-                ApiLogger.info(String.format("Retrieved registered email address %s for Company Number %s",
-                        registeredEmailAddressJson.getRegisteredEmailAddress(), transaction.getCompanyNumber()));
-                return true;
-            }
+        if (registeredEmailAddressJson != null &&
+            registeredEmailAddressJson.getRegisteredEmailAddress() != null &&
+            !registeredEmailAddressJson.getRegisteredEmailAddress().isEmpty()) {
+            ApiLogger.infoContext(requestId, String.format("Retrieved registered email address %s for Company Number %s",
+                    registeredEmailAddressJson.getRegisteredEmailAddress(), transaction.getCompanyNumber()));
+            return;
         }
         String message = format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                 transaction.getId(), transaction.getCompanyNumber());
         ApiLogger.infoContext(requestId, message);
-        throw new ServiceException(message);
+        throw new NoExistingEmailAddressException(message);
 
     }
-    private void checkHasExistingReaSubmisson(Transaction transaction, String requestId) throws ServiceException {
+    private void checkHasExistingReaSubmission(Transaction transaction, String requestId) throws SubmissionAlreadyExistsException {
         if(transaction.getResources() != null && transaction.getResources().entrySet().stream().anyMatch(resourceEntry ->
                 FILING_KIND.equals(resourceEntry.getValue().getKind()))){
-        String message = format("Transaction id: %s has an existing Registered Email Address submission",
-                transaction.getId());
-        ApiLogger.infoContext(requestId, message);
-        throw new ServiceException(message);
-    }
+            String message = format("Transaction id: %s has an existing Registered Email Address submission",
+                    transaction.getId());
+            ApiLogger.infoContext(requestId, message);
+            throw new SubmissionAlreadyExistsException(message);
+        }
     }
 
     private String generateTransactionUri(String transactionId) {
@@ -248,7 +253,7 @@ public class RegisteredEmailAddressService {
                                             String objectId) throws ServiceException {
 
         transaction.setResources(Collections.singletonMap(submissionUri, resource));
-        transaction.setReference(format(REFERENCE, objectId));
+        transaction.setReference(format(TRANSACTION_REFERENCE_TEMPLATE, objectId));
         transactionService.updateTransaction(transaction, loggingContext);
     }
 

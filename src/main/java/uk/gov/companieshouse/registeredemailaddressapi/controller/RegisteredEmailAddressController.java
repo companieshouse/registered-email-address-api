@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NoExistingEmailAddressException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
@@ -37,7 +39,7 @@ public class RegisteredEmailAddressController {
             @RequestAttribute(TRANSACTION_KEY) Transaction transaction,
             @Valid @RequestBody RegisteredEmailAddressDTO registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
-            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException {
+            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException {
 
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
@@ -60,7 +62,7 @@ public class RegisteredEmailAddressController {
             @RequestAttribute(TRANSACTION_KEY) Transaction transaction,
             @Valid @RequestBody RegisteredEmailAddressDTO registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
-            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, SubmissionNotFoundException {
+            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, SubmissionNotFoundException, NoExistingEmailAddressException {
 
         HashMap<String, Object> logMap = Maps.newHashMap();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
