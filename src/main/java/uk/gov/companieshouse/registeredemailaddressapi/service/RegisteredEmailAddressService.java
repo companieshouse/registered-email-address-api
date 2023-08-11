@@ -207,11 +207,11 @@ public class RegisteredEmailAddressService {
     private void checkHasExistingReaSubmission(Transaction transaction, String requestId) throws SubmissionAlreadyExistsException {
         if(transaction.getResources() != null && transaction.getResources().entrySet().stream().anyMatch(resourceEntry ->
                 FILING_KIND.equals(resourceEntry.getValue().getKind()))){
-        String message = format("Transaction id: %s has an existing Registered Email Address submission",
-                transaction.getId());
-        ApiLogger.infoContext(requestId, message);
-        throw new SubmissionAlreadyExistsException(message);
-    }
+            String message = format("Transaction id: %s has an existing Registered Email Address submission",
+                    transaction.getId());
+            ApiLogger.infoContext(requestId, message);
+            throw new SubmissionAlreadyExistsException(message);
+        }
     }
 
     private String generateTransactionUri(String transactionId) {
