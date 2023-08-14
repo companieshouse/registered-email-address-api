@@ -11,7 +11,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
@@ -87,7 +87,7 @@ class RegisteredEmailAddressFilingServiceTest {
     }
 
     @Test
-    void testRegisteredEmailAddressFilingFilingReturnedSuccessfully() throws SubmissionNotFoundException, IOException, URIValidationException {
+    void testRegisteredEmailAddressFilingFilingReturnedSuccessfully() throws NotFoundException, IOException, URIValidationException {
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO =
                 helper.generateRegisteredEmailAddressResponseDTO(TEST_EMAIL, UUID.randomUUID().toString());
         // mocking
@@ -107,13 +107,13 @@ class RegisteredEmailAddressFilingServiceTest {
     }
 
     @Test
-    void testRegisteredEmailAddressFilingErrorHandledSuccessfully() throws SubmissionNotFoundException {
+    void testRegisteredEmailAddressFilingErrorHandledSuccessfully() throws NotFoundException {
         // mocking
         when(registeredEmailAddressService.getRegisteredEmailAddressSubmission(SUBMISSION_ID)).thenReturn(Optional.empty());
         when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID)).thenReturn(buildRegisteredEmailAddressDAO());
 
         var submissionNotFoundException = assertThrows(
-            SubmissionNotFoundException.class,
+            NotFoundException.class,
             () -> registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction)
         );
 

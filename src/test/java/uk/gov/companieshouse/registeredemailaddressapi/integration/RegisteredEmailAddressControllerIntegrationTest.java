@@ -222,7 +222,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
         mvc.perform(put("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456").content(helper.writeToJson(registeredEmailAddressDTO)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$")
                         .value(format("Transaction %s can only be edited when status is OPEN",
                                 transaction.getId())));
