@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressFilingService;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
@@ -45,7 +45,7 @@ public class RegisteredEmailAddressFilingController {
             FilingApi registeredEmailAddressFilings = registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction);
 
             return ResponseEntity.ok(new FilingApi[]{registeredEmailAddressFilings});
-        } catch (SubmissionNotFoundException e) {
+        } catch (NotFoundException e) {
             ApiLogger.errorContext(transactionId, e.getMessage(), e, logMap);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

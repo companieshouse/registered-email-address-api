@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.controller.RegisteredEmailAddressController;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.NoExistingEmailAddressException;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.*;
 import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
@@ -80,7 +77,7 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, SubmissionNotFoundException, NoExistingEmailAddressException {
+    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, NotFoundException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, TransactionNotOpenException {
 
         when(this.registeredEmailAddressService.updateRegisteredEmailAddress(
                 transaction,
@@ -107,7 +104,7 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testGetValidationStatusTest() throws SubmissionNotFoundException {
+    void testGetValidationStatusTest() throws NotFoundException {
         ValidationStatusResponse validationStatusResponse = new ValidationStatusResponse();
         validationStatusResponse.setValid(true);
 
@@ -127,7 +124,7 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testGetRegisteredEmailAddressTest() throws SubmissionNotFoundException {
+    void testGetRegisteredEmailAddressTest() throws NotFoundException {
 
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO =
                 helper.generateRegisteredEmailAddressResponseDTO("test@Test.com", UUID.randomUUID().toString());

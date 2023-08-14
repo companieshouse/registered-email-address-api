@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.exception;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -50,7 +49,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
-    @ExceptionHandler(SubmissionNotFoundException.class)
+    @ExceptionHandler(TransactionNotOpenException.class)
+    public ResponseEntity<Object> handleTransactionNotOpenException(Exception ex, WebRequest webRequest) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleSubmissionNotFoundException(Exception ex, WebRequest webRequest) {
 
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -73,13 +78,9 @@ public class GlobalExceptionHandler {
     private void logException(Exception ex, WebRequest webRequest) {
         String context = webRequest.getHeader(ERIC_REQUEST_ID_KEY);
         String sanitisedExceptionMessage = truncate(Encode.forJava(ex.getMessage()));
-        // String sanitisedStackTrace = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ex)));
-        // String sanitisedRootCause = truncate(Encode.forJava(ExceptionUtils.getStackTrace(ExceptionUtils.getRootCause(ex))));
 
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put("error", ex.getClass());
-        // logMap.put("stackTrace", sanitisedStackTrace);
-        // logMap.put("rootCause", sanitisedRootCause);
 
         ApiLogger.errorContext(context, sanitisedExceptionMessage, null, logMap);
 

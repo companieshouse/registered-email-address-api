@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.NoExistingEmailAddressException;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.*;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
@@ -62,7 +59,7 @@ public class RegisteredEmailAddressController {
             @RequestAttribute(TRANSACTION_KEY) Transaction transaction,
             @Valid @RequestBody RegisteredEmailAddressDTO registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
-            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, SubmissionNotFoundException, NoExistingEmailAddressException {
+            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, NotFoundException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, TransactionNotOpenException {
 
         HashMap<String, Object> logMap = Maps.newHashMap();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
@@ -83,7 +80,7 @@ public class RegisteredEmailAddressController {
     @GetMapping
     public ResponseEntity<RegisteredEmailAddressResponseDTO> getRegisteredEmailAddressFilingSubmission(
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
-            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) throws SubmissionNotFoundException {
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) throws NotFoundException {
 
         ApiLogger.debugContext(requestId, "Called getRegisteredEmailAddress(...)");
 
@@ -101,7 +98,7 @@ public class RegisteredEmailAddressController {
     @GetMapping("/validation-status")
     public ResponseEntity<ValidationStatusResponse> getValidationStatus(
             @PathVariable(TRANSACTION_ID_KEY) String transactionId,
-            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) throws SubmissionNotFoundException {
+            @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) throws NotFoundException {
 
         ApiLogger.debugContext(requestId, "Called getValidationStatus(...)");
 

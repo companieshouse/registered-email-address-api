@@ -13,7 +13,7 @@ import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.controller.RegisteredEmailAddressFilingController;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressFilingService;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
 
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +46,7 @@ class RegisteredEmailAddressFilingControllerTest {
     }
 
     @Test
-    void testCreateRegisteredEmailAddressSuccessTest() throws SubmissionNotFoundException {
+    void testCreateRegisteredEmailAddressSuccessTest() throws NotFoundException {
        // mocking
        FilingApi filing = buildFiling();
        when(registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction)).thenReturn(buildFiling());
@@ -63,8 +63,8 @@ class RegisteredEmailAddressFilingControllerTest {
     }
 
     @Test
-    void testGCreateRegisteredEmailAddressSubmissionNotFound() throws SubmissionNotFoundException {
-        when(registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction)).thenThrow(SubmissionNotFoundException.class);
+    void testGCreateRegisteredEmailAddressSubmissionNotFound() throws NotFoundException {
+        when(registeredEmailAddressFilingService.generateRegisteredEmailAddressFilings(transaction)).thenThrow(NotFoundException.class);
 
         var createRegisteredEmailAddressFilingResponse = registeredEmailAddressFilingController.getRegisteredEmailAddressFilings(
             transaction,
