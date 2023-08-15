@@ -1,12 +1,10 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
-import com.google.gson.GsonBuilder;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
-import uk.gov.companieshouse.service.rest.err.Errors;
 
 import java.util.ArrayList;
 
