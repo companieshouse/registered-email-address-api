@@ -304,6 +304,28 @@ class RegisteredEmailAddressControllerIntegrationTest {
     }
 
     @Test
+    void testGetValidationStatusTest_invalid() throws Exception {
+        Transaction transaction = helper.generateTransaction();
+        String email = "TestTest.com";
+        RegisteredEmailAddressDAO registeredEmailAddressDAO = helper
+                .generateRegisteredEmailAddressDAO(email, transaction.getId());
+
+
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(registeredEmailAddressRepository.findByTransactionId(transaction.getId()))
+                .thenReturn(registeredEmailAddressDAO);
+
+        this.mvc.perform(get("/transactions/" + transaction.getId() + "/registered-email-address/validation-status")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errors").isNotEmpty())
+                .andExpect(jsonPath("$.is_valid").value(false));
+
+    }
+
+    @Test
     void testGetValidationStatusFailureTest() throws Exception {
         Transaction transaction = helper.generateTransaction();
 
