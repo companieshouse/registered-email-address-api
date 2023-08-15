@@ -16,7 +16,7 @@ public class ValidationUtils {
 
     public static boolean isNotNull(Object toTest, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
         if (toTest == null) {
-            setErrorMsgToLocation(errs, qualifiedFieldName, NOT_NULL_ERROR_MESSAGE.replace("%s", qualifiedFieldName));
+            setErrorMsg(errs, qualifiedFieldName, NOT_NULL_ERROR_MESSAGE.replace("%s", qualifiedFieldName));
             ApiLogger.infoContext(loggingContext , qualifiedFieldName + " Field is null");
             return false;
         }
@@ -28,18 +28,18 @@ public class ValidationUtils {
         var matcher = pattern.matcher(email);
 
         if (!matcher.matches()) {
-            setErrorMsgToLocation(errs, qualifiedFieldName, String.format(INVALID_EMAIL_ERROR_MESSAGE, qualifiedFieldName));
+            setErrorMsg(errs, qualifiedFieldName, String.format(INVALID_EMAIL_ERROR_MESSAGE, qualifiedFieldName));
             ApiLogger.infoContext(loggingContext, "Email address is not in the correct format for " + qualifiedFieldName);
         }
     }
     public static void isEmailAddressStatementAccepted(boolean acceptedEmailAddressStatement, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
         if (!acceptedEmailAddressStatement) {
-            setErrorMsgToLocation(errs, qualifiedFieldName, String.format(ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE, qualifiedFieldName));
+            setErrorMsg(errs, qualifiedFieldName, String.format(ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE, qualifiedFieldName));
             ApiLogger.infoContext(loggingContext, "The " + qualifiedFieldName + " must be True.");
         }
     }
 
-    public static void setErrorMsgToLocation(ArrayList<ValidationStatusError> errs, String qualifiedFieldName, String msg){
+    public static void setErrorMsg(ArrayList<ValidationStatusError> errs, String qualifiedFieldName, String msg){
         ValidationStatusError validationStatusError = new ValidationStatusError();
         validationStatusError.setError(msg);
         validationStatusError.setLocation(qualifiedFieldName);
