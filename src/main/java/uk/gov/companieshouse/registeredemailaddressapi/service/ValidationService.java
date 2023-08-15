@@ -1,12 +1,12 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
-import com.google.gson.GsonBuilder;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
-import uk.gov.companieshouse.service.rest.err.Errors;
+
+import java.util.ArrayList;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.*;
 
@@ -15,7 +15,7 @@ public class ValidationService {
 
     public ValidationStatusResponse validateRegisteredEmailAddress(RegisteredEmailAddressDAO registeredEmailAddress,
                                                                    String requestId) {
-        var errors = new Errors();
+        var errors = new ArrayList<ValidationStatusError>();
         if (isNotNull(registeredEmailAddress.getData(),
                 "registered_email_address",
                 errors,
@@ -39,34 +39,23 @@ public class ValidationService {
         return formatValidationStatusResponse(errors, registeredEmailAddress, requestId);
     }
 
-    private ValidationStatusResponse formatValidationStatusResponse(Errors validationErrors,
+    private ValidationStatusResponse formatValidationStatusResponse(ArrayList<ValidationStatusError> validationErrors,
                                                                     RegisteredEmailAddressDAO registeredEmailAddress,
                                                                     String requestId) {
         var validationStatus = new ValidationStatusResponse();
 
-        if (!validationErrors.hasErrors()) {
+        if (validationErrors.isEmpty()) {
             ApiLogger.infoContext(requestId, String.format("Validation Successful for TransactionId %s",
                     registeredEmailAddress.getTransactionId()));
-
             validationStatus.setValid(true);
         } else {
+
             ApiLogger.infoContext(requestId, String.format("Validation Unsuccessful for TransactionId %s, return errors",
                     registeredEmailAddress.getTransactionId()));
-            var errorsAsJsonString = convertErrorsToJsonString(validationErrors);
             validationStatus.setValid(false);
-            var errors = new ValidationStatusError[1];
-            var error = new ValidationStatusError();
-            error.setError(errorsAsJsonString);
-            errors[0] = error;
-
-            validationStatus.setValidationStatusError(errors);
+            ValidationStatusError[] validationStatusErrors = validationErrors.toArray(new ValidationStatusError[0]);
+            validationStatus.setValidationStatusError(validationStatusErrors);
         }
         return validationStatus;
     }
-
-    private static String convertErrorsToJsonString(Errors validationErrors) {
-        var gson = new GsonBuilder().create();
-        return gson.toJson(validationErrors);
-    }
-
 }
