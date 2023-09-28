@@ -10,6 +10,10 @@ import java.io.IOException;
 @Component
 public class ApiClientService {
 
+    public ApiClient getApiKeyAuthenticatedClient() {
+        return ApiSdkManager.getSDK();
+    }
+
     public ApiClient getOauthAuthenticatedClient(String ericPassThroughHeader) throws IOException {
         return ApiSdkManager.getSDK(ericPassThroughHeader);
     }
