@@ -254,7 +254,7 @@ class RegisteredEmailAddressServiceTest {
             fail();
         } catch (Exception e) {
             assertEquals(ServiceException.class, e.getClass());
-            assertEquals(e.getMessage(), format("Transaction %s invalid", null));
+            assertEquals(e.getMessage(), format("Transaction %s invalid", "null"));
         }
     }
 
