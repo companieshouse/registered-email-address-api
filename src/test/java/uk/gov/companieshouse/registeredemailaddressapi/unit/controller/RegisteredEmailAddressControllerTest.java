@@ -50,7 +50,7 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testCreateRegisteredEmailAddressSuccessTest() throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException {
+    void testCreateRegisteredEmailAddressSuccessTest() throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, CompanyNotFoundException {
 
         when(this.registeredEmailAddressService.createRegisteredEmailAddress(
                 transaction,
@@ -77,7 +77,7 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, NotFoundException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, TransactionNotOpenException {
+    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, NotFoundException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, TransactionNotOpenException, CompanyNotFoundException {
 
         when(this.registeredEmailAddressService.updateRegisteredEmailAddress(
                 transaction,

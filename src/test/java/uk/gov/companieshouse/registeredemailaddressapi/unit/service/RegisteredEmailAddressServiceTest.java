@@ -1,14 +1,42 @@
 package uk.gov.companieshouse.registeredemailaddressapi.unit.service;
 
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.*;
+import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityStatusCode;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.CompanyNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NoExistingEmailAddressException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.TransactionNotOpenException;
 import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressData;
@@ -16,22 +44,11 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseData;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
+import uk.gov.companieshouse.registeredemailaddressapi.service.EligibilityService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
-import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
 
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressServiceTest {
@@ -56,6 +73,9 @@ class RegisteredEmailAddressServiceTest {
     private ValidationService validationService;
 
     @Mock
+    private EligibilityService eligibilityService;
+
+    @Mock
     private PrivateDataRetrievalService privateDataRetrievalService;
 
     @InjectMocks
@@ -65,23 +85,32 @@ class RegisteredEmailAddressServiceTest {
     private ArgumentCaptor<Transaction> transactionApiCaptor;
 
     @Test
-    void testCreateRegisteredEmailAddressIsSuccessful() throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException {
+    void testCreateRegisteredEmailAddressIsSuccessful() throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, CompanyNotFoundException {
+        // GIVEN
+
         Transaction transaction = buildTransaction();
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = buildRegisteredEmailAddressResponsesDTO();
         RegisteredEmailAddressDAO registeredEmailAddressDAO = buildRegisteredEmailAddressDAO();
 
+        RegisteredEmailAddressJson registeredEmailAddressJson = buildRegisteredEmailAddressJson(COMPANY_EMAIL);
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenReturn(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+
         when(registeredEmailAddressMapper.dtoToDao(any())).thenReturn(registeredEmailAddressDAO);
         when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressResponseDTO);
         when(registeredEmailAddressRepository.insert(registeredEmailAddressDAO)).thenReturn(registeredEmailAddressDAO);
 
-        RegisteredEmailAddressJson registeredEmailAddressJson = buildRegisteredEmailAddressJson(COMPANY_EMAIL);
         when(privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).thenReturn(registeredEmailAddressJson);
 
         RegisteredEmailAddressResponseDTO response = registeredEmailAddressService.createRegisteredEmailAddress(transaction,
                 registeredEmailAddressDTO,
                 REQUEST_ID,
                 USER_ID);
+
+        // THEN
 
         assertEquals(SUBMISSION_ID, response.getId());
 
@@ -101,13 +130,19 @@ class RegisteredEmailAddressServiceTest {
     }
 
     @Test
-    void testCreateRegisteredEmailAddressFailsCompanyHasNoEmailAddress() throws ServiceException {
+    void testCreateRegisteredEmailAddressFailsCompanyHasNoEmailAddress() throws ServiceException, CompanyNotFoundException {
+
+        // GIVEN
 
         Transaction transaction = buildTransaction();
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
 
         RegisteredEmailAddressJson registeredEmailAddressJson = buildRegisteredEmailAddressJson(null);
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenReturn(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
         when(privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).thenReturn(registeredEmailAddressJson);
 
         try {
@@ -117,6 +152,8 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
+            // THEN
+
             assertEquals(NoExistingEmailAddressException.class, e.getClass());
             assertEquals(String.format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                             TRANSACTION_ID, COMPANY_NUMBER), e.getMessage());
@@ -125,7 +162,8 @@ class RegisteredEmailAddressServiceTest {
     }
 
     @Test
-    void testCreateRegisteredEmailAddressFailsTransactionAlreadyHasEmailAddress() throws ServiceException {
+    void testCreateRegisteredEmailAddressFailsTransactionAlreadyHasEmailAddress() throws ServiceException, CompanyNotFoundException {
+        // GIVEN
 
         Transaction transaction = buildTransaction();
         Resource resource = new Resource();
@@ -137,6 +175,10 @@ class RegisteredEmailAddressServiceTest {
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
 
         RegisteredEmailAddressJson registeredEmailAddressJson = buildRegisteredEmailAddressJson(COMPANY_EMAIL);
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenReturn(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
         when(privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).thenReturn(registeredEmailAddressJson);
 
         try {
@@ -146,6 +188,8 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
+            // THEN
+
             assertEquals(SubmissionAlreadyExistsException.class, e.getClass());
             assertEquals(e.getMessage(),
                     String.format("Transaction id: %s has an existing Registered Email Address submission",
@@ -155,7 +199,74 @@ class RegisteredEmailAddressServiceTest {
     }
 
     @Test
-    void testUpdateRegisteredEmailAddressIsSuccessful() throws ServiceException, NotFoundException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, TransactionNotOpenException {
+    void testCreateRegisteredEmailAddressFailsCompanyNotElegibleForService() throws ServiceException, CompanyNotFoundException {
+        // GIVEN
+
+        Transaction transaction = buildTransaction();
+        Resource resource = new Resource();
+        resource.setKind(FILING_KIND);
+        Map<String, Resource> resourceMap = new HashMap<>();
+        resourceMap.put("test", resource);
+        transaction.setResources(resourceMap);
+
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenReturn(EligibilityStatusCode.INVALID_COMPANY_TYPE);
+
+        try {
+            registeredEmailAddressService.createRegisteredEmailAddress(transaction,
+                    registeredEmailAddressDTO,
+                    REQUEST_ID,
+                    USER_ID);
+            fail();
+        } catch (Exception e) {
+            // THEN
+
+            assertEquals(ServiceException.class, e.getClass());
+            assertEquals(e.getMessage(),
+                    String.format("Transaction id: %s the company is not elegible for the service",
+                            TRANSACTION_ID));
+        }
+
+    }
+
+    @Test
+    void testCreateRegisteredEmailAddressFailsCompanyNotFound() throws ServiceException, CompanyNotFoundException {
+        // GIVEN
+
+        Transaction transaction = buildTransaction();
+        Resource resource = new Resource();
+        resource.setKind(FILING_KIND);
+        Map<String, Resource> resourceMap = new HashMap<>();
+        resourceMap.put("test", resource);
+        transaction.setResources(resourceMap);
+
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenThrow(CompanyNotFoundException.class);
+
+        try {
+            registeredEmailAddressService.createRegisteredEmailAddress(transaction,
+                    registeredEmailAddressDTO,
+                    REQUEST_ID,
+                    USER_ID);
+            fail();
+        } catch (Exception e) {
+            // THEN
+
+            assertEquals(CompanyNotFoundException.class, e.getClass());
+        }
+
+    }
+
+    @Test
+    void testUpdateRegisteredEmailAddressIsSuccessful() throws ServiceException, NotFoundException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, TransactionNotOpenException, CompanyNotFoundException {
+        // GIVEN
+
         Transaction transaction = buildTransaction();
         transaction.setStatus(OPEN);
 
@@ -167,11 +278,15 @@ class RegisteredEmailAddressServiceTest {
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = buildRegisteredEmailAddressResponsesDTO();
         registeredEmailAddressResponseDTO.getData().setRegisteredEmailAddress(newEmail);
 
-        when(registeredEmailAddressRepository.findByTransactionId(transaction.getId())).thenReturn(registeredEmailAddressDAO);
         registeredEmailAddressDAO.setUpdatedAt(LocalDateTime.now());
-        registeredEmailAddressDAO.getData()
-                .setRegisteredEmailAddress(newEmail);
+        registeredEmailAddressDAO.getData().setRegisteredEmailAddress(newEmail);
         registeredEmailAddressDAO.getData().setAcceptAppropriateEmailAddressStatement(false);
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenReturn(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+
+        when(registeredEmailAddressRepository.findByTransactionId(transaction.getId())).thenReturn(registeredEmailAddressDAO);
         when(registeredEmailAddressRepository.save(registeredEmailAddressDAO)).thenReturn(registeredEmailAddressDAO);
         when(registeredEmailAddressMapper.daoToDto(any())).thenReturn(registeredEmailAddressResponseDTO);
 
@@ -183,6 +298,8 @@ class RegisteredEmailAddressServiceTest {
                 REQUEST_ID,
                 USER_ID);
 
+        // THEN
+
         assertEquals(SUBMISSION_ID, response.getId());
         assertEquals(newEmail, response.getData().getRegisteredEmailAddress());
 
@@ -190,7 +307,9 @@ class RegisteredEmailAddressServiceTest {
     }
 
     @Test
-    void testUpdateRegisteredEmailAddressFailsCompanyHasNoEmailAddress() throws ServiceException {
+    void testUpdateRegisteredEmailAddressFailsCompanyHasNoEmailAddress() throws ServiceException, CompanyNotFoundException {
+        // GIVEN
+
         Transaction transaction = buildTransaction();
         transaction.setStatus(OPEN);
 
@@ -201,13 +320,17 @@ class RegisteredEmailAddressServiceTest {
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO = buildRegisteredEmailAddressResponsesDTO();
         registeredEmailAddressResponseDTO.getData().setRegisteredEmailAddress(newEmail);
 
-        when(registeredEmailAddressRepository.findByTransactionId(transaction.getId())).thenReturn(registeredEmailAddressDAO);
         registeredEmailAddressDAO.setUpdatedAt(LocalDateTime.now());
-        registeredEmailAddressDAO.getData()
-                .setRegisteredEmailAddress(newEmail);
+        registeredEmailAddressDAO.getData().setRegisteredEmailAddress(newEmail);
         registeredEmailAddressDAO.getData().setAcceptAppropriateEmailAddressStatement(false);
 
         RegisteredEmailAddressJson registeredEmailAddressJson = buildRegisteredEmailAddressJson("");
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenReturn(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
+
+        when(registeredEmailAddressRepository.findByTransactionId(transaction.getId())).thenReturn(registeredEmailAddressDAO);
         when(privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).thenReturn(registeredEmailAddressJson);
 
         try {
@@ -217,6 +340,8 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
             fail();
         } catch (Exception e) {
+            // THEN
+
             assertEquals(NoExistingEmailAddressException.class, e.getClass());
             assertEquals(format("Transaction id: %s; company number: %s has no existing Registered Email Address",
                     TRANSACTION_ID, COMPANY_NUMBER), e.getMessage());

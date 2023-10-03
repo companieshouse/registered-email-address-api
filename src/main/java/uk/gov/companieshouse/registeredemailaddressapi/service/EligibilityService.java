@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityRule;
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityStatusCode;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.model.response.CompanyValidationResponse;
@@ -19,10 +20,18 @@ public class EligibilityService {
 
     private final List<EligibilityRule<CompanyProfileApi>> eligibilityRules;
 
+    private final CompanyProfileService companyProfileService;
+
     @Autowired
-    public EligibilityService(@Qualifier("rea-update-eligibility-rules")
-                                                    List<EligibilityRule<CompanyProfileApi>> eligibilityRules){
+    public EligibilityService(@Qualifier("rea-update-eligibility-rules") List<EligibilityRule<CompanyProfileApi>> eligibilityRules, CompanyProfileService companyProfileService){
         this.eligibilityRules = eligibilityRules;
+        this.companyProfileService = companyProfileService;
+    }
+
+    public EligibilityStatusCode checkCompanyEligibility(String companyNumber) throws ServiceException, CompanyNotFoundException {
+        var companyProfile = companyProfileService.getCompanyProfile(companyNumber);
+
+        return checkCompanyEligibility(companyProfile).getEligibilityStatusCode();
     }
 
     public CompanyValidationResponse checkCompanyEligibility(CompanyProfileApi companyProfile) throws ServiceException {

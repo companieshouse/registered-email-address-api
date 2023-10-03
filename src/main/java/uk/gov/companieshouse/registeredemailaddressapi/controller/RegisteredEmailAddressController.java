@@ -36,7 +36,7 @@ public class RegisteredEmailAddressController {
             @RequestAttribute(TRANSACTION_KEY) Transaction transaction,
             @Valid @RequestBody RegisteredEmailAddressDTO registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
-            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException {
+            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, CompanyNotFoundException {
 
         HashMap<String, Object> logMap = new HashMap<>();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());
@@ -59,7 +59,7 @@ public class RegisteredEmailAddressController {
             @RequestAttribute(TRANSACTION_KEY) Transaction transaction,
             @Valid @RequestBody RegisteredEmailAddressDTO registeredEmailAddressDto,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId,
-            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, NotFoundException, NoExistingEmailAddressException, TransactionNotOpenException {
+            @RequestHeader(value = ERIC_IDENTITY) String userId) throws ServiceException, NotFoundException, NoExistingEmailAddressException, TransactionNotOpenException, CompanyNotFoundException {
 
         HashMap<String, Object> logMap = Maps.newHashMap();
         logMap.put(TRANSACTION_ID_KEY, transaction.getId());

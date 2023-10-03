@@ -32,7 +32,7 @@ public class CompanyProfileService {
             throw new ServiceException(String.format(EXCEPTION_MESSAGE, companyNumber), e);
         } catch (ApiErrorResponseException e) {
             if (HttpStatus.NOT_FOUND.value() == e.getStatusCode()) {
-                throw new CompanyNotFoundException();
+                throw new CompanyNotFoundException(String.format(EXCEPTION_MESSAGE, companyNumber), e);
             }
             var message = String.format(
                     EXCEPTION_MESSAGE_WITH_HTTP_CODE,

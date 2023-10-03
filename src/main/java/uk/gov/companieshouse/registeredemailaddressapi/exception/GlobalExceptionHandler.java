@@ -61,6 +61,12 @@ public class GlobalExceptionHandler {
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(CompanyNotFoundException.class)
+    public ResponseEntity<Object> handleCompanyNotFoundException(Exception ex, WebRequest webRequest) {
+
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<Object> handleServiceException(Exception ex, WebRequest webRequest) {
         logException(ex, webRequest);

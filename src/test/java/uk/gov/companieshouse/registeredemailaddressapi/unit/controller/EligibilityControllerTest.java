@@ -75,7 +75,7 @@ class EligibilityControllerTest {
 
     @Test
     void testCompanyNotFound() throws ServiceException, CompanyNotFoundException {
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException());
+        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException("", new Exception()));
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
         assertEquals(400, response.getStatusCodeValue());
         assertNotNull(response.getBody());
