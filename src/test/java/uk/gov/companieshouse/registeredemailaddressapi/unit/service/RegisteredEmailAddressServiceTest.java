@@ -220,7 +220,7 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
         });
 
-        assertEquals(String.format("Transaction id: %s the company is not elegible for the service", TRANSACTION_ID), exception.getMessage());
+        assertEquals(String.format("Transaction id: %s the company is not elegible for the service due to INVALID_COMPANY_TYPE", TRANSACTION_ID), exception.getMessage());
     }
 
     @Test
@@ -386,7 +386,7 @@ class RegisteredEmailAddressServiceTest {
                     USER_ID);
         });
 
-        assertEquals(String.format("Transaction id: %s the company is not elegible for the service", TRANSACTION_ID), exception.getMessage());
+        assertEquals(String.format("Transaction id: %s the company is not elegible for the service due to INVALID_COMPANY_TYPE", TRANSACTION_ID), exception.getMessage());
     }
 
     @Test

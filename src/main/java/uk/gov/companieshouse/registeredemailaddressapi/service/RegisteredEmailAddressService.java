@@ -243,7 +243,7 @@ public class RegisteredEmailAddressService {
         var companyEligibility = eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber());
 
         if (EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != companyEligibility) {
-            String message = format("Transaction id: %s the company is not elegible for the service", transaction.getId());
+            String message = format("Transaction id: %s the company is not elegible for the service due to %s", transaction.getId(), companyEligibility.name());
             ApiLogger.infoContext(requestId, message);
 
             throw new ServiceException(message);
