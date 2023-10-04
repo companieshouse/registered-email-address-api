@@ -3,6 +3,7 @@ package uk.gov.companieshouse.registeredemailaddressapi.unit.service;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -203,11 +204,6 @@ class RegisteredEmailAddressServiceTest {
         // GIVEN
 
         Transaction transaction = buildTransaction();
-        Resource resource = new Resource();
-        resource.setKind(FILING_KIND);
-        Map<String, Resource> resourceMap = new HashMap<>();
-        resourceMap.put("test", resource);
-        transaction.setResources(resourceMap);
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
 
@@ -215,21 +211,16 @@ class RegisteredEmailAddressServiceTest {
 
         when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenReturn(EligibilityStatusCode.INVALID_COMPANY_TYPE);
 
-        try {
+        // THEN
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
             registeredEmailAddressService.createRegisteredEmailAddress(transaction,
                     registeredEmailAddressDTO,
                     REQUEST_ID,
                     USER_ID);
-            fail();
-        } catch (Exception e) {
-            // THEN
+        });
 
-            assertEquals(ServiceException.class, e.getClass());
-            assertEquals(e.getMessage(),
-                    String.format("Transaction id: %s the company is not elegible for the service",
-                            TRANSACTION_ID));
-        }
-
+        assertEquals(String.format("Transaction id: %s the company is not elegible for the service", TRANSACTION_ID), exception.getMessage());
     }
 
     @Test
@@ -237,11 +228,6 @@ class RegisteredEmailAddressServiceTest {
         // GIVEN
 
         Transaction transaction = buildTransaction();
-        Resource resource = new Resource();
-        resource.setKind(FILING_KIND);
-        Map<String, Resource> resourceMap = new HashMap<>();
-        resourceMap.put("test", resource);
-        transaction.setResources(resourceMap);
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = buildRegisteredEmailAddressDTO();
 
@@ -249,18 +235,14 @@ class RegisteredEmailAddressServiceTest {
 
         when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenThrow(CompanyNotFoundException.class);
 
-        try {
+        // THEN
+
+        assertThrows(CompanyNotFoundException.class, () -> {
             registeredEmailAddressService.createRegisteredEmailAddress(transaction,
                     registeredEmailAddressDTO,
                     REQUEST_ID,
                     USER_ID);
-            fail();
-        } catch (Exception e) {
-            // THEN
-
-            assertEquals(CompanyNotFoundException.class, e.getClass());
-        }
-
+        });
     }
 
     @Test
@@ -381,6 +363,52 @@ class RegisteredEmailAddressServiceTest {
             assertEquals(ServiceException.class, e.getClass());
             assertEquals(e.getMessage(), format("Transaction %s invalid", "null"));
         }
+    }
+
+    @Test
+    void testUpdateRegisteredEmailAddressFailsCompanyNotElegibleForService() throws ServiceException, CompanyNotFoundException {
+        // GIVEN
+
+        Transaction transaction = new Transaction();
+        transaction.setId(TRANSACTION_ID);
+        transaction.setStatus(OPEN);
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenReturn(EligibilityStatusCode.INVALID_COMPANY_TYPE);
+
+        // THEN
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            registeredEmailAddressService.updateRegisteredEmailAddress(transaction,
+                    buildRegisteredEmailAddressDTO(),
+                    REQUEST_ID,
+                    USER_ID);
+        });
+
+        assertEquals(String.format("Transaction id: %s the company is not elegible for the service", TRANSACTION_ID), exception.getMessage());
+    }
+
+    @Test
+    void testUpdateRegisteredEmailAddressFailsCompanyNotFound() throws ServiceException, CompanyNotFoundException {
+        // GIVEN
+
+        Transaction transaction = new Transaction();
+        transaction.setId(TRANSACTION_ID);
+        transaction.setStatus(OPEN);
+
+        // WHEN
+
+        when(eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber())).thenThrow(CompanyNotFoundException.class);
+
+        // THEN
+
+        assertThrows(CompanyNotFoundException.class, () -> {
+            registeredEmailAddressService.updateRegisteredEmailAddress(transaction,
+                    buildRegisteredEmailAddressDTO(),
+                    REQUEST_ID,
+                    USER_ID);
+        });
     }
 
     @Test
