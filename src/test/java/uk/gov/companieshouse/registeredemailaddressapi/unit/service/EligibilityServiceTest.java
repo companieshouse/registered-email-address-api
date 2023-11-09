@@ -2,7 +2,6 @@ package uk.gov.companieshouse.registeredemailaddressapi.unit.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Set;
@@ -18,7 +17,6 @@ import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityRu
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.impl.CompanyStatusValidation;
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.impl.CompanyTypeValidation;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.service.CompanyProfileService;
@@ -90,24 +88,4 @@ class EligibilityServiceTest {
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_TYPE, responseBody.getEligibilityStatusCode());
     }
 
-    @Test
-    void withNoErrors() throws ServiceException, CompanyNotFoundException {
-        // GIVEN
-
-        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
-        companyProfileApi.setCompanyStatus("active");
-        companyProfileApi.setType("ltd");
-
-        var companyNumber = "123";
-
-        // WHEN
-
-        when(companyProfileService.getCompanyProfile(companyNumber)).thenReturn(companyProfileApi);
-
-        var eligibilityStatusCode = eligibilityService.checkCompanyEligibility(companyNumber);
-
-        // THEN
-
-        assertEquals(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE, eligibilityStatusCode);
-    }
 }

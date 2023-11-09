@@ -28,10 +28,14 @@ public class EligibilityService {
         this.companyProfileService = companyProfileService;
     }
 
-    public EligibilityStatusCode checkCompanyEligibility(String companyNumber) throws ServiceException, CompanyNotFoundException {
+    public boolean checkCompanyEligibility(String companyNumber) throws ServiceException, CompanyNotFoundException, EligibilityException {
         var companyProfile = companyProfileService.getCompanyProfile(companyNumber);
 
-        return checkCompanyEligibility(companyProfile).getEligibilityStatusCode();
+        for (EligibilityRule<CompanyProfileApi> eligibilityRule : eligibilityRules) {
+            eligibilityRule.validate(companyProfile);
+        }
+
+        return true;
     }
 
     public CompanyValidationResponse checkCompanyEligibility(CompanyProfileApi companyProfile) throws ServiceException {

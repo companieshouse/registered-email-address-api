@@ -24,8 +24,9 @@ public class CompanyTypeValidation implements EligibilityRule<CompanyProfileApi>
         ApiLogger.info(String.format("Validating Company Type Should Use for: %s", profileToValidate.getCompanyNumber()), logMap);
 
         if (!companyTypes.contains(profileToValidate.getType())) {
-            ApiLogger.info(String.format("Company Type validation Should Use failed for: %s", profileToValidate.getCompanyNumber()), logMap);
-            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TYPE);
+            String message = String.format("company number: %s has invalid Type", profileToValidate.getCompanyNumber());
+            ApiLogger.info(message, logMap);
+            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_TYPE, message);
         }
 
         ApiLogger.info(String.format("Company Type validation Should Use passed for: %s", profileToValidate.getCompanyNumber()), logMap);

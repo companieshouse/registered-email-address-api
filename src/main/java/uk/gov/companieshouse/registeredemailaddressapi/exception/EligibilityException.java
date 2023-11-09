@@ -5,7 +5,8 @@ import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilitySt
 public class EligibilityException extends Exception {
     private final EligibilityStatusCode eligibilityStatusCode;
 
-    public EligibilityException(EligibilityStatusCode eligibilityStatusCode) {
+    public EligibilityException(EligibilityStatusCode eligibilityStatusCode, String message) {
+        super(message);
         this.eligibilityStatusCode = eligibilityStatusCode;
     }
 

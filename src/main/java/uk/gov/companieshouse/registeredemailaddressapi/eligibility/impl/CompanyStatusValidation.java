@@ -22,9 +22,11 @@ public class CompanyStatusValidation implements EligibilityRule<CompanyProfileAp
         var status = profileToValidate.getCompanyStatus();
 
         if (!allowedStatuses.contains(status)) {
-            ApiLogger.info(String.format("Company Status validation failed for: %s", profileToValidate.getCompanyNumber()));
-            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_STATUS);
+            String message = String.format("company number: %s has invalid Status", profileToValidate.getCompanyNumber());
+            ApiLogger.info(message);
+            throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_STATUS, message);
         }
+        
         ApiLogger.info(String.format("Company Status validation passed for: %s", profileToValidate.getCompanyNumber()));
     }
 }

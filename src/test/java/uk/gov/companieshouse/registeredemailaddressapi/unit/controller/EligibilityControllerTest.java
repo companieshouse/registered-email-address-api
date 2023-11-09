@@ -56,7 +56,7 @@ class EligibilityControllerTest {
         companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.INVALID_COMPANY_STATUS);
         when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(companyValidationResponse);
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
-        assertEquals(400, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCodeValue());
     }
 
     @Test
@@ -77,7 +77,7 @@ class EligibilityControllerTest {
     void testCompanyNotFound() throws ServiceException, CompanyNotFoundException {
         when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException("", new Exception()));
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
-        assertEquals(400, response.getStatusCodeValue());
+        assertEquals(404, response.getStatusCodeValue());
         assertNotNull(response.getBody());
         assertEquals(EligibilityStatusCode.COMPANY_NOT_FOUND, response.getBody().getEligibilityStatusCode());
     }

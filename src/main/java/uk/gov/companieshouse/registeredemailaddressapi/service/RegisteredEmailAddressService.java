@@ -22,9 +22,8 @@ import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
-import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.CompanyNotFoundException;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.NoExistingEmailAddressException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
@@ -44,7 +43,6 @@ public class RegisteredEmailAddressService {
     private final TransactionService transactionService;
     private final EligibilityService eligibilityService;
     private final ValidationService validationService;
-    private final PrivateDataRetrievalService privateDataRetrievalService;
 
     private static final String TRANSACTION_REFERENCE_TEMPLATE = "UpdateRegisteredEmailAddressReference_%s";
 
@@ -54,28 +52,23 @@ public class RegisteredEmailAddressService {
             RegisteredEmailAddressRepository registeredEmailAddressRepository,
             TransactionService transactionService,
             EligibilityService eligibilityService,
-            ValidationService validationService,
-            PrivateDataRetrievalService privateDataRetrievalService) {
+            ValidationService validationService) {
         this.registeredEmailAddressMapper = registeredEmailAddressMapper;
         this.registeredEmailAddressRepository = registeredEmailAddressRepository;
         this.transactionService = transactionService;
         this.eligibilityService = eligibilityService;
         this.validationService = validationService;
-        this.privateDataRetrievalService = privateDataRetrievalService;
     }
 
     public RegisteredEmailAddressResponseDTO createRegisteredEmailAddress(Transaction transaction,
                                                                   RegisteredEmailAddressDTO registeredEmailAddressDTO,
                                                                   String requestId,
-                                                                  String userId) throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, CompanyNotFoundException {
+                                                                  String userId) throws ServiceException, SubmissionAlreadyExistsException, CompanyNotFoundException, EligibilityException {
 
         ApiLogger.debugContext(requestId, " -  createRegisteredEmailAddress(...)");
 
-        // Throws CompanyNotFoundException and ServiceException
-        checkCompanyIsEligibleForService(transaction, requestId);
-
-        // Throws NoExistingEmailAddressException
-        checkCompanyHasExistingRegisteredEmailAddress(transaction, requestId);
+        // Throws CompanyNotFoundException, EligibilityException and ServiceException
+        checkCompanyIsEligibleForService(transaction);
 
         // Throws SubmissionAlreadyExistsException
         checkHasExistingReaSubmission(transaction, requestId);
@@ -116,19 +109,16 @@ public class RegisteredEmailAddressService {
     public RegisteredEmailAddressResponseDTO updateRegisteredEmailAddress(Transaction transaction,
                                                                           RegisteredEmailAddressDTO registeredEmailAddressDTO,
                                                                           String requestId,
-                                                                          String userId) throws ServiceException, NoExistingEmailAddressException, TransactionNotOpenException, NotFoundException, CompanyNotFoundException {
+                                                                          String userId) throws ServiceException, TransactionNotOpenException, NotFoundException, CompanyNotFoundException, EligibilityException {
 
         ApiLogger.debugContext(requestId, " -  updateRegisteredEmailAddress(...)");
 
         if (transaction.getStatus() != null) {
             if (transaction.getStatus().equals(OPEN)) {
-                // Throws CompanyNotFoundException and ServiceException
-                checkCompanyIsEligibleForService(transaction, requestId);
+                // Throws CompanyNotFoundException, EligibilityException and ServiceException
+                checkCompanyIsEligibleForService(transaction);
 
                 var registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
-
-                // Throws NoExistingEmailAddressException
-                checkCompanyHasExistingRegisteredEmailAddress(transaction, requestId);
 
                 if (!registeredEmailAddressDTO.getRegisteredEmailAddress().isEmpty()) {
                     registeredEmailAddress.getData()
@@ -210,23 +200,14 @@ public class RegisteredEmailAddressService {
 
     //Private Methods
 
-    private void checkCompanyHasExistingRegisteredEmailAddress(Transaction transaction, String requestId) throws ServiceException, NoExistingEmailAddressException {
-        ApiLogger.infoContext(requestId, String.format("Check Registered Email Address exists for %s", transaction.getCompanyNumber()));
-        var registeredEmailAddressJson = privateDataRetrievalService.getRegisteredEmailAddress(transaction.getCompanyNumber());
-
-        if (registeredEmailAddressJson != null &&
-            registeredEmailAddressJson.getRegisteredEmailAddress() != null &&
-            !registeredEmailAddressJson.getRegisteredEmailAddress().isEmpty()) {
-            ApiLogger.infoContext(requestId, String.format("Retrieved registered email address %s for Company Number %s",
-                    registeredEmailAddressJson.getRegisteredEmailAddress(), transaction.getCompanyNumber()));
-            return;
+    private void checkCompanyIsEligibleForService(Transaction transaction) throws ServiceException, CompanyNotFoundException, EligibilityException {
+        try {
+            eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber());
+        } catch (EligibilityException e) {
+            // just update the message in the EligibilityException according to historic format
+            String message = format("Transaction id: %s; %s", transaction.getId(), e.getMessage());
+            throw new EligibilityException(e.getEligibilityStatusCode(), message);
         }
-
-        String message = format("Transaction id: %s; company number: %s has no existing Registered Email Address",
-                transaction.getId(), transaction.getCompanyNumber());
-        ApiLogger.infoContext(requestId, message);
-
-        throw new NoExistingEmailAddressException(message);
     }
 
     private void checkHasExistingReaSubmission(Transaction transaction, String requestId) throws SubmissionAlreadyExistsException {
@@ -236,17 +217,6 @@ public class RegisteredEmailAddressService {
                     transaction.getId());
             ApiLogger.infoContext(requestId, message);
             throw new SubmissionAlreadyExistsException(message);
-        }
-    }
-
-    private void checkCompanyIsEligibleForService(Transaction transaction, String requestId) throws ServiceException, CompanyNotFoundException {
-        var companyEligibility = eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber());
-
-        if (EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE != companyEligibility) {
-            String message = format("Transaction id: %s the company is not elegible for the service due to %s", transaction.getId(), companyEligibility.name());
-            ApiLogger.infoContext(requestId, message);
-
-            throw new ServiceException(message);
         }
     }
 

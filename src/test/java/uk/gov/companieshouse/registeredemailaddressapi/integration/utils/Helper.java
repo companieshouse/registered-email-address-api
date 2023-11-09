@@ -1,9 +1,13 @@
 package uk.gov.companieshouse.registeredemailaddressapi.integration.utils;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
@@ -11,8 +15,6 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseData;
-
-import java.util.UUID;
 
 public class Helper {
 
@@ -22,11 +24,27 @@ public class Helper {
         transaction.setId(id);
         return transaction;
     }
+
+    public Transaction generateTransaction(String companyNumber) {
+        Transaction transaction = generateTransaction();
+        transaction.setCompanyNumber(companyNumber);
+        return transaction;
+    }
+
+    public CompanyProfileApi generateCompanyProfileApi(String companyNumber) {
+        CompanyProfileApi companyProfileApi = new CompanyProfileApi();
+        companyProfileApi.setCompanyNumber(companyNumber);
+        companyProfileApi.setCompanyStatus("active");
+        companyProfileApi.setType("ltd");
+        return companyProfileApi;
+    }
+
     public RegisteredEmailAddressJson generateRegisteredEmailAddressJson(String companyEmail) {
         RegisteredEmailAddressJson response = new RegisteredEmailAddressJson();
         response.setRegisteredEmailAddress(companyEmail);
         return response;
     }
+
     public RegisteredEmailAddressDTO generateRegisteredEmailAddressDTO(String email){
         RegisteredEmailAddressDTO registeredEmailAddressDTO = new RegisteredEmailAddressDTO();
         registeredEmailAddressDTO.setRegisteredEmailAddress(email);
