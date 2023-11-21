@@ -13,7 +13,7 @@ public class CompanyEmailValidation implements EligibilityRule<CompanyProfileApi
     private static void handleValidationFailure(CompanyProfileApi profileToValidate) throws EligibilityException {
         String message = String.format("company number: %s has no existing Registered Email Address", profileToValidate.getCompanyNumber());
         ApiLogger.info(message);
-        throw new EligibilityException(EligibilityStatusCode.INVALID_COMPANY_WITH_NON_EXISTENT_EMAIL, message);
+        throw new EligibilityException(EligibilityStatusCode.INVALID_NO_REGISTERED_EMAIL_ADDRESS_EXISTS, message);
     }
 
     private final PrivateDataRetrievalService privateDataRetrievalService;
