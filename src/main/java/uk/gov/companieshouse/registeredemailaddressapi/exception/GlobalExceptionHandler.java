@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.registeredemailaddressapi.exception;
 
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,13 +15,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -43,8 +44,8 @@ public class GlobalExceptionHandler {
         return  ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
-    @ExceptionHandler(NoExistingEmailAddressException.class)
-    public ResponseEntity<Object> handleNoExistingEmailAddressException(Exception ex, WebRequest webRequest) {
+    @ExceptionHandler(EligibilityException.class)
+    public ResponseEntity<Object> handleEligibilityException(Exception ex, WebRequest webRequest) {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
@@ -57,6 +58,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleSubmissionNotFoundException(Exception ex, WebRequest webRequest) {
+
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CompanyNotFoundException.class)
+    public ResponseEntity<Object> handleCompanyNotFoundException(Exception ex, WebRequest webRequest) {
 
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }

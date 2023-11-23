@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.registeredemailaddressapi.unit.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,20 +13,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.controller.RegisteredEmailAddressController;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.*;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.CompanyNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.TransactionNotOpenException;
 import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
-
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressControllerTest {
@@ -50,7 +56,7 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testCreateRegisteredEmailAddressSuccessTest() throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException {
+    void testCreateRegisteredEmailAddressSuccessTest() throws ServiceException, SubmissionAlreadyExistsException, CompanyNotFoundException, EligibilityException {
 
         when(this.registeredEmailAddressService.createRegisteredEmailAddress(
                 transaction,
@@ -77,7 +83,7 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, NotFoundException, NoExistingEmailAddressException, SubmissionAlreadyExistsException, TransactionNotOpenException {
+    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, NotFoundException, SubmissionAlreadyExistsException, TransactionNotOpenException, CompanyNotFoundException, EligibilityException {
 
         when(this.registeredEmailAddressService.updateRegisteredEmailAddress(
                 transaction,
