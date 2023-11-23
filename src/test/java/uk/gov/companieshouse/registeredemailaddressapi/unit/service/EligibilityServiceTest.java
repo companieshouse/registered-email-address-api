@@ -96,7 +96,7 @@ class EligibilityServiceTest {
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
         companyProfileApi.setCompanyStatus("active");
-        companyProfileApi.setType("plc");
+        companyProfileApi.setType("registered-overseas-entity");
 
         // WHEN
         var responseBody = eligibilityService.checkCompanyEligibility(companyProfileApi);
