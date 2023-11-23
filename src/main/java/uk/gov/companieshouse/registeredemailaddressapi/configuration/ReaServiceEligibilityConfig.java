@@ -48,7 +48,7 @@ public class ReaServiceEligibilityConfig {
         /* Check 2: Company Type */
         listOfRules.add(companyTypeValidationForWebFiling);
 
-        /* Check 2: Company Email */
+        /* Check 3: Company Email */
         listOfRules.add(companyEmailValidation);
 
         return listOfRules;

@@ -2,7 +2,7 @@ package uk.gov.companieshouse.registeredemailaddressapi.unit.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +20,12 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.response.CompanyVal
 import uk.gov.companieshouse.registeredemailaddressapi.service.CompanyProfileService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.EligibilityService;
 
+/**
+ *
+ * Test was originally copied from test of same name in the confirmation-statement-api project.
+ * @author paulparlett
+ *
+ */
 @ExtendWith(MockitoExtension.class)
 class EligibilityControllerTest {
 
@@ -37,46 +43,78 @@ class EligibilityControllerTest {
 
     @Test
     void testSuccessfulGetEligibility() throws ServiceException, CompanyNotFoundException {
+        // GIVEN
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("AcceptValue");
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
         CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
         companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE);
-        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(companyValidationResponse);
+
+        given(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).willReturn(companyProfileApi);
+        given(eligibilityService.checkCompanyEligibility(companyProfileApi)).willReturn(companyValidationResponse);
+
+        // WHEN
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
+
+        // THEN
         assertEquals(200, response.getStatusCodeValue());
+        assertEquals(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE, response.getBody().getEligibilityStatusCode());
+
     }
 
     @Test
     void testFailedGetEligibility() throws ServiceException, CompanyNotFoundException {
+        // GIVEN
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyStatus("FailureValue");
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenReturn(companyProfileApi);
+
         CompanyValidationResponse companyValidationResponse = new CompanyValidationResponse();
         companyValidationResponse.setEligibilityStatusCode(EligibilityStatusCode.INVALID_COMPANY_STATUS);
-        when(eligibilityService.checkCompanyEligibility(companyProfileApi)).thenReturn(companyValidationResponse);
+
+        given(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).willReturn(companyProfileApi);
+        given(eligibilityService.checkCompanyEligibility(companyProfileApi)).willReturn(companyValidationResponse);
+
+        // WHEN
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
+
+        // THEN
         assertEquals(200, response.getStatusCodeValue());
+        assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, response.getBody().getEligibilityStatusCode());
     }
 
     @Test
     void testServiceExceptionGetEligibility() throws ServiceException, CompanyNotFoundException {
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new ServiceException("", new Exception()));
+        // GIVEN
+        given(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).willThrow(new ServiceException("", new Exception()));
+
+        // WHEN
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
+
+        // THEN
         assertEquals(500, response.getStatusCodeValue());
     }
 
     @Test
     void testUncheckedExceptionGetEligibility() throws ServiceException, CompanyNotFoundException {
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new RuntimeException("runtime exception"));
+        // GIVEN
+        given(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).willThrow(new RuntimeException("runtime exception"));
+
+        // WHEN
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
+
+        // THEN
         assertEquals(500, response.getStatusCodeValue());
     }
 
     @Test
     void testCompanyNotFound() throws ServiceException, CompanyNotFoundException {
-        when(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).thenThrow(new CompanyNotFoundException("", new Exception()));
+        // GIVEN
+        given(companyProfileService.getCompanyProfile(COMPANY_NUMBER)).willThrow(new CompanyNotFoundException("", new Exception()));
+
+        // WHEN
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
+
+        // THEN
         assertEquals(404, response.getStatusCodeValue());
         assertNotNull(response.getBody());
         assertEquals(EligibilityStatusCode.COMPANY_NOT_FOUND, response.getBody().getEligibilityStatusCode());
