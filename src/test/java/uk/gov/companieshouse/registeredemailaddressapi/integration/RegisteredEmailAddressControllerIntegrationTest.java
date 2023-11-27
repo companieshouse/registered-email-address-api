@@ -2,6 +2,7 @@ package uk.gov.companieshouse.registeredemailaddressapi.integration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,7 +15,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthentic
 import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateEmailDataRetrievalService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 
 import static java.lang.String.format;
@@ -42,7 +43,8 @@ class RegisteredEmailAddressControllerIntegrationTest {
     protected TransactionService transactionService;
 
     @MockBean
-    protected PrivateDataRetrievalService privateDataRetrievalService;
+    @Qualifier("oracleQueryApiDataRetrievalServiceImpl")
+    protected PrivateEmailDataRetrievalService privateDataRetrievalService;
 
     @MockBean
     protected UserAuthenticationInterceptor userAuthenticationInterceptor;

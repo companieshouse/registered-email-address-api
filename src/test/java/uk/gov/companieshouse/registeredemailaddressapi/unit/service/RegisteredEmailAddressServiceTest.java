@@ -16,7 +16,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseData;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.OracleQueryApiDataRetrievalServiceImpl;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService;
@@ -56,7 +56,7 @@ class RegisteredEmailAddressServiceTest {
     private ValidationService validationService;
 
     @Mock
-    private PrivateDataRetrievalService privateDataRetrievalService;
+    private OracleQueryApiDataRetrievalServiceImpl privateDataRetrievalService;
 
     @InjectMocks
     private RegisteredEmailAddressService registeredEmailAddressService;

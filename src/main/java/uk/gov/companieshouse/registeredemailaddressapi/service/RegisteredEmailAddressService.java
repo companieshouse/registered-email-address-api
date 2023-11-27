@@ -32,7 +32,7 @@ public class RegisteredEmailAddressService {
     private final RegisteredEmailAddressRepository registeredEmailAddressRepository;
     private final TransactionService transactionService;
     private final ValidationService validationService;
-    private final PrivateDataRetrievalService privateDataRetrievalService;
+    private final OracleQueryApiDataRetrievalServiceImpl privateDataRetrievalService;
 
     private static final String TRANSACTION_REFERENCE_TEMPLATE = "UpdateRegisteredEmailAddressReference_%s";
 
@@ -42,12 +42,12 @@ public class RegisteredEmailAddressService {
             RegisteredEmailAddressRepository registeredEmailAddressRepository,
             TransactionService transactionService,
             ValidationService validationService,
-            PrivateDataRetrievalService privateDataRetrievalService) {
+            OracleQueryApiDataRetrievalServiceImpl oracleQueryApiDataRetrievalServiceImpl) {
         this.registeredEmailAddressMapper = registeredEmailAddressMapper;
         this.registeredEmailAddressRepository = registeredEmailAddressRepository;
         this.transactionService = transactionService;
         this.validationService = validationService;
-        this.privateDataRetrievalService = privateDataRetrievalService;
+        this.privateDataRetrievalService = oracleQueryApiDataRetrievalServiceImpl;
     }
 
     public RegisteredEmailAddressResponseDTO createRegisteredEmailAddress(Transaction transaction,

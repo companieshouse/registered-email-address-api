@@ -4,6 +4,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
@@ -14,7 +15,8 @@ import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceExceptio
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
 @Service
-public class PrivateDataRetrievalService {
+@Qualifier("oracleQueryApiDataRetrievalServiceImpl")
+public class OracleQueryApiDataRetrievalServiceImpl implements PrivateEmailDataRetrievalService {
 
     private static final String COMPANY_NUMBER = "company_number";
     private static final String REGISTERED_EMAIL_ADDRESS_URI_SUFFIX = "/company/%s/registered-email-address";
@@ -25,10 +27,12 @@ public class PrivateDataRetrievalService {
     @Value("${ORACLE_QUERY_API_URL}")
     private String oracleQueryApiUrl;
 
+    @Override
     public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber)
             throws ServiceException {
 
         var logMap = new HashMap<String, Object>();
+
         try {
             logMap.put(COMPANY_NUMBER, companyNumber);
             ApiLogger.info("Retrieving Registered Email Address for Company Number ", logMap);

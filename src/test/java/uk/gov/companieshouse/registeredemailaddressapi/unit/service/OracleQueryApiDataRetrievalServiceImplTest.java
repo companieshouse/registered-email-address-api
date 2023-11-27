@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.registeredemailaddressapi.unit.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponseException;
@@ -24,16 +24,16 @@ import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.registeredemailaddressapi.client.ApiClientService;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.OracleQueryApiDataRetrievalServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
-class PrivateDataRetrievalServiceTest {
+class OracleQueryApiDataRetrievalServiceImplTest {
 
     private static final String COMPANY_NUMBER = "12345678";
     private static final String COMPANY_EMAIL = "tester@testing.com";
 
     @InjectMocks
-    private PrivateDataRetrievalService privateDataRetrievalService;
+    private OracleQueryApiDataRetrievalServiceImpl oracleQueryApiDataRetrievalServiceImpl;
 
     @Mock
     private ApiClientService apiClientService;
@@ -76,7 +76,7 @@ class PrivateDataRetrievalServiceTest {
             when(privateCompanyEmailGet.execute()).thenReturn(apiPrivateCompanyEmailGetResponse);
             when(apiPrivateCompanyEmailGetResponse.getData()).thenReturn(registeredEmailAddressJson);
 
-            RegisteredEmailAddressJson response = privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER);
+            RegisteredEmailAddressJson response = oracleQueryApiDataRetrievalServiceImpl.getRegisteredEmailAddress(COMPANY_NUMBER);
             assertEquals(COMPANY_EMAIL, response.getRegisteredEmailAddress());
         }
 
@@ -87,7 +87,7 @@ class PrivateDataRetrievalServiceTest {
             when(privateCompanyEmailGet.execute()).thenReturn(apiPrivateCompanyEmailGetResponse);
             when(apiPrivateCompanyEmailGetResponse.getData()).thenReturn(registeredEmailAddressJson);
 
-            RegisteredEmailAddressJson response = privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER);
+            RegisteredEmailAddressJson response = oracleQueryApiDataRetrievalServiceImpl.getRegisteredEmailAddress(COMPANY_NUMBER);
             assertNull(response.getRegisteredEmailAddress());
         }
 
@@ -97,7 +97,7 @@ class PrivateDataRetrievalServiceTest {
             when(privateCompanyEmailGet.execute()).thenReturn(apiPrivateCompanyEmailGetResponse);
             when(apiPrivateCompanyEmailGetResponse.getData()).thenReturn(null);
 
-            RegisteredEmailAddressJson response = privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER);
+            RegisteredEmailAddressJson response = oracleQueryApiDataRetrievalServiceImpl.getRegisteredEmailAddress(COMPANY_NUMBER);
             assertNull(response);
         }
 
@@ -107,7 +107,7 @@ class PrivateDataRetrievalServiceTest {
 
             when(privateCompanyEmailGet.execute()).thenThrow(NOT_FOUND_Exception);
 
-            RegisteredEmailAddressJson response = privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER);
+            RegisteredEmailAddressJson response = oracleQueryApiDataRetrievalServiceImpl.getRegisteredEmailAddress(COMPANY_NUMBER);
             assertNull(response);
         }
 
@@ -118,7 +118,7 @@ class PrivateDataRetrievalServiceTest {
 
             assertThrows(
                     ServiceException.class,
-                    () -> privateDataRetrievalService.getRegisteredEmailAddress((COMPANY_NUMBER)));
+                    () -> oracleQueryApiDataRetrievalServiceImpl.getRegisteredEmailAddress((COMPANY_NUMBER)));
         }
 
         @Test
@@ -130,10 +130,11 @@ class PrivateDataRetrievalServiceTest {
 
             assertThrows(
                     ServiceException.class,
-                    () -> privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER));
+                    () -> oracleQueryApiDataRetrievalServiceImpl.getRegisteredEmailAddress(COMPANY_NUMBER));
         }
 
     }
+
     private RegisteredEmailAddressJson buildRegisteredEmailAddressJson(String companyEmail) {
         RegisteredEmailAddressJson response = new RegisteredEmailAddressJson();
         response.setRegisteredEmailAddress(companyEmail);
