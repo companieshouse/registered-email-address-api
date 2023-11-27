@@ -32,7 +32,7 @@ public class RegisteredEmailAddressService {
     private final RegisteredEmailAddressRepository registeredEmailAddressRepository;
     private final TransactionService transactionService;
     private final ValidationService validationService;
-    private final OracleQueryApiDataRetrievalServiceImpl privateDataRetrievalService;
+    private final PrivateEmailDataRetrievalService privateEmailDataRetrievalService;
 
     private static final String TRANSACTION_REFERENCE_TEMPLATE = "UpdateRegisteredEmailAddressReference_%s";
 
@@ -42,12 +42,12 @@ public class RegisteredEmailAddressService {
             RegisteredEmailAddressRepository registeredEmailAddressRepository,
             TransactionService transactionService,
             ValidationService validationService,
-            OracleQueryApiDataRetrievalServiceImpl oracleQueryApiDataRetrievalServiceImpl) {
+            PrivateEmailDataRetrievalService privateEmailDataRetrievalService) {
         this.registeredEmailAddressMapper = registeredEmailAddressMapper;
         this.registeredEmailAddressRepository = registeredEmailAddressRepository;
         this.transactionService = transactionService;
         this.validationService = validationService;
-        this.privateDataRetrievalService = oracleQueryApiDataRetrievalServiceImpl;
+        this.privateEmailDataRetrievalService = privateEmailDataRetrievalService;
     }
 
     public RegisteredEmailAddressResponseDTO createRegisteredEmailAddress(Transaction transaction,
@@ -191,13 +191,13 @@ public class RegisteredEmailAddressService {
 
     private void checkCompanyHasExistingRegisteredEmailAddress(Transaction transaction, String requestId) throws ServiceException, NoExistingEmailAddressException {
         ApiLogger.infoContext(requestId, String.format("Check Registered Email Address exists for %s", transaction.getCompanyNumber()));
-        var registeredEmailAddressJson = privateDataRetrievalService.getRegisteredEmailAddress(transaction.getCompanyNumber());
+        var registeredEmailAddressJson = privateEmailDataRetrievalService.getRegisteredEmailAddress(transaction.getCompanyNumber());
 
         if (registeredEmailAddressJson != null &&
             registeredEmailAddressJson.getRegisteredEmailAddress() != null &&
             !registeredEmailAddressJson.getRegisteredEmailAddress().isEmpty()) {
-            ApiLogger.infoContext(requestId, String.format("Retrieved registered email address %s for Company Number %s",
-                    registeredEmailAddressJson.getRegisteredEmailAddress(), transaction.getCompanyNumber()));
+            ApiLogger.infoContext(requestId, String.format("Retrieved registered email address for Company Number %s",
+                    transaction.getCompanyNumber()));
             return;
         }
         String message = format("Transaction id: %s; company number: %s has no existing Registered Email Address",
@@ -260,7 +260,3 @@ public class RegisteredEmailAddressService {
     }
 
 }
-
-
-
-

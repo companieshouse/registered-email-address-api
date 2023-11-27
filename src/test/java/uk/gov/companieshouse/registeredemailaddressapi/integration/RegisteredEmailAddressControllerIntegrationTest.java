@@ -34,7 +34,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
     Helper helper = new Helper();
 
     @Autowired
-    private MockMvc   mvc;
+    private MockMvc mvc;
 
     @MockBean
     protected RegisteredEmailAddressRepository registeredEmailAddressRepository;

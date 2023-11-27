@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
@@ -16,6 +17,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
 @Service
 @Qualifier("oracleQueryApiDataRetrievalServiceImpl")
+@ConditionalOnExpression("!'${env.name}'.equals('stagsbox') && !'${env.name}'.equals('livesbox')")
 public class OracleQueryApiDataRetrievalServiceImpl implements PrivateEmailDataRetrievalService {
 
     private static final String COMPANY_NUMBER = "company_number";
