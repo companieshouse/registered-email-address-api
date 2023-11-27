@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 @Configuration
 public class ApplicationConfig {
-
     @Bean
     public Supplier<LocalDateTime> dateTimeNow() {
         return LocalDateTime::now;
@@ -19,6 +18,4 @@ public class ApplicationConfig {
     public Supplier<LocalDate> dateNow() {
         return LocalDate::now;
     }
-
-
 }
