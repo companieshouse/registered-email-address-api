@@ -1,18 +1,13 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import uk.gov.companieshouse.GenerateEtagUtil;
-import uk.gov.companieshouse.api.model.transaction.Resource;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.*;
-import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
-import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
-import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
+import static java.lang.String.format;
+import static java.util.Map.entry;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_SELF;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_VALIDATION;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_URI_PATTERN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.VALIDATION_STATUS_URI_SUFFIX;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -20,10 +15,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.lang.String.format;
-import static java.util.Map.entry;
-import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import uk.gov.companieshouse.GenerateEtagUtil;
+import uk.gov.companieshouse.api.model.transaction.Resource;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.CompanyNotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.TransactionNotOpenException;
+import uk.gov.companieshouse.registeredemailaddressapi.mapper.RegisteredEmailAddressMapper;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
+import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
 @Service
 public class RegisteredEmailAddressService {
@@ -31,8 +41,8 @@ public class RegisteredEmailAddressService {
     private final RegisteredEmailAddressMapper registeredEmailAddressMapper;
     private final RegisteredEmailAddressRepository registeredEmailAddressRepository;
     private final TransactionService transactionService;
+    private final EligibilityService eligibilityService;
     private final ValidationService validationService;
-    private final PrivateEmailDataRetrievalService privateEmailDataRetrievalService;
 
     private static final String TRANSACTION_REFERENCE_TEMPLATE = "UpdateRegisteredEmailAddressReference_%s";
 
@@ -41,24 +51,24 @@ public class RegisteredEmailAddressService {
             RegisteredEmailAddressMapper registeredEmailAddressMapper,
             RegisteredEmailAddressRepository registeredEmailAddressRepository,
             TransactionService transactionService,
-            ValidationService validationService,
-            PrivateEmailDataRetrievalService privateEmailDataRetrievalService) {
+            EligibilityService eligibilityService,
+            ValidationService validationService) {
         this.registeredEmailAddressMapper = registeredEmailAddressMapper;
         this.registeredEmailAddressRepository = registeredEmailAddressRepository;
         this.transactionService = transactionService;
+        this.eligibilityService = eligibilityService;
         this.validationService = validationService;
-        this.privateEmailDataRetrievalService = privateEmailDataRetrievalService;
     }
 
     public RegisteredEmailAddressResponseDTO createRegisteredEmailAddress(Transaction transaction,
                                                                   RegisteredEmailAddressDTO registeredEmailAddressDTO,
                                                                   String requestId,
-                                                                  String userId) throws ServiceException, NoExistingEmailAddressException, SubmissionAlreadyExistsException {
+                                                                  String userId) throws ServiceException, SubmissionAlreadyExistsException, CompanyNotFoundException, EligibilityException {
 
         ApiLogger.debugContext(requestId, " -  createRegisteredEmailAddress(...)");
 
-        // Throws NoExistingEmailAddressException
-        checkCompanyHasExistingRegisteredEmailAddress(transaction, requestId);
+        // Throws CompanyNotFoundException, EligibilityException and ServiceException
+        checkCompanyIsEligibleForService(transaction);
 
         // Throws SubmissionAlreadyExistsException
         checkHasExistingReaSubmission(transaction, requestId);
@@ -82,7 +92,7 @@ public class RegisteredEmailAddressService {
 
         // create the Resource to be added to the Transaction (includes various links to the resource)
         var registeredEmailAddressResource = createRegisteredEmailAddressTransactionResource(submissionUri);
-        
+
         // Update company name set on the transaction and add a link to newly created Registered Email address
         // submission (aka resource) to the transaction (and potentially also a link for the 'resume' journey)
         updateTransactionWithLinks(transaction,
@@ -99,47 +109,48 @@ public class RegisteredEmailAddressService {
     public RegisteredEmailAddressResponseDTO updateRegisteredEmailAddress(Transaction transaction,
                                                                           RegisteredEmailAddressDTO registeredEmailAddressDTO,
                                                                           String requestId,
-                                                                          String userId) throws ServiceException, NoExistingEmailAddressException, TransactionNotOpenException, NotFoundException {
+                                                                          String userId) throws ServiceException, TransactionNotOpenException, NotFoundException, CompanyNotFoundException, EligibilityException {
 
         ApiLogger.debugContext(requestId, " -  updateRegisteredEmailAddress(...)");
-            if (transaction.getStatus() != null) {
-                if (transaction.getStatus().equals(OPEN)) {
-                    var registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
 
-                    // Throws NoExistingEmailAddressException
-                    checkCompanyHasExistingRegisteredEmailAddress(transaction, requestId);
+        if (transaction.getStatus() != null) {
+            if (transaction.getStatus().equals(OPEN)) {
+                // Throws CompanyNotFoundException, EligibilityException and ServiceException
+                checkCompanyIsEligibleForService(transaction);
 
-                    if (!registeredEmailAddressDTO.getRegisteredEmailAddress().isEmpty()) {
-                        registeredEmailAddress.getData()
-                                .setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
-                    }
+                var registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
 
-                    if (!registeredEmailAddressDTO.isAcceptAppropriateEmailAddressStatement() ==
-                            registeredEmailAddress.getData().isAcceptAppropriateEmailAddressStatement()) {
-                        registeredEmailAddress.getData()
-                                .setAcceptAppropriateEmailAddressStatement(registeredEmailAddressDTO.isAcceptAppropriateEmailAddressStatement());
-                    }
-
-
-                    registeredEmailAddress.setLastModifiedByUserId(userId);
-                    registeredEmailAddress.setUpdatedAt(LocalDateTime.now());
-                    RegisteredEmailAddressDAO createdRegisteredEmailAddress = registeredEmailAddressRepository
-                            .save(registeredEmailAddress);
-
-                    return registeredEmailAddressMapper
-                            .daoToDto(createdRegisteredEmailAddress);
-                } else {
-                    String message = format("Transaction %s can only be edited when status is %s ",
-                            transaction.getId(),
-                            OPEN);
-                    ApiLogger.infoContext(requestId, message);
-                    throw new TransactionNotOpenException(message);
+                if (!registeredEmailAddressDTO.getRegisteredEmailAddress().isEmpty()) {
+                    registeredEmailAddress.getData()
+                            .setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
                 }
+
+                if (!registeredEmailAddressDTO.isAcceptAppropriateEmailAddressStatement() ==
+                        registeredEmailAddress.getData().isAcceptAppropriateEmailAddressStatement()) {
+                    registeredEmailAddress.getData()
+                            .setAcceptAppropriateEmailAddressStatement(registeredEmailAddressDTO.isAcceptAppropriateEmailAddressStatement());
+                }
+
+
+                registeredEmailAddress.setLastModifiedByUserId(userId);
+                registeredEmailAddress.setUpdatedAt(LocalDateTime.now());
+                RegisteredEmailAddressDAO createdRegisteredEmailAddress = registeredEmailAddressRepository
+                        .save(registeredEmailAddress);
+
+                return registeredEmailAddressMapper
+                        .daoToDto(createdRegisteredEmailAddress);
             } else {
-                String message = format("Transaction %s invalid",
-                        transaction.getId());
+                String message = format("Transaction %s can only be edited when status is %s ",
+                        transaction.getId(),
+                        OPEN);
                 ApiLogger.infoContext(requestId, message);
-                throw new ServiceException(message);
+                throw new TransactionNotOpenException(message);
+            }
+        } else {
+            String message = format("Transaction %s invalid",
+                    transaction.getId());
+            ApiLogger.infoContext(requestId, message);
+            throw new ServiceException(message);
         }
 
     }
@@ -189,23 +200,16 @@ public class RegisteredEmailAddressService {
 
     //Private Methods
 
-    private void checkCompanyHasExistingRegisteredEmailAddress(Transaction transaction, String requestId) throws ServiceException, NoExistingEmailAddressException {
-        ApiLogger.infoContext(requestId, String.format("Check Registered Email Address exists for %s", transaction.getCompanyNumber()));
-        var registeredEmailAddressJson = privateEmailDataRetrievalService.getRegisteredEmailAddress(transaction.getCompanyNumber());
-
-        if (registeredEmailAddressJson != null &&
-            registeredEmailAddressJson.getRegisteredEmailAddress() != null &&
-            !registeredEmailAddressJson.getRegisteredEmailAddress().isEmpty()) {
-            ApiLogger.infoContext(requestId, String.format("Retrieved registered email address for Company Number %s",
-                    transaction.getCompanyNumber()));
-            return;
+    private void checkCompanyIsEligibleForService(Transaction transaction) throws ServiceException, CompanyNotFoundException, EligibilityException {
+        try {
+            eligibilityService.checkCompanyEligibility(transaction.getCompanyNumber());
+        } catch (EligibilityException e) {
+            // just update the message in the EligibilityException according to historic format
+            String message = format("Transaction id: %s; %s", transaction.getId(), e.getMessage());
+            throw new EligibilityException(e.getEligibilityStatusCode(), message);
         }
-        String message = format("Transaction id: %s; company number: %s has no existing Registered Email Address",
-                transaction.getId(), transaction.getCompanyNumber());
-        ApiLogger.infoContext(requestId, message);
-        throw new NoExistingEmailAddressException(message);
-
     }
+
     private void checkHasExistingReaSubmission(Transaction transaction, String requestId) throws SubmissionAlreadyExistsException {
         if(transaction.getResources() != null && transaction.getResources().entrySet().stream().anyMatch(resourceEntry ->
                 FILING_KIND.equals(resourceEntry.getValue().getKind()))){
