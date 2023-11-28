@@ -6,3 +6,4 @@ routes:
   1: ^/transactions/(.*)/registered-email-address
   2: ^/private/transactions/(.*)/registered-email-address/filings
   3: ^/registered-email-address/healthcheck
+  4: ^/registered-email-address/company/(.*)/eligibility
