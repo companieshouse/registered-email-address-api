@@ -22,7 +22,7 @@ public class MockEmailRetrieverImpl implements PrivateDataRetrievalService {
 
         if (companyNumber.endsWith("ERR")) {
             ApiLogger.info(format("Mocking Registered Email Address lookup for sandbox environment - returning mock email address for company number %s", companyNumber), logMap);
-            RegisteredEmailAddressJson registeredEmailAddressJson = new RegisteredEmailAddressJson();
+            var registeredEmailAddressJson = new RegisteredEmailAddressJson();
             registeredEmailAddressJson.setRegisteredEmailAddress("mockexistingemail@companieshouse.gov.uk");
             return registeredEmailAddressJson;
         } else {
