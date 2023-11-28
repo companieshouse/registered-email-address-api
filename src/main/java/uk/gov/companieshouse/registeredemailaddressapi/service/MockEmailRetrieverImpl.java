@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
+import static java.lang.String.format;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,13 @@ public class MockEmailRetrieverImpl implements PrivateEmailDataRetrievalService 
         var logMap = new HashMap<String, Object>();
 
         if (companyNumber.endsWith("ERR")) {
-            ApiLogger.info("Mocking Registered Email Address for sandbox environment", logMap);
+            ApiLogger.info(format("Mocking Registered Email Address lookup for sandbox environment - returning mock email address for company number %s", companyNumber), logMap);
             RegisteredEmailAddressJson registeredEmailAddressJson = new RegisteredEmailAddressJson();
             registeredEmailAddressJson.setRegisteredEmailAddress("mockexistingemail@companieshouse.gov.uk");
             return registeredEmailAddressJson;
         } else {
-            ApiLogger.info("Error Retrieving Registered Email Address for Company " + companyNumber, logMap);
-            throw new ServiceException("Error Retrieving Registered Email Address for Company");
+            ApiLogger.info(format("Mocking Registered Email Address lookup for sandbox environment - returning no email address as company number %s does not end with ERR", companyNumber), logMap);
+            return null;
         }
     }
 }
