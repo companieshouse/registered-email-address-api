@@ -24,7 +24,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityExce
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.service.CompanyProfileService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.EligibilityService;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateEmailDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
 
 @ExtendWith(MockitoExtension.class)
 class EligibilityServiceTest {
@@ -38,7 +38,7 @@ class EligibilityServiceTest {
     private CompanyProfileService companyProfileService;
 
     @Mock
-    private PrivateEmailDataRetrievalService privateEmailDataRetrievalService;
+    private PrivateDataRetrievalService privateDataRetrievalService;
 
     private EligibilityService eligibilityService;
 
@@ -46,7 +46,7 @@ class EligibilityServiceTest {
     void init() {
         CompanyTypeValidation companyTypeValidation = new CompanyTypeValidation(Set.of("ltd"));
         CompanyStatusValidation companyStatusValidation = new CompanyStatusValidation(Set.of("active"));
-        CompanyEmailValidation companyEmailValidation = new CompanyEmailValidation(privateEmailDataRetrievalService);
+        CompanyEmailValidation companyEmailValidation = new CompanyEmailValidation(privateDataRetrievalService);
 
         eligibilityRules = List.of(companyTypeValidation, companyStatusValidation, companyEmailValidation);
 
@@ -64,7 +64,7 @@ class EligibilityServiceTest {
         RegisteredEmailAddressJson registeredEmailAddressJson = new RegisteredEmailAddressJson();
         registeredEmailAddressJson.setRegisteredEmailAddress("info@acme.com");
 
-        BDDMockito.given(privateEmailDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).willReturn(registeredEmailAddressJson);
+        BDDMockito.given(privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).willReturn(registeredEmailAddressJson);
 
         // WHEN
         var responseBody = eligibilityService.checkCompanyEligibility(companyProfileApi);
@@ -114,7 +114,7 @@ class EligibilityServiceTest {
         companyProfileApi.setCompanyStatus("active");
         companyProfileApi.setType("ltd");
 
-        BDDMockito.given(privateEmailDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).willReturn(null);
+        BDDMockito.given(privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).willReturn(null);
 
         // WHEN
         var responseBody = eligibilityService.checkCompanyEligibility(companyProfileApi);
@@ -135,7 +135,7 @@ class EligibilityServiceTest {
         RegisteredEmailAddressJson registeredEmailAddressJson = new RegisteredEmailAddressJson();
         registeredEmailAddressJson.setRegisteredEmailAddress(null);
 
-        BDDMockito.given(privateEmailDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).willReturn(registeredEmailAddressJson);
+        BDDMockito.given(privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).willReturn(registeredEmailAddressJson);
 
         // WHEN
         var responseBody = eligibilityService.checkCompanyEligibility(companyProfileApi);
@@ -156,7 +156,7 @@ class EligibilityServiceTest {
         RegisteredEmailAddressJson registeredEmailAddressJson = new RegisteredEmailAddressJson();
         registeredEmailAddressJson.setRegisteredEmailAddress("");
 
-        BDDMockito.given(privateEmailDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).willReturn(registeredEmailAddressJson);
+        BDDMockito.given(privateDataRetrievalService.getRegisteredEmailAddress(COMPANY_NUMBER)).willReturn(registeredEmailAddressJson);
 
         // WHEN
         var responseBody = eligibilityService.checkCompanyEligibility(companyProfileApi);

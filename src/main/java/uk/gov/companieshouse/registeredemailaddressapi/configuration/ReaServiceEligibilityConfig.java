@@ -15,7 +15,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityRu
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.impl.CompanyEmailValidation;
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.impl.CompanyStatusValidation;
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.impl.CompanyTypeValidation;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateEmailDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
 
 @Configuration
 public class ReaServiceEligibilityConfig {
@@ -26,11 +26,11 @@ public class ReaServiceEligibilityConfig {
     @Value("${allowed.company.types}")
     private Set<String> allowedCompanyTypes;
 
-    private final PrivateEmailDataRetrievalService privateEmailDataRetrievalService;
+    private final PrivateDataRetrievalService privateDataRetrievalService;
 
     @Autowired
-    public ReaServiceEligibilityConfig(PrivateEmailDataRetrievalService privateEmailDataRetrievalService) {
-        this.privateEmailDataRetrievalService = privateEmailDataRetrievalService;
+    public ReaServiceEligibilityConfig(PrivateDataRetrievalService privateDataRetrievalService) {
+        this.privateDataRetrievalService = privateDataRetrievalService;
     }
 
     @Bean
@@ -40,7 +40,7 @@ public class ReaServiceEligibilityConfig {
 
         var companyStatusValidation = new CompanyStatusValidation(allowedCompanyStatuses);
         var companyTypeValidationForWebFiling = new CompanyTypeValidation(allowedCompanyTypes);
-        var companyEmailValidation = new CompanyEmailValidation(privateEmailDataRetrievalService);
+        var companyEmailValidation = new CompanyEmailValidation(privateDataRetrievalService);
 
         /* Check 1: Company Status */
         listOfRules.add(companyStatusValidation);

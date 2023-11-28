@@ -31,7 +31,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.service.CompanyProfileService;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateEmailDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 
 @SpringBootTest
@@ -51,7 +51,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
 
     @MockBean
     @Qualifier("oracleQueryApiDataRetrievalServiceImpl")
-    protected PrivateEmailDataRetrievalService privateEmailDataRetrievalService;
+    protected PrivateDataRetrievalService privateDataRetrievalService;
 
     @MockBean
     protected UserAuthenticationInterceptor userAuthenticationInterceptor;
@@ -77,7 +77,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
         when(companyProfileService.getCompanyProfile(companyNumber)).thenReturn(companyProfileApi);
 
         RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(email);
-        when(privateEmailDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
 
         mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
@@ -144,7 +144,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
         when(registeredEmailAddressRepository.insert(any(RegisteredEmailAddressDAO.class))).thenReturn(registeredEmailAddressDAO);
 
         RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(null);
-        when(privateEmailDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
 
         this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
@@ -175,7 +175,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
         when(companyProfileService.getCompanyProfile(companyNumber)).thenReturn(companyProfileApi);
 
         RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(email);
-        when(privateEmailDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
 
         // Create an existing submission
         mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
@@ -213,7 +213,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
         when(companyProfileService.getCompanyProfile(companyNumber)).thenReturn(companyProfileApi);
 
         RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(email);
-        when(privateEmailDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
 
         mvc.perform(put("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")
@@ -293,7 +293,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
         when(registeredEmailAddressRepository.save(any(RegisteredEmailAddressDAO.class))).thenReturn(registeredEmailAddressDAO);
 
         RegisteredEmailAddressJson emailResponse = helper.generateRegisteredEmailAddressJson(null);
-        when(privateEmailDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
+        when(privateDataRetrievalService.getRegisteredEmailAddress(companyNumber)).thenReturn(emailResponse);
 
         mvc.perform(put("/transactions/" + transaction.getId() + "/registered-email-address")
                         .contentType("application/json").header("ERIC-Identity", "123")

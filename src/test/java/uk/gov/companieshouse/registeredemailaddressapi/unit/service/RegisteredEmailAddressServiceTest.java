@@ -45,7 +45,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseData;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.service.EligibilityService;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateEmailDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService;
@@ -75,7 +75,7 @@ class RegisteredEmailAddressServiceTest {
     private EligibilityService eligibilityService;
 
     @Mock
-    private PrivateEmailDataRetrievalService privateEmailDataRetrievalService;
+    private PrivateDataRetrievalService privateDataRetrievalService;
 
     @InjectMocks
     private RegisteredEmailAddressService registeredEmailAddressService;

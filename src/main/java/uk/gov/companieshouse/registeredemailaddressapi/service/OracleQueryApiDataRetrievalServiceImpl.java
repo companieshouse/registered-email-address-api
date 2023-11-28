@@ -18,7 +18,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 @Service
 @Qualifier("oracleQueryApiDataRetrievalServiceImpl")
 @ConditionalOnExpression("!'${env.name}'.equals('stagsbox') && !'${env.name}'.equals('livesbox')")
-public class OracleQueryApiDataRetrievalServiceImpl implements PrivateEmailDataRetrievalService {
+public class OracleQueryApiDataRetrievalServiceImpl implements PrivateDataRetrievalService {
 
     private static final String COMPANY_NUMBER = "company_number";
     private static final String REGISTERED_EMAIL_ADDRESS_URI_SUFFIX = "/company/%s/registered-email-address";

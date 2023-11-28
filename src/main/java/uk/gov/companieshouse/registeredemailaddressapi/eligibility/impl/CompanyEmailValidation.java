@@ -5,7 +5,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityRu
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilityStatusCode;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateEmailDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
 public class CompanyEmailValidation implements EligibilityRule<CompanyProfileApi> {
@@ -16,17 +16,17 @@ public class CompanyEmailValidation implements EligibilityRule<CompanyProfileApi
         throw new EligibilityException(EligibilityStatusCode.INVALID_NO_REGISTERED_EMAIL_ADDRESS_EXISTS, message);
     }
 
-    private final PrivateEmailDataRetrievalService privateEmailDataRetrievalService;
+    private final PrivateDataRetrievalService privateDataRetrievalService;
 
-    public CompanyEmailValidation(PrivateEmailDataRetrievalService privateEmailDataRetrievalService) {
-        this.privateEmailDataRetrievalService = privateEmailDataRetrievalService;
+    public CompanyEmailValidation(PrivateDataRetrievalService privateDataRetrievalService) {
+        this.privateDataRetrievalService = privateDataRetrievalService;
     }
 
     @Override
     public void validate(CompanyProfileApi profileToValidate) throws EligibilityException, ServiceException {
         ApiLogger.info(String.format("Validating Company Email for: %s", profileToValidate.getCompanyNumber()));
 
-        var registeredEmailAddressJson = privateEmailDataRetrievalService.getRegisteredEmailAddress(profileToValidate.getCompanyNumber());
+        var registeredEmailAddressJson = privateDataRetrievalService.getRegisteredEmailAddress(profileToValidate.getCompanyNumber());
 
         if (registeredEmailAddressJson == null) {
             // all because the OracleQueryApi will return 404 for a non-existent email :-(

@@ -13,7 +13,7 @@ import java.util.HashMap;
 @Service
 @Qualifier("mockEmailRetrieverImpl")
 @ConditionalOnExpression("'${env.name}'.equals('stagsbox') || '${env.name}'.equals('livesbox')")
-public class MockEmailRetrieverImpl implements PrivateEmailDataRetrievalService {
+public class MockEmailRetrieverImpl implements PrivateDataRetrievalService {
 
     @Override
     public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException {
