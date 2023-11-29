@@ -15,6 +15,7 @@ import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,7 +41,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
     Helper helper = new Helper();
 
     @Autowired
-    private MockMvc   mvc;
+    private MockMvc mvc;
 
     @MockBean
     protected RegisteredEmailAddressRepository registeredEmailAddressRepository;
@@ -49,6 +50,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
     protected TransactionService transactionService;
 
     @MockBean
+    @Qualifier("oracleQueryApiDataRetrievalServiceImpl")
     protected PrivateDataRetrievalService privateDataRetrievalService;
 
     @MockBean
