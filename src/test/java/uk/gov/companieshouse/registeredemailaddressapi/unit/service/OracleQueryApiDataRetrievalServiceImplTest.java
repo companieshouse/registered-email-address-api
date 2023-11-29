@@ -51,7 +51,7 @@ class OracleQueryApiDataRetrievalServiceImplTest {
     private PrivateCompanyEmailGet privateCompanyEmailGet;
 
 
-    private static final ApiErrorResponseException NOT_FOUND_Exception = ApiErrorResponseException.fromHttpResponseException(
+    private static final ApiErrorResponseException NOT_FOUND_EXCEPTION = ApiErrorResponseException.fromHttpResponseException(
             new HttpResponseException.Builder(404, "ERROR", new HttpHeaders()).build());
 
 
@@ -105,7 +105,7 @@ class OracleQueryApiDataRetrievalServiceImplTest {
         void testNullResponseWhenCompanyEmailGetThrowsNotFoundApiResponseException()
                 throws IOException, URIValidationException, ServiceException {
 
-            when(privateCompanyEmailGet.execute()).thenThrow(NOT_FOUND_Exception);
+            when(privateCompanyEmailGet.execute()).thenThrow(NOT_FOUND_EXCEPTION);
 
             RegisteredEmailAddressJson response = oracleQueryApiDataRetrievalServiceImpl.getRegisteredEmailAddress(COMPANY_NUMBER);
             assertNull(response);
