@@ -14,6 +14,7 @@ public class Constants {
 
     // URI path attributes
     public static final String TRANSACTION_ID_KEY = "transaction_id";
+    public static final String COMPANY_NUMBER_KEY = "company-number";
 
     // URIs
     public static final String TRANSACTION_URI_PATTERN = "/transactions/%s/registered-email-address";

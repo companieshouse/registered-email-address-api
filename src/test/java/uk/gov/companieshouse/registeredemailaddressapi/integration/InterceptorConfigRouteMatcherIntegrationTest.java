@@ -27,31 +27,26 @@ class InterceptorConfigRouteMatchingTest {
     void interceptorsMatchIntendedRoutesTest() throws Exception {
 
         Map<String,Set<String>> testCases = new HashMap<>();
+
         Set<String> LOGGING_INTERCEPTOR = Set.of("LoggingInterceptor");
+        Set<String> COMPANY_INTERCEPTORS = Set.of("LoggingInterceptor", "TokenPermissionsInterceptor", "UserAuthenticationInterceptor");
         Set<String> TRANSACTION_INTERCEPTORS =
-            Set.of("TransactionInterceptor", "TokenPermissionsInterceptor", "LoggingInterceptor", "UserAuthenticationInterceptor");
+            Set.of("LoggingInterceptor", "TokenPermissionsInterceptor", "UserAuthenticationInterceptor", "TransactionInterceptor");
+        Set<String> FILINGS_INTERCEPTORS =
+            Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "FilingInterceptor");
 
-        // LoggingInterceptor - just logs details of request at start and end
+        // logging only
         testCases.put("/registered-email-address/healthcheck", LOGGING_INTERCEPTOR);
-        testCases.put("/registered-email-address/company/12345678/eligibility", LOGGING_INTERCEPTOR);
 
-        /* Transactions:
-            - TransactionInterceptor - sets transaction ID & retrieved txn details in request
-            - TokenPermissionsInterceptor - creates a TokenPermissions object and sets it into the request
-            - LoggingInterceptor - just logs details of request at start and end
-            - AUTH: UserAuthenticationInterceptor - OK if using API key OR user has a scope with the company_rea=update permission
-        */
+        // company endpoints
+        testCases.put("/registered-email-address/company/12345678/eligibility", COMPANY_INTERCEPTORS);
+
+        // transaction endpoints
         testCases.put("/transactions/111111-222222-333333/registered-email-address", TRANSACTION_INTERCEPTORS);
         testCases.put("/transactions/111111-222222-333333/registered-email-address/validation-status", TRANSACTION_INTERCEPTORS);
 
-        /* Internal endpoint (filings):
-            - LoggingInterceptor - just logs details of request at start and end
-            - AUTH: InternalUserInterceptor - must be API key auth with internal user privileges
-            - TransactionInterceptor - sets transaction ID & retrieved txn details in request
-            - FilingInterceptor - checks that transaction is closed
-        */
-        testCases.put("/private/transactions/111111-222222-333333/registered-email-address/filings",
-            Set.of("LoggingInterceptor", "InternalUserInterceptor", "TransactionInterceptor", "FilingInterceptor"));
+        // filings
+        testCases.put("/private/transactions/111111-222222-333333/registered-email-address/filings", FILINGS_INTERCEPTORS);
 
         for (String requestPath : testCases.keySet()){
 

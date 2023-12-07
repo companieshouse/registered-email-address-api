@@ -17,16 +17,13 @@ import uk.gov.companieshouse.registeredemailaddressapi.interceptor.FilingInterce
 @ComponentScan("uk.gov.companieshouse.api.interceptor")
 public class InterceptorConfig implements WebMvcConfigurer {
     static final String TRANSACTIONS = "/transactions/**";
+    static final String HEALTHCHECK = "/registered-email-address/healthcheck";
     static final String FILINGS = "/private/transactions/**/filings";
-
-    static final String[] USER_AUTH_ENDPOINTS = {
-            TRANSACTIONS
-    };
 
     static final String[] INTERNAL_AUTH_ENDPOINTS = {
         FILINGS
     };
-  
+
     @Autowired
     private LoggingInterceptor loggingInterceptor;
 
@@ -64,7 +61,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
      */
     private void addTokenPermissionsInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(getTokenPermissionsInterceptor())
-                .addPathPatterns(USER_AUTH_ENDPOINTS);
+                .excludePathPatterns(INTERNAL_AUTH_ENDPOINTS)
+                .excludePathPatterns(HEALTHCHECK);
     }
     private TokenPermissionsInterceptor getTokenPermissionsInterceptor() {
         return new TokenPermissionsInterceptor();
@@ -95,7 +93,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
      */
     private void addUserAuthenticationEndpointsInterceptor(InterceptorRegistry registry) {
         registry.addInterceptor(userAuthenticationInterceptor)
-                .addPathPatterns(USER_AUTH_ENDPOINTS);
+                .excludePathPatterns(INTERNAL_AUTH_ENDPOINTS)
+                .excludePathPatterns(HEALTHCHECK);
     }
 
     /**
