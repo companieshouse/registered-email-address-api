@@ -18,6 +18,9 @@ import java.util.Map;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
 
+/**
+ * Retrieves the transaction data and sets it into the request.
+ */
 @Component
 public class TransactionInterceptor implements HandlerInterceptor {
 

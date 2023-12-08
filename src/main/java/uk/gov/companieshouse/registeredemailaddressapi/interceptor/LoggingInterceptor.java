@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
+/**
+ * Logs request details before and after request handling.
+ */
 @Component
 public class LoggingInterceptor implements HandlerInterceptor {
 

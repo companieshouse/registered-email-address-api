@@ -23,14 +23,11 @@ import static org.mockito.Mockito.when;
 class InterceptorConfigTest {
 
     static final String TRANSACTIONS = "/transactions/**";
+    static final String HEALTHCHECK = "/registered-email-address/healthcheck";
     static final String FILINGS = "/private/transactions/**/filings";
 
-    static final String[] USER_AUTH_ENDPOINTS = {
-            TRANSACTIONS
-    };
-
     static final String[] INTERNAL_AUTH_ENDPOINTS = {
-            FILINGS
+        FILINGS
     };
 
     @Mock
@@ -61,6 +58,7 @@ class InterceptorConfigTest {
     void addInterceptorsTest() {
         when(interceptorRegistry.addInterceptor(any())).thenReturn(interceptorRegistration);
         when(interceptorRegistration.addPathPatterns(any(String.class))).thenReturn(interceptorRegistration);
+        when(interceptorRegistration.excludePathPatterns(any(String.class))).thenReturn(interceptorRegistration);
 
         interceptorConfig.addInterceptors(interceptorRegistry);
 
@@ -75,7 +73,8 @@ class InterceptorConfigTest {
 
         // User authentication interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(userAuthenticationInterceptor);
-        inOrder.verify(interceptorRegistration).addPathPatterns(USER_AUTH_ENDPOINTS);
+        inOrder.verify(interceptorRegistration).excludePathPatterns(INTERNAL_AUTH_ENDPOINTS);
+        inOrder.verify(interceptorRegistration).excludePathPatterns(HEALTHCHECK);
 
         // Internal User auth interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(internalUserInterceptor);

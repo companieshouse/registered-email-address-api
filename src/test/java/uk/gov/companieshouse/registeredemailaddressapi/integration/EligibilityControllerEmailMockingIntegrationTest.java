@@ -40,7 +40,8 @@ class EligibilityControllerEmailMockingIntegrationTest {
 
         this.mvc.perform(get("/registered-email-address/company/"+companyNumber+"/eligibility")
                 .contentType("application/json").header("ERIC-Identity", "123")
-                .header("X-Request-Id", "123456"))
+                .header("X-Request-Id", "123456")
+                .header("ERIC-Authorised-Token-Permissions", "company_number="+companyNumber+" company_rea=update"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"eligibility_status_code\":\"COMPANY_VALID_FOR_SERVICE\"}"));
     }
@@ -54,7 +55,8 @@ class EligibilityControllerEmailMockingIntegrationTest {
 
         this.mvc.perform(get("/registered-email-address/company/"+companyNumber+"/eligibility")
                 .contentType("application/json").header("ERIC-Identity", "123")
-                .header("X-Request-Id", "123456"))
+                .header("X-Request-Id", "123456")
+                .header("ERIC-Authorised-Token-Permissions", "company_number="+companyNumber+" company_rea=update"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"eligibility_status_code\":\"INVALID_NO_REGISTERED_EMAIL_ADDRESS_EXISTS\"}"));
     }
