@@ -66,13 +66,8 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         boolean hasCompanyRegisteredEmailAddressUpdatePermission = tokenPermissions.hasPermission(Key.COMPANY_REA_UPDATE, Value.UPDATE);
 
         // Check the user is authorised for the relevant company
-        String companyNumber = pathVariables.get(COMPANY_NUMBER_KEY);
-        if (companyNumber == null) {
-            final var transaction = (Transaction) request.getAttribute(TRANSACTION_KEY);
-            if (transaction != null) {
-                companyNumber = transaction.getCompanyNumber();
-            }
-        }
+        final var transaction = (Transaction) request.getAttribute(TRANSACTION_KEY);
+        String companyNumber = (transaction != null) ? transaction.getCompanyNumber() : pathVariables.get(COMPANY_NUMBER_KEY);
         if (companyNumber == null) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("path_variables", pathVariables);
