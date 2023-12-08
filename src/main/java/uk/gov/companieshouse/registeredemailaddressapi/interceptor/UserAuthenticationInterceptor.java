@@ -76,7 +76,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         if (companyNumber == null) {
             final Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("path_variables", pathVariables);
-            ApiLogger.debugContext(reqId, "CompanyAuthenticationInterceptor error: no company number to check in path or transaction", debugMap);
+            ApiLogger.debugContext(reqId, "UserAuthenticationInterceptor error: no company number to check in path or transaction", debugMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return false;
         }
