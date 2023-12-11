@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.*;
@@ -41,6 +42,11 @@ public class TransactionInterceptor implements HandlerInterceptor {
         var logMap = new HashMap<String, Object>();
         logMap.put(TRANSACTION_ID_KEY, transactionId);
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
+        if (!Pattern.matches(TRANSACTION_ID_REGEX,transactionId)){
+            ApiLogger.debugContext(reqId, "Transaction id did not pass validation", logMap);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return false; // TODO set body
+        }
         try {
             ApiLogger.debugContext(reqId, "Getting transaction for request.", logMap);
 

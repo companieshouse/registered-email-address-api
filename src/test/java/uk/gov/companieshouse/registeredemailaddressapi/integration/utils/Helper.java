@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.integration.utils;
 
+import java.util.Random;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,8 +21,10 @@ public class Helper {
 
     public Transaction generateTransaction(){
         Transaction transaction = new Transaction();
-        String id = UUID.randomUUID().toString();
-        transaction.setId(id);
+        Random random = new Random(Integer.MAX_VALUE);
+        String rand = String.format("%018d", random.nextInt());
+        String[] tranId = rand.split("(?<=\\G.{6})");
+        transaction.setId(String.join("-", tranId));
         return transaction;
     }
 

@@ -25,7 +25,9 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TR
 @ExtendWith(MockitoExtension.class)
 class TransactionInterceptorTest {
 
-    private static final String TX_ID = "12345678";
+    private static final String TX_ID = "123456-654321-123456";
+    private static final String TX_ID_TOO_LONG = "123456-654321-1234567";
+    private static final String TX_ID_ILLEGAL_CHAR = "123456-654321-12345!";
     private static final String PASSTHROUGH_HEADER = "passthrough";
     private static final String LOGGING_CONTEXT = "fg4536";
 
@@ -54,6 +56,36 @@ class TransactionInterceptorTest {
 
         assertTrue(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
         verify(mockHttpServletRequest, times(1)).setAttribute("transaction", dummyTransaction);
+    }
+
+    @Test
+    void testPreHandleIsUnsuccessfulWhenTxnIdIsTooLong() throws Exception {
+        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+        Object mockHandler = new Object();
+
+        var pathParams = new HashMap<String, String>();
+        pathParams.put(TRANSACTION_ID_KEY, TX_ID_TOO_LONG);
+
+        when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
+        when(mockHttpServletRequest.getHeader("ERIC-Access-Token")).thenReturn(PASSTHROUGH_HEADER);
+
+        assertFalse(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST,  mockHttpServletResponse.getStatus());
+    }
+
+    @Test
+    void testPreHandleIsUnsuccessfulWhenTxnIdContainsIllegalChar() throws Exception {
+        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+        Object mockHandler = new Object();
+
+        var pathParams = new HashMap<String, String>();
+        pathParams.put(TRANSACTION_ID_KEY, TX_ID_ILLEGAL_CHAR);
+
+        when(mockHttpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathParams);
+        when(mockHttpServletRequest.getHeader("ERIC-Access-Token")).thenReturn(PASSTHROUGH_HEADER);
+
+        assertFalse(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST,  mockHttpServletResponse.getStatus());
     }
 
     @Test
