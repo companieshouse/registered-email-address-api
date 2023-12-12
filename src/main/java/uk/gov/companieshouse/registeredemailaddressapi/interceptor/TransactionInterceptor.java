@@ -5,6 +5,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
@@ -43,9 +46,13 @@ public class TransactionInterceptor implements HandlerInterceptor {
         logMap.put(TRANSACTION_ID_KEY, transactionId);
         String reqId = request.getHeader(ERIC_REQUEST_ID_KEY);
         if (!Pattern.matches(TRANSACTION_ID_REGEX,transactionId)){
-            ApiLogger.debugContext(reqId, "Transaction id did not pass validation", logMap);
+            ApiLogger.debugContext(reqId, "Invalid transaction id", logMap);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return false; // TODO set body
+            var errorsList = Map.of("errors", Map.of("error", "Invalid transaction id"));
+            response.setContentType("application/json");
+            ObjectMapper objectMapper = new ObjectMapper();
+            response.getWriter().write(objectMapper.writeValueAsString(errorsList));
+            return false;
         }
         try {
             ApiLogger.debugContext(reqId, "Getting transaction for request.", logMap);

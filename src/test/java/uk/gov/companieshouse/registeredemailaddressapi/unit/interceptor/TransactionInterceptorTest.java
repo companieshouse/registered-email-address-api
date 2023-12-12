@@ -71,6 +71,7 @@ class TransactionInterceptorTest {
 
         assertFalse(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
         assertEquals(HttpServletResponse.SC_BAD_REQUEST,  mockHttpServletResponse.getStatus());
+        assertEquals("{\"errors\":{\"error\":\"Invalid transaction id\"}}", mockHttpServletResponse.getContentAsString());
     }
 
     @Test
@@ -86,6 +87,7 @@ class TransactionInterceptorTest {
 
         assertFalse(transactionInterceptor.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler));
         assertEquals(HttpServletResponse.SC_BAD_REQUEST,  mockHttpServletResponse.getStatus());
+        assertEquals("{\"errors\":{\"error\":\"Invalid transaction id\"}}", mockHttpServletResponse.getContentAsString());
     }
 
     @Test
