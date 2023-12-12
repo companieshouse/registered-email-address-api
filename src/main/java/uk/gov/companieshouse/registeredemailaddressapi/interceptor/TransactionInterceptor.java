@@ -50,7 +50,7 @@ public class TransactionInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             var errorsList = Map.of("errors", Map.of("error", "Invalid transaction id"));
             response.setContentType("application/json");
-            ObjectMapper objectMapper = new ObjectMapper();
+            var objectMapper = new ObjectMapper();
             response.getWriter().write(objectMapper.writeValueAsString(errorsList));
             return false;
         }
