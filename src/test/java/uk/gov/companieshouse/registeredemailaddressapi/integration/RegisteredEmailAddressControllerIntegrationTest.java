@@ -256,7 +256,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
 
 
         String email = "UpdateTest@Test.com";
-        String transactionId = "xxxxx-xxxxx-xxxxx";
+        String transactionId = "0-0-0-0-0-0-0-0-0-0-"; // passes validation but will never be generated
         RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(email);
         RegisteredEmailAddressDAO registeredEmailAddressDAO = helper
                 .generateRegisteredEmailAddressDAO(email, transactionId);

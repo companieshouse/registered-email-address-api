@@ -1,12 +1,16 @@
 package uk.gov.companieshouse.registeredemailaddressapi.controller;
 
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.COMPANY_NUMBER_REGEX;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 import java.util.HashMap;
 
+import javax.validation.constraints.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,6 +24,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.service.EligibilityServic
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
 @RestController
+@Validated
 public class EligibilityController {
 
     @Autowired
@@ -29,7 +34,9 @@ public class EligibilityController {
     private EligibilityService eligibilityService;
 
     @GetMapping("/registered-email-address/company/{company-number}/eligibility")
-    public ResponseEntity<CompanyValidationResponse> getEligibility(@PathVariable("company-number") String companyNumber,
+    public ResponseEntity<CompanyValidationResponse> getEligibility(
+            @PathVariable("company-number") @Pattern(regexp = COMPANY_NUMBER_REGEX,
+                message = "Invalid company number") String companyNumber,
             @RequestHeader(value = ERIC_REQUEST_ID_KEY) String requestId) {
 
         var logMap = new HashMap<String, Object>();

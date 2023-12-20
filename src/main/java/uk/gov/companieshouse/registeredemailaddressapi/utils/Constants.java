@@ -40,4 +40,7 @@ public class Constants {
     // Utitity constants
     public static final String DATE_FORMATTER_PATTERN = "d MMMM yyyy";
 
+    // validation constants
+    public static final String COMPANY_NUMBER_REGEX = "\\w{8}"; // 8 chars (alphanumeric)
+    public static final String TRANSACTION_ID_REGEX = "[0-9-]{20}"; // 20 chars (digits and -)
 }

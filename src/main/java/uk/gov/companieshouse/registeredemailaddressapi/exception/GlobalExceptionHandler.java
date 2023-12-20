@@ -4,7 +4,10 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ER
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
@@ -73,6 +76,18 @@ public class GlobalExceptionHandler {
         logException(ex, webRequest);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> constraintViolationException(ConstraintViolationException ex, WebRequest webRequest) {
+        logException(ex, webRequest);
+        List<String> errorsList = new ArrayList<>();
+
+        ex.getConstraintViolations().forEach(cv -> errorsList.add(cv.getMessage()));
+
+        Map<String, List<String>> errors = new HashMap<>();
+        errors.put("errors", errorsList);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
     @ExceptionHandler(Exception.class)

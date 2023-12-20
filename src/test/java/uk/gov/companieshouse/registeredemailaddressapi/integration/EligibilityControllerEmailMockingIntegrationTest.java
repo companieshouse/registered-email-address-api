@@ -61,5 +61,19 @@ class EligibilityControllerEmailMockingIntegrationTest {
                 .andExpect(content().json("{\"eligibility_status_code\":\"INVALID_NO_REGISTERED_EMAIL_ADDRESS_EXISTS\"}"));
     }
 
+    @Test
+    void EligibilityEndpointInvalidCompanyNumberTest() throws Exception {
+
+        final String companyNumber = "12345678999"; // too long
+        CompanyProfileApi companyProfileApi = HELPER.generateCompanyProfileApi(companyNumber);
+        given(companyProfileService.getCompanyProfile(companyNumber)).willReturn(companyProfileApi);
+
+        this.mvc.perform(get("/registered-email-address/company/"+companyNumber+"/eligibility")
+                .contentType("application/json").header("ERIC-Identity", "123")
+                .header("X-Request-Id", "123456")
+                .header("ERIC-Authorised-Token-Permissions", "company_number="+companyNumber+" company_rea=update"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json("{\"errors\":[\"Invalid company number\"]}"));
+    }
 
 }
