@@ -1,18 +1,5 @@
 package uk.gov.companieshouse.registeredemailaddressapi.integration;
 
-import static java.lang.String.format;
-import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
-import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -33,6 +19,19 @@ import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmai
 import uk.gov.companieshouse.registeredemailaddressapi.service.CompanyProfileService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
+
+import static java.lang.String.format;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -83,10 +82,51 @@ class RegisteredEmailAddressControllerIntegrationTest {
                         .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456").content(helper.writeToJson(registeredEmailAddressDTO)))
                 .andExpect(status().isCreated()).andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.data.registered_email_address").value("Test@Test.com"))
+                .andExpect(jsonPath("$.data.registered_email_address").value(email))
                 .andExpect(jsonPath("$.data.accept_appropriate_email_address_statement").value(true));
 
     }
+
+    @Test
+    void testCreateRegisteredEmailAddressInvalidEmailTest() throws Exception {
+
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO("email+middle\"-quotes@domain.com");
+        Transaction transaction = helper.generateTransaction();
+
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+
+        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456")
+                        .content(helper.writeToJson(registeredEmailAddressDTO)))
+
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]")
+                        .value("registered_email_address must have a valid email format"));
+    }
+
+    @Test
+    void testCreateRegisteredEmailAddressTailingWhiteSpaceTest() throws Exception {
+
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO("Test@Test.com ");
+        Transaction transaction = helper.generateTransaction();
+
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
+        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
+
+        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
+                        .contentType("application/json").header("ERIC-Identity", "123")
+                        .header("X-Request-Id", "123456")
+                        .content(helper.writeToJson(registeredEmailAddressDTO)))
+
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]")
+                        .value("registered_email_address must have a valid email format"));
+    }
+
 
     @Test
     void testCreateRegisteredEmailAddressEmptyEmailFailureTest() throws Exception {
