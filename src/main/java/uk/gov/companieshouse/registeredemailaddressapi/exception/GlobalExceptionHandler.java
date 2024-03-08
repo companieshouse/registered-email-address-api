@@ -1,14 +1,5 @@
 package uk.gov.companieshouse.registeredemailaddressapi.exception;
 
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.ConstraintViolationException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +9,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
+
+import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -69,6 +67,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleCompanyNotFoundException(Exception ex, WebRequest webRequest) {
 
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidEmailAddressException.class)
+    public ResponseEntity<Object> handleInvalidEmailAddressException(Exception ex, WebRequest webRequest) {
+        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(ServiceException.class)

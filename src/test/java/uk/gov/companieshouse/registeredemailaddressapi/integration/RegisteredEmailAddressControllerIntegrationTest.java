@@ -1,6 +1,8 @@
 package uk.gov.companieshouse.registeredemailaddressapi.integration;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -87,10 +89,11 @@ class RegisteredEmailAddressControllerIntegrationTest {
 
     }
 
-    @Test
-    void testCreateRegisteredEmailAddressInvalidEmailTest() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"email+middle\\\"-quotes@domain.com", "Test@Test.com ", "223j&kg", "Test@Test..com", "Test@Test"})
+    void testCreateRegisteredEmailAddressInvalidEmailTest(String email) throws Exception {
 
-        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO("email+middle\"-quotes@domain.com");
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(email);
         Transaction transaction = helper.generateTransaction();
 
         when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
@@ -103,55 +106,13 @@ class RegisteredEmailAddressControllerIntegrationTest {
                         .content(helper.writeToJson(registeredEmailAddressDTO)))
 
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]")
-                        .value("registered_email_address must have a valid email format"));
-    }
-
-    @Test
-    void testCreateRegisteredEmailAddressTailingWhiteSpaceTest() throws Exception {
-
-        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO("Test@Test.com ");
-        Transaction transaction = helper.generateTransaction();
-
-        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
-        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
-        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
-
-        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
-                        .contentType("application/json").header("ERIC-Identity", "123")
-                        .header("X-Request-Id", "123456")
-                        .content(helper.writeToJson(registeredEmailAddressDTO)))
-
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]")
-                        .value("registered_email_address must have a valid email format"));
-    }
-
-
-    @Test
-    void testCreateRegisteredEmailAddressEmptyEmailFailureTest() throws Exception {
-
-        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(null);
-        Transaction transaction = helper.generateTransaction();
-
-        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
-        when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
-        when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
-
-        this.mvc.perform(post("/transactions/" + transaction.getId() + "/registered-email-address")
-                        .contentType("application/json").header("ERIC-Identity", "123")
-                        .header("X-Request-Id", "123456")
-                        .content(helper.writeToJson(registeredEmailAddressDTO)))
-
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]")
-                        .value("registered_email_address must not be blank"));
+                .andExpect(content().string("registered_email_address : "+ email +" is in an incorrect format"));
     }
 
     @Test
     void testCreateRegisteredEmailAddressRegexFailureTest() throws Exception {
         Transaction transaction = helper.generateTransaction();
-        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO("223j&kg");
+        RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(null);
 
         when(transactionService.getTransaction(any(), any(), any())).thenReturn(transaction);
         when(userAuthenticationInterceptor.preHandle(any(), any(), any())).thenReturn(true);
@@ -160,10 +121,8 @@ class RegisteredEmailAddressControllerIntegrationTest {
                         .contentType("application/json").header("ERIC-Identity", "123")
                         .header("X-Request-Id", "123456")
                         .content(helper.writeToJson(registeredEmailAddressDTO)))
-
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]")
-                        .value("registered_email_address must have a valid email format"));
+                .andExpect(jsonPath("$.errors[0]").value("registered_email_address must not be blank"));
     }
 
     @Test
