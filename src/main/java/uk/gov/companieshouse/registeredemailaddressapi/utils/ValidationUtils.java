@@ -8,6 +8,15 @@ import java.util.regex.Pattern;
 @Component
 public class ValidationUtils {
 
+    private static final Pattern EMAIL_NOTIFY_REGEX =
+            Pattern.compile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~\\-]+@([^.@][^@\\s]+)$");
+    private static final Pattern HOSTNAME_REGEX =
+            Pattern.compile("^(xn|[a-z0-9]+)(-?-[a-z0-9]+)*$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TLD_PART_REGEX =
+            Pattern.compile(
+                    "^(?:[a-z]{2,63}|xn--[a-z0-9]+(?:-[a-z0-9]+){1,4})(?:$|[^-])",
+                    Pattern.CASE_INSENSITIVE);
+
     public static final String NOT_NULL_ERROR_MESSAGE = "%s must not be null";
     public static final String INVALID_EMAIL_ERROR_MESSAGE = "Email address is not in the correct format for %s, like name@example.com";
     public static final String ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE = "The Appropriate Email Address Statement has not been accepted.";
@@ -22,15 +31,41 @@ public class ValidationUtils {
         }
         return true;
     }
-    public static void isValidEmailAddress(String email, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
-        var regex = "^.+@.+\\..+$";
-        var pattern = Pattern.compile(regex);
-        var matcher = pattern.matcher(email);
+    public static void validateEmailAddress(String email, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
 
-        if (!matcher.matches()) {
+
+        if (!isEmailAddressValid(email)) {
             setErrorMsg(errs, qualifiedFieldName, String.format(INVALID_EMAIL_ERROR_MESSAGE, qualifiedFieldName));
             ApiLogger.infoContext(loggingContext, "Email address is not in the correct format for " + qualifiedFieldName);
         }
+    }
+
+    public static boolean isEmailAddressValid(String email){
+        if (email == null || email.isBlank()) {
+            return false;
+        }
+        if (email.contains("..")) {
+            return false;
+        }
+        var matcher = EMAIL_NOTIFY_REGEX.matcher(email);
+        if (!matcher.matches()) {
+            return false;
+        }
+
+        var hostname = matcher.group(1);
+        String[] parts = hostname.split("\\.");
+        if (parts.length < 2) {
+            return false;
+        }
+        for (String part : parts) {
+            if (!HOSTNAME_REGEX.matcher(part).matches()) {
+                return false;
+            }
+        }
+        if (!TLD_PART_REGEX.matcher(parts[parts.length - 1]).matches()) {
+            return false;
+        }
+        return true;
     }
     public static void isEmailAddressStatementAccepted(boolean acceptedEmailAddressStatement, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
         if (!acceptedEmailAddressStatement) {

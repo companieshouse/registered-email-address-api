@@ -24,7 +24,7 @@ public class ValidationService {
             ApiLogger.debugContext(requestId, String.format("Registered Email Address found for Transaction %s.",
                     registeredEmailAddress.getTransactionId() ));
 
-            isValidEmailAddress(registeredEmailAddress.getData().getRegisteredEmailAddress(),
+            validateEmailAddress(registeredEmailAddress.getData().getRegisteredEmailAddress(),
                     "registered_email_address",
                     errors,
                     requestId);
