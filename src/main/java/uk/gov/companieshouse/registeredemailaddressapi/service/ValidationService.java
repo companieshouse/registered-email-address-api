@@ -7,6 +7,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.*;
 
@@ -15,7 +16,7 @@ public class ValidationService {
 
     public ValidationStatusResponse validateRegisteredEmailAddress(RegisteredEmailAddressDAO registeredEmailAddress,
                                                                    String requestId) {
-        var errors = new ArrayList<ValidationStatusError>();
+        List<ValidationStatusError> errors = new ArrayList<>();
         if (isNotNull(registeredEmailAddress.getData(),
                 "registered_email_address",
                 errors,
@@ -24,7 +25,7 @@ public class ValidationService {
             ApiLogger.debugContext(requestId, String.format("Registered Email Address found for Transaction %s.",
                     registeredEmailAddress.getTransactionId() ));
 
-            isValidEmailAddress(registeredEmailAddress.getData().getRegisteredEmailAddress(),
+            validateEmailAddress(registeredEmailAddress.getData().getRegisteredEmailAddress(),
                     "registered_email_address",
                     errors,
                     requestId);
@@ -39,7 +40,7 @@ public class ValidationService {
         return formatValidationStatusResponse(errors, registeredEmailAddress, requestId);
     }
 
-    private ValidationStatusResponse formatValidationStatusResponse(ArrayList<ValidationStatusError> validationErrors,
+    private ValidationStatusResponse formatValidationStatusResponse(List<ValidationStatusError> validationErrors,
                                                                     RegisteredEmailAddressDAO registeredEmailAddress,
                                                                     String requestId) {
         var validationStatus = new ValidationStatusResponse();

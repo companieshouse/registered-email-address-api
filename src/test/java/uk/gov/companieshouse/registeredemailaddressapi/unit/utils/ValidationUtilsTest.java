@@ -12,7 +12,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.isValidEmailAddress;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.validateEmailAddress;
 
 @ExtendWith(MockitoExtension.class)
 class ValidationUtilsTest {
@@ -51,7 +51,7 @@ class ValidationUtilsTest {
     @DisplayName("Validate Email successfully")
     void validateEmail_Successful() {
         var errors = new ArrayList<ValidationStatusError>();
-        isValidEmailAddress(EMAIL_TEST, DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
+        validateEmailAddress(EMAIL_TEST, DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
         assertEquals(0, errors.size());
         assertTrue(errors.isEmpty());
     }
@@ -60,7 +60,7 @@ class ValidationUtilsTest {
     @DisplayName("Validate Email unsuccessfully")
     void validateEmail_Unsuccessful() {
         var errors = new ArrayList<ValidationStatusError>();
-        isValidEmailAddress("lorem@ipsum", DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
+        validateEmailAddress("lorem@ipsum", DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
         assertEquals(1, errors.size());
         assertEquals("Email address is not in the correct format for parentField, like name@example.com", errors.get(0).getError());
     }

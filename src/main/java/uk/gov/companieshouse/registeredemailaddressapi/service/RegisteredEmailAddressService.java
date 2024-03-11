@@ -1,29 +1,14 @@
 package uk.gov.companieshouse.registeredemailaddressapi.service;
 
-import static java.lang.String.format;
-import static java.util.Map.entry;
-import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_SELF;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_VALIDATION;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_URI_PATTERN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.VALIDATION_STATUS_URI_SUFFIX;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import uk.gov.companieshouse.GenerateEtagUtil;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.CompanyNotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityException;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.InvalidEmailAddressException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.SubmissionAlreadyExistsException;
@@ -34,6 +19,22 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.lang.String.format;
+import static java.util.Map.entry;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_SELF;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.LINK_VALIDATION;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_URI_PATTERN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.VALIDATION_STATUS_URI_SUFFIX;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.ValidationUtils.isEmailAddressValid;
 
 @Service
 public class RegisteredEmailAddressService {
@@ -63,9 +64,13 @@ public class RegisteredEmailAddressService {
     public RegisteredEmailAddressResponseDTO createRegisteredEmailAddress(Transaction transaction,
                                                                   RegisteredEmailAddressDTO registeredEmailAddressDTO,
                                                                   String requestId,
-                                                                  String userId) throws ServiceException, SubmissionAlreadyExistsException, CompanyNotFoundException, EligibilityException {
+                                                                  String userId) throws ServiceException, SubmissionAlreadyExistsException, CompanyNotFoundException, EligibilityException, InvalidEmailAddressException {
 
         ApiLogger.debugContext(requestId, " -  createRegisteredEmailAddress(...)");
+        String email = registeredEmailAddressDTO.getRegisteredEmailAddress();
+        if(!isEmailAddressValid(email)){
+            throw new InvalidEmailAddressException(String.format("registered_email_address : %s is in an incorrect format", email));
+        }
 
         // Throws CompanyNotFoundException, EligibilityException and ServiceException
         checkCompanyIsEligibleForService(transaction);
@@ -109,21 +114,24 @@ public class RegisteredEmailAddressService {
     public RegisteredEmailAddressResponseDTO updateRegisteredEmailAddress(Transaction transaction,
                                                                           RegisteredEmailAddressDTO registeredEmailAddressDTO,
                                                                           String requestId,
-                                                                          String userId) throws ServiceException, TransactionNotOpenException, NotFoundException, CompanyNotFoundException, EligibilityException {
+                                                                          String userId) throws ServiceException, TransactionNotOpenException, NotFoundException, CompanyNotFoundException, EligibilityException, InvalidEmailAddressException {
 
         ApiLogger.debugContext(requestId, " -  updateRegisteredEmailAddress(...)");
+
 
         if (transaction.getStatus() != null) {
             if (transaction.getStatus().equals(OPEN)) {
                 // Throws CompanyNotFoundException, EligibilityException and ServiceException
                 checkCompanyIsEligibleForService(transaction);
 
-                var registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
 
-                if (!registeredEmailAddressDTO.getRegisteredEmailAddress().isEmpty()) {
-                    registeredEmailAddress.getData()
-                            .setRegisteredEmailAddress(registeredEmailAddressDTO.getRegisteredEmailAddress());
+                String email = registeredEmailAddressDTO.getRegisteredEmailAddress();
+                if(!isEmailAddressValid(email)){
+                    throw new InvalidEmailAddressException(String.format("registered_email_address : %s is in an incorrect format", email));
                 }
+
+                var registeredEmailAddress = getRegisteredEmailAddressDAO(transaction.getId(), requestId);
+                registeredEmailAddress.getData().setRegisteredEmailAddress(email);
 
                 if (!registeredEmailAddressDTO.isAcceptAppropriateEmailAddressStatement() ==
                         registeredEmailAddress.getData().isAcceptAppropriateEmailAddressStatement()) {
