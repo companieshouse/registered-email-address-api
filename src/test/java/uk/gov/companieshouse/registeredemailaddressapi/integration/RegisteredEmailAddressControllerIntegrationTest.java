@@ -90,7 +90,7 @@ class RegisteredEmailAddressControllerIntegrationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"email+middle\\\"-quotes@domain.com", "Test@Test.com ", "223j&kg", "Test@Test..com", "Test@Test"})
+    @ValueSource(strings = {"email+middle\\\"-quotes@domain.com", "Test@Test.com ", "223j&kg", "Test@Test..com", "Test@Test", "Test@Test,com"})
     void testCreateRegisteredEmailAddressInvalidEmailTest(String email) throws Exception {
 
         RegisteredEmailAddressDTO registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(email);
