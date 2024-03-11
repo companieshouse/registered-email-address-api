@@ -11,7 +11,7 @@ public class ValidationUtils {
     private static final Pattern EMAIL_NOTIFY_REGEX =
             Pattern.compile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~\\-]+@([^.@][^@\\s]+)$");
     private static final Pattern HOSTNAME_REGEX =
-            Pattern.compile("^(xn|[a-z0-9]+)(-?-[a-z0-9]+)*$", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("^([a-z0-9]+)(-?-[a-z0-9]+)*$", Pattern.CASE_INSENSITIVE);
     private static final Pattern TLD_PART_REGEX =
             Pattern.compile(
                     "^(?:[a-z]{2,63}|xn--[a-z0-9]+(?:-[a-z0-9]+){1,4})(?:$|[^-])",
@@ -62,10 +62,7 @@ public class ValidationUtils {
                 return false;
             }
         }
-        if (!TLD_PART_REGEX.matcher(parts[parts.length - 1]).matches()) {
-            return false;
-        }
-        return true;
+        return TLD_PART_REGEX.matcher(parts[parts.length - 1]).matches();
     }
     public static void isEmailAddressStatementAccepted(boolean acceptedEmailAddressStatement, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
         if (!acceptedEmailAddressStatement) {

@@ -61,9 +61,9 @@ class RegisteredEmailAddressControllerIntegrationTest {
     protected CompanyProfileService companyProfileService;
 
 
-    @Test
-    void testCreateRegisteredEmailAddressSuccessTest() throws Exception {
-        String email = "Test@Test.com";
+    @ParameterizedTest
+    @ValueSource(strings = {"Test@Test.com", "Test@nx--Test.78.com", "Test@Test-Test.78.com"})
+    void testCreateRegisteredEmailAddressSuccessTest(String email) throws Exception {
         String companyNumber = "123456";
 
         Transaction transaction = helper.generateTransaction(companyNumber);
