@@ -2,7 +2,8 @@ package uk.gov.companieshouse.registeredemailaddressapi.utils;
 
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
-import java.util.ArrayList;
+
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Component
@@ -23,7 +24,7 @@ public class ValidationUtils {
 
     private ValidationUtils() { }
 
-    public static boolean isNotNull(Object toTest, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
+    public static boolean isNotNull(Object toTest, String qualifiedFieldName, List<ValidationStatusError> errs, String loggingContext) {
         if (toTest == null) {
             setErrorMsg(errs, qualifiedFieldName, NOT_NULL_ERROR_MESSAGE.replace("%s", qualifiedFieldName));
             ApiLogger.infoContext(loggingContext , qualifiedFieldName + " Field is null");
@@ -31,7 +32,7 @@ public class ValidationUtils {
         }
         return true;
     }
-    public static void validateEmailAddress(String email, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
+    public static void validateEmailAddress(String email, String qualifiedFieldName, List<ValidationStatusError> errs, String loggingContext) {
 
 
         if (!isEmailAddressValid(email)) {
@@ -64,14 +65,14 @@ public class ValidationUtils {
         }
         return TLD_PART_REGEX.matcher(parts[parts.length - 1]).matches();
     }
-    public static void isEmailAddressStatementAccepted(boolean acceptedEmailAddressStatement, String qualifiedFieldName, ArrayList<ValidationStatusError> errs, String loggingContext) {
+    public static void isEmailAddressStatementAccepted(boolean acceptedEmailAddressStatement, String qualifiedFieldName, List<ValidationStatusError> errs, String loggingContext) {
         if (!acceptedEmailAddressStatement) {
             setErrorMsg(errs, qualifiedFieldName, String.format(ACCEPTED_EMAIL_ADDRESS_STATEMENT_ERROR_MESSAGE, qualifiedFieldName));
             ApiLogger.infoContext(loggingContext, "The " + qualifiedFieldName + " must be True.");
         }
     }
 
-    public static void setErrorMsg(ArrayList<ValidationStatusError> errs, String qualifiedFieldName, String msg){
+    public static void setErrorMsg(List<ValidationStatusError> errs, String qualifiedFieldName, String msg){
         ValidationStatusError validationStatusError = new ValidationStatusError();
         validationStatusError.setError(msg);
         validationStatusError.setLocation(qualifiedFieldName);
