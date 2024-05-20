@@ -5,7 +5,7 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ER
 
 import java.util.HashMap;
 
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -2,6 +2,7 @@ package uk.gov.companieshouse.registeredemailaddressapi.integration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -21,7 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class InterceptorConfigRouteMatchingTest {
 
     @Autowired
-    private RequestMappingHandlerMapping mapping;
+    @Qualifier("requestMappingHandlerMapping")
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @Test
     void interceptorsMatchIntendedRoutesTest() throws Exception {
@@ -58,10 +60,10 @@ class InterceptorConfigRouteMatchingTest {
             }
             HandlerExecutionChain chain;
             try {
-                chain = mapping.getHandler(request);
+                chain = requestMappingHandlerMapping.getHandler(request);
             } catch (HttpRequestMethodNotSupportedException e) {
                 request = new MockHttpServletRequest("POST", requestPath);
-                chain = mapping.getHandler(request);
+                chain = requestMappingHandlerMapping.getHandler(request);
             }
             assertNotNull(chain, "No handler found for path "+requestPath);
 
