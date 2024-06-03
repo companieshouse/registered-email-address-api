@@ -11,7 +11,6 @@ locals {
   lb_listener_rule_priority   = 86
   lb_listener_paths           = [ "/transactions/*/registered-email-address*",
                                   "/private/transactions/*/registered-email-address/filings",
-                                  "/registered-email-address/healthcheck",
                                   "/registered-email-address/company/*/eligibility" ]
   healthcheck_path            = "/registered-email-address-api/healthcheck" #healthcheck path for registered-email-address-api
   healthcheck_matcher         = "200"
