@@ -5,7 +5,7 @@ API for Registered Email Address - provides functionality for changing and retri
 
 ### Requirements
 In order to run the service locally you will need the following:
-- [Java 11](https://www.oracle.com/java/technologies/downloads/#java11)
+- [Java 21](https://www.oracle.com/java/technologies/downloads/#java21)
 - [Maven](https://maven.apache.org/download.cgi)
 - [Git](https://git-scm.com/downloads)
 

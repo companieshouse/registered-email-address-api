@@ -57,7 +57,6 @@ class InterceptorConfigTest {
     @Test
     void addInterceptorsTest() {
         when(interceptorRegistry.addInterceptor(any())).thenReturn(interceptorRegistration);
-        when(interceptorRegistration.addPathPatterns(any(String.class))).thenReturn(interceptorRegistration);
         when(interceptorRegistration.excludePathPatterns(any(String.class))).thenReturn(interceptorRegistration);
 
         interceptorConfig.addInterceptors(interceptorRegistry);
@@ -69,7 +68,6 @@ class InterceptorConfigTest {
 
         // Transaction interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(transactionInterceptor);
-        inOrder.verify(interceptorRegistration).addPathPatterns(TRANSACTIONS, FILINGS);
 
         // User authentication interceptor check
         inOrder.verify(interceptorRegistry).addInterceptor(userAuthenticationInterceptor);

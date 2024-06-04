@@ -13,7 +13,6 @@ public class ApplicationConfig {
     public Supplier<LocalDateTime> dateTimeNow() {
         return LocalDateTime::now;
     }
-
     @Bean
     public Supplier<LocalDate> dateNow() {
         return LocalDate::now;
