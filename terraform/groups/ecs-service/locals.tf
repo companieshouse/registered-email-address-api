@@ -12,7 +12,7 @@ locals {
   lb_listener_paths           = [ "/transactions/*/registered-email-address*",
                                   "/private/transactions/*/registered-email-address/filings",
                                   "/registered-email-address/company/*/eligibility" ]
-  healthcheck_path            = "/registered-email-address-api/healthcheck" #healthcheck path for registered-email-address-api
+  healthcheck_path            = "/registered-email-address/healthcheck" #healthcheck path for registered-email-address-api
   healthcheck_matcher         = "200"
   vpc_name                    = local.stack_secrets["vpc_name"]
   s3_config_bucket            = data.vault_generic_secret.shared_s3.data["config_bucket_name"]
