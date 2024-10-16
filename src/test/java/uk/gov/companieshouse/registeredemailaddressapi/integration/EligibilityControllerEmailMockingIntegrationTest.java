@@ -34,7 +34,7 @@ class EligibilityControllerEmailMockingIntegrationTest {
     @Test
     void EligibilityEndpointMockEmailResponseTest() throws Exception {
 
-        final String companyNumber = "12345ERR";
+        final String companyNumber = "RE123456";
         CompanyProfileApi companyProfileApi = HELPER.generateCompanyProfileApi(companyNumber);
         given(companyProfileService.getCompanyProfile(companyNumber)).willReturn(companyProfileApi);
 

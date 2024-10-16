@@ -11,7 +11,7 @@ import uk.gov.companieshouse.registeredemailaddressapi.service.MockEmailRetrieve
 class MockEmailRetrieverImplTest {
 
     private static final String COMPANY_NUMBER = "12345678";
-    private static final String COMPANY_NUMBER_ERR = "12345ERR";
+    private static final String COMPANY_NUMBER_RE = "RE123456";
     private static final String COMPANY_EMAIL_MOCK = "mockexistingemail@companieshouse.gov.uk";
 
 
@@ -24,7 +24,7 @@ class MockEmailRetrieverImplTest {
         @Test
         void testMockEmailAddressForTestCompany() throws ServiceException {
 
-            RegisteredEmailAddressJson response = mockEmailRetrieverImpl.getRegisteredEmailAddress(COMPANY_NUMBER_ERR);
+            RegisteredEmailAddressJson response = mockEmailRetrieverImpl.getRegisteredEmailAddress(COMPANY_NUMBER_RE);
             assertEquals(COMPANY_EMAIL_MOCK, response.getRegisteredEmailAddress());
         }
 
