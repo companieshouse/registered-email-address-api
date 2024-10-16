@@ -13,22 +13,16 @@ import java.util.HashMap;
 @ConditionalOnExpression("'${env.name}'.equals('stagsbox') || '${env.name}'.equals('livesbox')")
 public class MockEmailRetrieverImpl implements PrivateDataRetrievalService {
 
-    private static final String TEST_COMPANY_PREFIX = "RE";
     private static final String MOCK_EMAIL = "mockexistingemail@companieshouse.gov.uk";
 
     @Override
     public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber) throws ServiceException {
 
         var logMap = new HashMap<String, Object>();
+        ApiLogger.info(format("Mocking Registered Email Address lookup for sandbox environment - returning mock email address for company number %s", companyNumber), logMap);
+        var registeredEmailAddressJson = new RegisteredEmailAddressJson();
+        registeredEmailAddressJson.setRegisteredEmailAddress(MOCK_EMAIL);
+        return registeredEmailAddressJson;
 
-        if (companyNumber.startsWith(TEST_COMPANY_PREFIX)) {
-            ApiLogger.info(format("Mocking Registered Email Address lookup for sandbox environment - returning mock email address for company number %s", companyNumber), logMap);
-            var registeredEmailAddressJson = new RegisteredEmailAddressJson();
-            registeredEmailAddressJson.setRegisteredEmailAddress(MOCK_EMAIL);
-            return registeredEmailAddressJson;
-        } else {
-            ApiLogger.info(format("Mocking Registered Email Address lookup for sandbox environment - returning no email address as company number %s does not start with %s", companyNumber, TEST_COMPANY_PREFIX), logMap);
-            return null;
-        }
     }
 }
