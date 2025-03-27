@@ -19,7 +19,7 @@ terraform {
 }
 
 module "ecs-service" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/ecs-service?ref=1.0.253"
+  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/ecs-service?ref=1.0.296"
   # Environmental configuration
   environment             = var.environment
   aws_region              = var.aws_region
@@ -29,18 +29,18 @@ module "ecs-service" {
   task_execution_role_arn = data.aws_iam_role.ecs_cluster_iam_role.arn
 
   # Load balancer configuration
-  lb_listener_arn                 = data.aws_lb_listener.service_lb_listener.arn
-  lb_listener_rule_priority       = local.lb_listener_rule_priority
-  lb_listener_paths               = local.lb_listener_paths
-  multilb_setup                   = true
-  multilb_listeners               = {
-    "priv-api-lb": {
-      listener_arn                = data.aws_lb_listener.secondary_lb_listener.arn,
-      load_balancer_arn           = data.aws_lb.secondary_lb.arn
+  lb_listener_arn           = data.aws_lb_listener.service_lb_listener.arn
+  lb_listener_rule_priority = local.lb_listener_rule_priority
+  lb_listener_paths         = local.lb_listener_paths
+  multilb_setup             = true
+  multilb_listeners = {
+    "priv-api-lb" : {
+      listener_arn      = data.aws_lb_listener.secondary_lb_listener.arn,
+      load_balancer_arn = data.aws_lb.secondary_lb.arn
     }
-    "pub-api-lb": {
-      load_balancer_arn           = data.aws_lb.service_lb.arn
-      listener_arn                = data.aws_lb_listener.service_lb_listener.arn
+    "pub-api-lb" : {
+      load_balancer_arn = data.aws_lb.service_lb.arn
+      listener_arn      = data.aws_lb_listener.service_lb_listener.arn
     }
   }
 
@@ -61,6 +61,7 @@ module "ecs-service" {
 
   # Service performance and scaling configs
   desired_task_count                 = var.desired_task_count
+  min_task_count                     = var.min_task_count
   max_task_count                     = var.max_task_count
   required_cpus                      = var.required_cpus
   required_memory                    = var.required_memory
@@ -77,10 +78,10 @@ module "ecs-service" {
   multilb_cloudwatch_alarms_enabled = var.multilb_cloudwatch_alarms_enabled
 
   # Service environment variable and secret configs
-  task_environment            = local.task_environment
-  task_secrets                = local.task_secrets
-  app_environment_filename    = local.app_environment_filename
-  use_set_environment_files   = local.use_set_environment_files
+  task_environment          = local.task_environment
+  task_secrets              = local.task_secrets
+  app_environment_filename  = local.app_environment_filename
+  use_set_environment_files = local.use_set_environment_files
 
   # eric options for eric running API module
   use_eric_reverse_proxy    = true
