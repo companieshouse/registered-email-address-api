@@ -44,7 +44,7 @@ endif
 dist: clean build package
 
 dependency-check:
-		dependency-check.sh --project <project> \
+		dependency-check.sh --project registered-email-address-api \
 			--scan './**/*.jar' \
 			--format HTML \
 			--out .
