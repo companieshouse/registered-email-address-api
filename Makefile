@@ -43,20 +43,6 @@ endif
 .PHONY: dist
 dist: clean build package
 
-.PHONY: dependency-check
-dependency-check:
-		dependency-check.sh --project registered-email-address-api \
-			--scan './**/*.jar' \
-			--format HTML \
-			--out .
-
-.PHONY: sonar-analysis
-sonar-analysis:
-		sonar-scanner \
-			-Dproject.settings=sonar-project.properties \
-			-Dsonar.internal.analysis.dbd=false \
-			-Dsonar.dependencyCheck.htmlReportPath=./dependency-check-report.html
-
 .PHONY: sonar
 sonar: dependency-check
 	mvn sonar:sonar -Dsonar.dependencyCheck.htmlReportPath=./target/dependency-check-report.html
