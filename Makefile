@@ -74,7 +74,7 @@ dependency-check:
 			suppressions_home="$${suppressions_home_target_dir}"; \
 		else \
 			mkdir -p "./target"; \
-			git clone $(dependency_check_suppressions_repo_url) "$${suppressions_home_target_dir}" && \
+			git clone git@github.com:companieshouse/dependency-check-suppressions.git "$${suppressions_home_target_dir}" && \
 				suppressions_home="$${suppressions_home_target_dir}"; \
 			if [ -d "$${suppressions_home_target_dir}" ] && [ -n "$(dependency_check_suppressions_repo_branch)" ]; then \
 				cd "$${suppressions_home}"; \
