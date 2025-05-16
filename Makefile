@@ -76,17 +76,12 @@ dependency-check:
 			mkdir -p "./target"; \
 			git clone git@github.com:companieshouse/dependency-check-suppressions.git "$${suppressions_home_target_dir}" && \
 				suppressions_home="$${suppressions_home_target_dir}"; \
-			if [ -d "$${suppressions_home_target_dir}" ] && [ -n "$(dependency_check_suppressions_repo_branch)" ]; then \
-				cd "$${suppressions_home}"; \
-				git checkout $(dependency_check_suppressions_repo_branch); \
-				cd -; \
-			fi; \
 		fi; \
 	fi; \
 	suppressions_path="$${suppressions_home}/suppressions/$(dependency_check_base_suppressions)"; \
 	if [  -f "$${suppressions_path}" ]; then \
 		cp -av "$${suppressions_path}" $(suppressions_file); \
-		mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file); \
+		mvn org.owasp:dependency-check-maven:check -DnvdApiKey=$(NVD_API_KEY) -DfailBuildOnCVSS=$(dependency_check_minimum_cvss) -DassemblyAnalyzerEnabled=$(dependency_check_assembly_analyzer_enabled) -DsuppressionFiles=$(suppressions_file); \
 	else \
 		printf -- "\n ERROR Cannot find suppressions file at '%s'\n" "$${suppressions_path}" >&2; \
 		exit 1; \
@@ -95,4 +90,4 @@ dependency-check:
 .PHONY: security-check
 security-check:
 	mvn org.owasp:dependency-check-maven:update-only
-	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=4 -DassemblyAnalyzerEnabled=false
+	mvn org.owasp:dependency-check-maven:check -DnvdApiKey=$(NVD_API_KEY) -DfailBuildOnCVSS=4 -DassemblyAnalyzerEnabled=false
