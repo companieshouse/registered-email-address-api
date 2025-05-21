@@ -76,11 +76,6 @@ dependency-check:
 			mkdir -p "./target"; \
 			git clone git@github.com:companieshouse/dependency-check-suppressions.git "$${suppressions_home_target_dir}" && \
 				suppressions_home="$${suppressions_home_target_dir}"; \
-			if [ -d "$${suppressions_home_target_dir}" ] && [ -n "$(dependency_check_suppressions_repo_branch)" ]; then \
-				cd "$${suppressions_home}"; \
-				git checkout $(dependency_check_suppressions_repo_branch); \
-				cd -; \
-			fi; \
 		fi; \
 	fi; \
 	suppressions_path="$${suppressions_home}/suppressions/$(dependency_check_base_suppressions)"; \
@@ -93,6 +88,4 @@ dependency-check:
 	fi
 
 .PHONY: security-check
-security-check:
-	mvn org.owasp:dependency-check-maven:update-only
-	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=4 -DassemblyAnalyzerEnabled=false
+security-check: dependency-check
