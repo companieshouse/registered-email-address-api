@@ -38,8 +38,6 @@
         <sonar.password></sonar.password>
         <sonar.projectName>registered-email-address-api</sonar.projectName>
         <sonar.projectKey>uk.gov.companieshouse:registered-email-address-api</sonar.projectKey>
-        <tomcat-embed-core.version>11.0.7</tomcat-embed-core.version>
-        <tomcat-embed-websocket.version>11.0.7</tomcat-embed-websocket.version>
         <swagger-ui.version>5.21.0</swagger-ui.version>
         <encoder.version>1.2.3</encoder.version>
         <sonar-maven-plugin.version>3.10.0.2594</sonar-maven-plugin.version>
@@ -87,16 +85,6 @@
                 <version>${junit-jupiter.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>${tomcat-embed-core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-websocket</artifactId>
-                <version>${tomcat-embed-websocket.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
