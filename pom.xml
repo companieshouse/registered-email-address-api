@@ -21,16 +21,16 @@
         <java.version>21</java.version>
         <spring-boot-starter.version>3.5.3</spring-boot-starter.version>
         <spring-context.version>6.2.10</spring-context.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <maven.compiler.release>21</maven.compiler.release>
-        <api-security-java.version>2.0.2</api-security-java.version>
+        <api-security-java.version>2.0.11</api-security-java.version>
         <structured-logging.version>3.0.40</structured-logging.version>
         <log4j.version>2.20.0</log4j.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <test-containers.version>1.19.8</test-containers.version>
         <rest-service-common-library-version>2.0.7</rest-service-common-library-version>
-        <api-helper-java-library-version>3.0.1</api-helper-java-library-version>
+        <api-helper-java-library-version>3.0.3</api-helper-java-library-version>
         <junit-jupiter.version>5.10.0</junit-jupiter.version>
         <mockito-junit-jupiter.version>5.10.0</mockito-junit-jupiter.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
@@ -41,15 +41,17 @@
         <sonar.projectKey>uk.gov.companieshouse:registered-email-address-api</sonar.projectKey>
         <swagger-ui.version>5.21.0</swagger-ui.version>
         <encoder.version>1.2.3</encoder.version>
-        <sonar-maven-plugin.version>3.10.0.2594</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
         <httpclient.version>4.5.14</httpclient.version>
         <jakarta.servlet-api.version>6.1.0-M2</jakarta.servlet-api.version>
-        <mockito-inline.version>4.5.1</mockito-inline.version>
-        <maven-failsafe-plugin.version>3.1.0</maven-failsafe-plugin.version>
-        <private-api-sdk-java.version>4.0.328</private-api-sdk-java.version>
-        <api-sdk-manager-java-library.version>3.0.9</api-sdk-manager-java-library.version>
+        <mockito-inline.version>5.2.0</mockito-inline.version>
+        <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
+        <private-api-sdk-java.version>4.0.337</private-api-sdk-java.version>
+        <api-sdk-manager-java-library.version>3.0.10</api-sdk-manager-java-library.version>
         <api-sdk-java.version>6.4.1</api-sdk-java.version>
         <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <tomcat-embed-core.version>11.0.10</tomcat-embed-core.version>
     </properties>
     <profiles>
         <profile>
@@ -92,6 +94,39 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat-embed-core.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-lang</groupId>
+                        <artifactId>commons-lang</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>${tomcat-embed-core.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-lang</groupId>
+                        <artifactId>commons-lang</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-el</artifactId>
+                <version>${tomcat-embed-core.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-lang</groupId>
+                        <artifactId>commons-lang</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -116,6 +151,12 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
@@ -194,6 +235,11 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
     </dependencies>
 
