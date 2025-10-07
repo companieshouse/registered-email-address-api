@@ -76,7 +76,7 @@ class RegisteredEmailAddressFilingControllerTest {
     }
 
     private Transaction buildTransaction() {
-        Transaction transaction = new Transaction();
+        transaction = new Transaction();
         transaction.setId(TRANSACTION_ID);
         transaction.setCompanyNumber(TEST_COMPANY_NUMBER);
         return transaction;

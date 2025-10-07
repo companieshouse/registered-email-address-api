@@ -11,7 +11,6 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.CO
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.REGISTERED_EMAIL_ADDRESS;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.NotFoundException;
@@ -94,9 +92,9 @@ class RegisteredEmailAddressFilingServiceTest {
     }
 
     @Test
-    void testRegisteredEmailAddressFilingFilingReturnedSuccessfully() throws NotFoundException, IOException, URIValidationException {
+    void testRegisteredEmailAddressFilingFilingReturnedSuccessfully() throws NotFoundException {
         RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO =
-                helper.generateRegisteredEmailAddressResponseDTO(TEST_EMAIL, UUID.randomUUID().toString());
+                helper.generateRegisteredEmailAddressResponseDTO(TEST_EMAIL);
         // mocking
         when(localDateSupplier.get()).thenReturn(FILING_DUMMY_DATE);
         when(registeredEmailAddressService.getRegisteredEmailAddressSubmission(SUBMISSION_ID)).thenReturn(Optional.of(registeredEmailAddressResponseDTO));
@@ -114,7 +112,7 @@ class RegisteredEmailAddressFilingServiceTest {
     }
 
     @Test
-    void testRegisteredEmailAddressFilingErrorHandledSuccessfully() throws NotFoundException {
+    void testRegisteredEmailAddressFilingErrorHandledSuccessfully() {
         // mocking
         when(registeredEmailAddressService.getRegisteredEmailAddressSubmission(SUBMISSION_ID)).thenReturn(Optional.empty());
         when(registeredEmailAddressRepository.findByTransactionId(TRANSACTION_ID)).thenReturn(buildRegisteredEmailAddressDAO());
@@ -129,7 +127,7 @@ class RegisteredEmailAddressFilingServiceTest {
     }
 
     private Transaction buildTransaction() {
-        Transaction transaction = new Transaction();
+        transaction = new Transaction();
         transaction.setId(TRANSACTION_ID);
         transaction.setCompanyNumber(TEST_COMPANY_NUMBER);
         return transaction;

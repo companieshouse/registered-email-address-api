@@ -59,7 +59,7 @@ class OracleQueryApiDataRetrievalServiceImplTest {
     class GetRegisteredEmailAddressTests {
 
         @BeforeEach
-        public void init()  {
+        void init()  {
             when(apiClientService.getInternalApiClient()).thenReturn(apiClient);
             // Private Get Company Email Data Mocks
             when(apiClient.privateCompanyResourceHandler()).thenReturn(

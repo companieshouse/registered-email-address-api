@@ -1,5 +1,11 @@
 package uk.gov.companieshouse.registeredemailaddressapi.unit.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
 import uk.gov.companieshouse.registeredemailaddressapi.controller.RegisteredEmailAddressController;
@@ -22,12 +29,6 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseDTO;
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressControllerTest {
 
@@ -36,10 +37,12 @@ class RegisteredEmailAddressControllerTest {
     private RegisteredEmailAddressDTO registeredEmailAddressDTO;
 
     private RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO;
+    
     private static final String REQUEST_ID = UUID.randomUUID().toString();
     private static final String TRANSACTION_ID = UUID.randomUUID().toString();
     private static final String USER_ID = UUID.randomUUID().toString();
     private static final String EMAIL_ADDRESS = "Test@Test.com";
+    
     @Mock
     private RegisteredEmailAddressService registeredEmailAddressService;
 
@@ -52,7 +55,7 @@ class RegisteredEmailAddressControllerTest {
     @BeforeEach
     void init() {
         registeredEmailAddressDTO = helper.generateRegisteredEmailAddressDTO(EMAIL_ADDRESS);
-        registeredEmailAddressResponseDTO = helper.generateRegisteredEmailAddressResponseDTO(EMAIL_ADDRESS, USER_ID);
+        registeredEmailAddressResponseDTO = helper.generateRegisteredEmailAddressResponseDTO(EMAIL_ADDRESS);
     }
 
     @Test
@@ -83,7 +86,7 @@ class RegisteredEmailAddressControllerTest {
     }
 
     @Test
-    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, NotFoundException, SubmissionAlreadyExistsException, TransactionNotOpenException, CompanyNotFoundException, EligibilityException, InvalidEmailAddressException {
+    void testUpdateRegisteredEmailAddressSuccessTest() throws ServiceException, NotFoundException, TransactionNotOpenException, CompanyNotFoundException, EligibilityException, InvalidEmailAddressException {
 
         when(this.registeredEmailAddressService.updateRegisteredEmailAddress(
                 transaction,
@@ -132,8 +135,6 @@ class RegisteredEmailAddressControllerTest {
     @Test
     void testGetRegisteredEmailAddressTest() throws NotFoundException {
 
-        RegisteredEmailAddressResponseDTO registeredEmailAddressResponseDTO =
-                helper.generateRegisteredEmailAddressResponseDTO("test@Test.com", UUID.randomUUID().toString());
         when(this.registeredEmailAddressService
                 .getRegisteredEmailAddress(TRANSACTION_ID, REQUEST_ID)).thenReturn(registeredEmailAddressResponseDTO);
 
@@ -143,7 +144,7 @@ class RegisteredEmailAddressControllerTest {
         );
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
-        assertEquals("test@Test.com", response.getBody().getData().getRegisteredEmailAddress());
+        assertEquals(EMAIL_ADDRESS, response.getBody().getData().getRegisteredEmailAddress());
 
         verify(registeredEmailAddressService).getRegisteredEmailAddress(
                 TRANSACTION_ID, REQUEST_ID);

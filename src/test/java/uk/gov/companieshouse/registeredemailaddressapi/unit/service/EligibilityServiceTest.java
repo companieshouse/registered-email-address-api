@@ -20,7 +20,6 @@ import uk.gov.companieshouse.registeredemailaddressapi.eligibility.EligibilitySt
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.impl.CompanyEmailValidation;
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.impl.CompanyStatusValidation;
 import uk.gov.companieshouse.registeredemailaddressapi.eligibility.impl.CompanyTypeValidation;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.EligibilityException;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.service.CompanyProfileService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.EligibilityService;
@@ -75,7 +74,7 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void testInvalidCompanyStatus() throws EligibilityException, ServiceException {
+    void testInvalidCompanyStatus() throws ServiceException {
         // GIVEN
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
@@ -91,7 +90,7 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void testInvalidCompanyType() throws EligibilityException, ServiceException {
+    void testInvalidCompanyType() throws ServiceException {
         // GIVEN
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
@@ -107,7 +106,7 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void testInvalidNoRegisteredEmailAddressExistsNull() throws EligibilityException, ServiceException {
+    void testInvalidNoRegisteredEmailAddressExistsNull() throws ServiceException {
         // GIVEN
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
@@ -125,7 +124,7 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void testInvalidNoRegisteredEmailAddressExistsEmpty() throws EligibilityException, ServiceException {
+    void testInvalidNoRegisteredEmailAddressExistsEmpty() throws ServiceException {
         // GIVEN
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
@@ -146,7 +145,7 @@ class EligibilityServiceTest {
     }
 
     @Test
-    void testInvalidNoRegisteredEmailAddressExistsBlank() throws EligibilityException, ServiceException {
+    void testInvalidNoRegisteredEmailAddressExistsBlank() throws ServiceException {
         // GIVEN
         CompanyProfileApi companyProfileApi = new CompanyProfileApi();
         companyProfileApi.setCompanyNumber(COMPANY_NUMBER);
