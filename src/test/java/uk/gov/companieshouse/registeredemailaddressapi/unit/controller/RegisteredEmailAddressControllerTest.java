@@ -72,7 +72,7 @@ class RegisteredEmailAddressControllerTest {
                 USER_ID
         );
 
-        assertEquals(HttpStatus.CREATED.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
+        assertEquals(HttpStatus.CREATED.value(), createRegisteredEmailAddressResponse.getStatusCode().value());
         assertEquals(registeredEmailAddressResponseDTO, createRegisteredEmailAddressResponse.getBody());
 
         verify(registeredEmailAddressService).createRegisteredEmailAddress(
@@ -99,7 +99,7 @@ class RegisteredEmailAddressControllerTest {
                 USER_ID
         );
 
-        assertEquals(HttpStatus.OK.value(), createRegisteredEmailAddressResponse.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), createRegisteredEmailAddressResponse.getStatusCode().value());
         assertEquals(registeredEmailAddressResponseDTO, createRegisteredEmailAddressResponse.getBody());
 
         verify(registeredEmailAddressService).updateRegisteredEmailAddress(
@@ -122,7 +122,7 @@ class RegisteredEmailAddressControllerTest {
                 REQUEST_ID
         );
 
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals(validationStatusResponse, response.getBody());
 
         verify(registeredEmailAddressService).getValidationStatus(
@@ -142,7 +142,7 @@ class RegisteredEmailAddressControllerTest {
                 REQUEST_ID
         );
 
-        assertEquals(HttpStatus.OK.value(), response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
         assertEquals("test@Test.com", response.getBody().getData().getRegisteredEmailAddress());
 
         verify(registeredEmailAddressService).getRegisteredEmailAddress(

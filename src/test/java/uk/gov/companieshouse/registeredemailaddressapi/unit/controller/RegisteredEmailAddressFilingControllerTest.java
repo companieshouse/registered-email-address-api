@@ -58,7 +58,7 @@ class RegisteredEmailAddressFilingControllerTest {
 
         assertNotNull(createRegisteredEmailAddressFilingResponse.getBody());
         assertEquals(1, createRegisteredEmailAddressFilingResponse.getBody().length);
-        assertEquals(HttpStatus.OK.value(), createRegisteredEmailAddressFilingResponse.getStatusCodeValue());
+        assertEquals(HttpStatus.OK.value(), createRegisteredEmailAddressFilingResponse.getStatusCode().value());
         assertEquals(filing.getDescription(), createRegisteredEmailAddressFilingResponse.getBody()[0].getDescription());
     }
 

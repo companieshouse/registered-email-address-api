@@ -44,6 +44,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
+        @SuppressWarnings("unchecked")
         final Map<String, String> pathVariables =
                 (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var transactionId = pathVariables.get(TRANSACTION_ID_KEY);
