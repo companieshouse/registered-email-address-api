@@ -40,7 +40,7 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TR
  * conflicts with existing, non-compatible bean definition of same name and class [uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor]
  *
  */
-@Component("UserAuthenticationInterceptor")
+@Component("userAuthenticationInterceptor2")
 public class UserAuthenticationInterceptor implements HandlerInterceptor {
 
     /**
