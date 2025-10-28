@@ -51,7 +51,7 @@
         <api-sdk-java.version>6.4.1</api-sdk-java.version>
         <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
-        <tomcat-embed-core.version>11.0.10</tomcat-embed-core.version>
+        <tomcat-embed-core.version>11.0.12</tomcat-embed-core.version>
     </properties>
     <profiles>
         <profile>
