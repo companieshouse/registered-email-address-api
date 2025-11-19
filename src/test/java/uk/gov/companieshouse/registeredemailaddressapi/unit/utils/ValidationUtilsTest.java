@@ -27,7 +27,7 @@ class ValidationUtilsTest {
 
     @BeforeEach
     void setUp() {
-
+        errors = new ArrayList<ValidationStatusError>();
     }
 
     @Test
@@ -39,7 +39,6 @@ class ValidationUtilsTest {
     @Test
     @DisplayName("Validate a string is not null unsuccessfully - null object")
     void validateNotNull_Unsuccessful() {
-        var errors = new ArrayList<ValidationStatusError>();
         boolean isNotNull = ValidationUtils.isNotNull(null, DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
 
         assertFalse(isNotNull);
@@ -50,7 +49,6 @@ class ValidationUtilsTest {
     @Test
     @DisplayName("Validate Email successfully")
     void validateEmail_Successful() {
-        var errors = new ArrayList<ValidationStatusError>();
         validateEmailAddress(EMAIL_TEST, DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
         assertEquals(0, errors.size());
         assertTrue(errors.isEmpty());
@@ -59,7 +57,6 @@ class ValidationUtilsTest {
     @Test
     @DisplayName("Validate Email unsuccessfully")
     void validateEmail_Unsuccessful() {
-        var errors = new ArrayList<ValidationStatusError>();
         validateEmailAddress("lorem@ipsum", DUMMY_PARENT_FIELD, errors, LOGGING_CONTEXT);
         assertEquals(1, errors.size());
         assertEquals("Email address is not in the correct format for parentField, like name@example.com", errors.get(0).getError());

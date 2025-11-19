@@ -27,11 +27,16 @@ import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 @Validated
 public class EligibilityController {
 
-    @Autowired
-    private CompanyProfileService companyProfileService;
+    private final CompanyProfileService companyProfileService;
+
+    private final EligibilityService eligibilityService;
 
     @Autowired
-    private EligibilityService eligibilityService;
+    public EligibilityController(CompanyProfileService companyProfileService, EligibilityService eligibilityService) {
+        super();
+        this.companyProfileService = companyProfileService;
+        this.eligibilityService = eligibilityService;
+    }
 
     @GetMapping("/registered-email-address/company/{company-number}/eligibility")
     public ResponseEntity<CompanyValidationResponse> getEligibility(

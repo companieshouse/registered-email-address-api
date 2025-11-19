@@ -1,27 +1,5 @@
 package uk.gov.companieshouse.registeredemailaddressapi.integration;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
-import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
-import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
-import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
-import uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
-import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
-import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
-import uk.gov.companieshouse.registeredemailaddressapi.service.CompanyProfileService;
-import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
-import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
-
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +13,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
 import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
+import uk.gov.companieshouse.registeredemailaddressapi.integration.utils.Helper;
+import uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dao.RegisteredEmailAddressDAO;
+import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressDTO;
+import uk.gov.companieshouse.registeredemailaddressapi.repository.RegisteredEmailAddressRepository;
+import uk.gov.companieshouse.registeredemailaddressapi.service.CompanyProfileService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrievalService;
+import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 class RegisteredEmailAddressControllerIntegrationTest {
@@ -44,20 +45,20 @@ class RegisteredEmailAddressControllerIntegrationTest {
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
+    @MockitoBean
     protected RegisteredEmailAddressRepository registeredEmailAddressRepository;
 
-    @MockBean
+    @MockitoBean
     protected TransactionService transactionService;
 
-    @MockBean
+    @MockitoBean
     @Qualifier("oracleQueryApiDataRetrievalServiceImpl")
     protected PrivateDataRetrievalService privateDataRetrievalService;
 
-    @MockBean
+    @MockitoBean
     protected UserAuthenticationInterceptor userAuthenticationInterceptor;
 
-    @MockBean
+    @MockitoBean
     protected CompanyProfileService companyProfileService;
 
 

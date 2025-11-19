@@ -23,11 +23,16 @@ public class OracleQueryApiDataRetrievalServiceImpl implements PrivateDataRetrie
     private static final String COMPANY_NUMBER = "company_number";
     private static final String REGISTERED_EMAIL_ADDRESS_URI_SUFFIX = "/company/%s/registered-email-address";
 
-    @Autowired
-    private ApiClientService apiClientService;
-
     @Value("${ORACLE_QUERY_API_URL}")
     private String oracleQueryApiUrl;
+
+    private final ApiClientService apiClientService;
+
+    @Autowired
+    public OracleQueryApiDataRetrievalServiceImpl(ApiClientService apiClientService) {
+        super();
+        this.apiClientService = apiClientService;
+    }
 
     @Override
     public RegisteredEmailAddressJson getRegisteredEmailAddress(String companyNumber)

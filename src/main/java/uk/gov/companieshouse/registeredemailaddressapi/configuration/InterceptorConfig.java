@@ -6,12 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
 import uk.gov.companieshouse.api.interceptor.TokenPermissionsInterceptor;
-import uk.gov.companieshouse.registeredemailaddressapi.interceptor.TransactionInterceptor;
-import uk.gov.companieshouse.registeredemailaddressapi.interceptor.LoggingInterceptor;
-import uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor;
 import uk.gov.companieshouse.registeredemailaddressapi.interceptor.FilingInterceptor;
+import uk.gov.companieshouse.registeredemailaddressapi.interceptor.LoggingInterceptor;
+import uk.gov.companieshouse.registeredemailaddressapi.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor;
 
 @Configuration
 @ComponentScan("uk.gov.companieshouse.api.interceptor")
@@ -24,20 +25,27 @@ public class InterceptorConfig implements WebMvcConfigurer {
         FILINGS
     };
 
-    @Autowired
-    private LoggingInterceptor loggingInterceptor;
+    private final LoggingInterceptor loggingInterceptor;
+
+    private final TransactionInterceptor transactionInterceptor;
+
+    private final UserAuthenticationInterceptor userAuthenticationInterceptor;
+
+    private final InternalUserInterceptor internalUserInterceptor;
+
+    private final FilingInterceptor filingInterceptor;
 
     @Autowired
-    private TransactionInterceptor transactionInterceptor;
-
-    @Autowired
-    private UserAuthenticationInterceptor userAuthenticationInterceptor;
-
-    @Autowired
-    private InternalUserInterceptor internalUserInterceptor;
-
-    @Autowired
-    private FilingInterceptor filingInterceptor;
+    public InterceptorConfig(LoggingInterceptor loggingInterceptor, TransactionInterceptor transactionInterceptor,
+            UserAuthenticationInterceptor userAuthenticationInterceptor, InternalUserInterceptor internalUserInterceptor,
+            FilingInterceptor filingInterceptor) {
+        super();
+        this.loggingInterceptor = loggingInterceptor;
+        this.transactionInterceptor = transactionInterceptor;
+        this.userAuthenticationInterceptor = userAuthenticationInterceptor;
+        this.internalUserInterceptor = internalUserInterceptor;
+        this.filingInterceptor = filingInterceptor;
+    }
 
     /**
      * Setup the interceptors to run against endpoints when the endpoints are called

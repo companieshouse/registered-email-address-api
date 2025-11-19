@@ -66,7 +66,7 @@ public class Helper {
         return registeredEmailAddressDAO;
     }
 
-    public RegisteredEmailAddressResponseDTO generateRegisteredEmailAddressResponseDTO(String email, String transactionId){
+    public RegisteredEmailAddressResponseDTO generateRegisteredEmailAddressResponseDTO(String email){
         RegisteredEmailAddressResponseData registeredEmailAddressData =  new RegisteredEmailAddressResponseData();
         registeredEmailAddressData.setRegisteredEmailAddress(email);
         registeredEmailAddressData.setAcceptAppropriateEmailAddressStatement(true);

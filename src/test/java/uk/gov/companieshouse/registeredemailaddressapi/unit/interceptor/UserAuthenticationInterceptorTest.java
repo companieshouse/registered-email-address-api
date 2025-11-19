@@ -77,7 +77,7 @@ class UserAuthenticationInterceptorTest {
 
         pathParams.remove(COMPANY_NUMBER_KEY);
         Transaction transaction = new Transaction();
-        transaction.setCompanyNumber(COMPANY_NUMBER);;
+        transaction.setCompanyNumber(COMPANY_NUMBER);
         when(mockHttpServletRequest.getAttribute(TOKEN_PERMISSIONS)).thenReturn(mockTokenPermissions);
         when(mockHttpServletRequest.getAttribute(TRANSACTION_KEY)).thenReturn(transaction);
         when(mockTokenPermissions.hasPermission(Permission.Key.COMPANY_NUMBER, COMPANY_NUMBER)).thenReturn(true);

@@ -3,7 +3,6 @@ package uk.gov.companieshouse.registeredemailaddressapi.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
@@ -23,7 +22,7 @@ public class EligibilityService {
     private final CompanyProfileService companyProfileService;
 
     @Autowired
-    public EligibilityService(@Qualifier("rea-update-eligibility-rules") List<EligibilityRule<CompanyProfileApi>> eligibilityRules, CompanyProfileService companyProfileService){
+    public EligibilityService(List<EligibilityRule<CompanyProfileApi>> eligibilityRules, CompanyProfileService companyProfileService){
         this.eligibilityRules = eligibilityRules;
         this.companyProfileService = companyProfileService;
     }

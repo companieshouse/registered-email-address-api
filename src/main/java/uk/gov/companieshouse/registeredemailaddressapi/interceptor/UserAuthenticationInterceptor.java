@@ -32,8 +32,15 @@ import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TR
  * (based on path variable or transaction data) and has the company_rea=update
  * permission.
  * Checks are skipped if an API key is being used.
+ * 
+ * Note component name override is required to avoid the following exception during initialisation of Spring application context
+ * 
+ * Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionException: 
+ * Annotation-specified bean name 'userAuthenticationInterceptor' for bean class [uk.gov.companieshouse.api.interceptor.UserAuthenticationInterceptor] 
+ * conflicts with existing, non-compatible bean definition of same name and class [uk.gov.companieshouse.registeredemailaddressapi.interceptor.UserAuthenticationInterceptor]
+ *
  */
-@Component("UserAuthenticationInterceptor")
+@Component("userAuthenticationInterceptor2")
 public class UserAuthenticationInterceptor implements HandlerInterceptor {
 
     /**
@@ -44,6 +51,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
+        @SuppressWarnings("unchecked")
         final Map<String, String> pathVariables =
                 (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         final var transactionId = pathVariables.get(TRANSACTION_ID_KEY);
