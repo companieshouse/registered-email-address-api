@@ -57,7 +57,7 @@ class EligibilityControllerTest {
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         // THEN
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals(EligibilityStatusCode.COMPANY_VALID_FOR_SERVICE, response.getBody().getEligibilityStatusCode());
 
     }
@@ -78,7 +78,7 @@ class EligibilityControllerTest {
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         // THEN
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals(EligibilityStatusCode.INVALID_COMPANY_STATUS, response.getBody().getEligibilityStatusCode());
     }
 
@@ -91,7 +91,7 @@ class EligibilityControllerTest {
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         // THEN
-        assertEquals(500, response.getStatusCodeValue());
+        assertEquals(500, response.getStatusCode().value());
     }
 
     @Test
@@ -103,7 +103,7 @@ class EligibilityControllerTest {
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         // THEN
-        assertEquals(500, response.getStatusCodeValue());
+        assertEquals(500, response.getStatusCode().value());
     }
 
     @Test
@@ -115,7 +115,7 @@ class EligibilityControllerTest {
         ResponseEntity<CompanyValidationResponse> response = eligibilityController.getEligibility(COMPANY_NUMBER, ERIC_REQUEST_ID);
 
         // THEN
-        assertEquals(404, response.getStatusCodeValue());
+        assertEquals(404, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(EligibilityStatusCode.COMPANY_NOT_FOUND, response.getBody().getEligibilityStatusCode());
     }

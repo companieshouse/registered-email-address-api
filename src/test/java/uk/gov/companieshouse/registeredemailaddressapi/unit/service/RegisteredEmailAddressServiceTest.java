@@ -1,5 +1,24 @@
 package uk.gov.companieshouse.registeredemailaddressapi.unit.service;
 
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
+import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
+import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -7,6 +26,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
@@ -30,25 +50,6 @@ import uk.gov.companieshouse.registeredemailaddressapi.service.PrivateDataRetrie
 import uk.gov.companieshouse.registeredemailaddressapi.service.RegisteredEmailAddressService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 import uk.gov.companieshouse.registeredemailaddressapi.service.ValidationService;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.CLOSED;
-import static uk.gov.companieshouse.api.model.transaction.TransactionStatus.OPEN;
-import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.FILING_KIND;
 
 @ExtendWith(MockitoExtension.class)
 class RegisteredEmailAddressServiceTest {
@@ -209,7 +210,7 @@ class RegisteredEmailAddressServiceTest {
     }
 
     @Test
-    void testUpdateRegisteredEmailAddressIsSuccessful() throws ServiceException, NotFoundException, SubmissionAlreadyExistsException, TransactionNotOpenException, CompanyNotFoundException, EligibilityException, InvalidEmailAddressException {
+    void testUpdateRegisteredEmailAddressIsSuccessful() throws ServiceException, NotFoundException, TransactionNotOpenException, CompanyNotFoundException, EligibilityException, InvalidEmailAddressException {
         // GIVEN
 
         Transaction transaction = buildTransaction();
