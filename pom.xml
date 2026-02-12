@@ -26,7 +26,7 @@
         <maven.compiler.release>21</maven.compiler.release>
         <api-security-java.version>2.0.11</api-security-java.version>
         <structured-logging.version>3.0.40</structured-logging.version>
-        <log4j.version>2.20.0</log4j.version>
+        <log4j.version>2.25.3</log4j.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <test-containers.version>1.19.8</test-containers.version>
         <rest-service-common-library-version>2.0.7</rest-service-common-library-version>
