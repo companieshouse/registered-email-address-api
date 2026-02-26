@@ -19,14 +19,14 @@
 
     <properties>
         <java.version>21</java.version>
-        <spring-boot-starter.version>3.5.3</spring-boot-starter.version>
+        <spring-boot-starter.version>3.5.9</spring-boot-starter.version>
         <spring-context.version>6.2.10</spring-context.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <maven.compiler.release>21</maven.compiler.release>
         <api-security-java.version>2.0.11</api-security-java.version>
         <structured-logging.version>3.0.40</structured-logging.version>
-        <log4j.version>2.20.0</log4j.version>
+        <log4j.version>2.25.3</log4j.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <test-containers.version>1.19.8</test-containers.version>
         <rest-service-common-library-version>2.0.7</rest-service-common-library-version>
@@ -46,12 +46,16 @@
         <jakarta.servlet-api.version>6.1.0-M2</jakarta.servlet-api.version>
         <mockito-inline.version>5.2.0</mockito-inline.version>
         <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
-        <private-api-sdk-java.version>4.0.337</private-api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.451</private-api-sdk-java.version>
         <api-sdk-manager-java-library.version>3.0.10</api-sdk-manager-java-library.version>
         <api-sdk-java.version>6.4.1</api-sdk-java.version>
         <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
-        <tomcat-embed-core.version>11.0.10</tomcat-embed-core.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <tomcat-embed-core.version>11.0.18</tomcat-embed-core.version>
+        <assertj-core.version>3.27.7</assertj-core.version>
+        <logback.version>1.5.28</logback.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <guava.version>33.5.0-android</guava.version>
     </properties>
     <profiles>
         <profile>
@@ -127,6 +131,36 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj-core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -151,12 +185,6 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
