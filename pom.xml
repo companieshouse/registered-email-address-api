@@ -129,6 +129,12 @@
                 <groupId>org.webjars</groupId>
                 <artifactId>swagger-ui</artifactId>
                 <version>${swagger-ui.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.webjars.npm</groupId>
+                        <artifactId>dompurify</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Source: https://mvnrepository.com/artifact/org.junit/junit-bom -->
             <dependency>
