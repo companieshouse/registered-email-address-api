@@ -2,11 +2,10 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!-- lookup parent from repository -->
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.12</version>
+        <version>2.1.13</version>
         <relativePath/>
     </parent>
 
@@ -19,43 +18,79 @@
 
     <properties>
         <java.version>21</java.version>
-        <spring-boot-starter.version>3.5.9</spring-boot-starter.version>
-        <spring-context.version>6.2.10</spring-context.version>
-        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <maven.compiler.release>21</maven.compiler.release>
-        <api-security-java.version>2.0.11</api-security-java.version>
-        <structured-logging.version>3.0.40</structured-logging.version>
+
+        <!-- Plugin Versions -->
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.sonarsource.scanner.maven/sonar-maven-plugin -->
+        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
+        <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
+
+        <!-- Dependency Versions -->
+        <spring-boot-starter.version>3.5.11</spring-boot-starter.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-context -->
+        <spring-context.version>6.2.16</spring-context.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
         <log4j.version>2.25.3</log4j.version>
-        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
-        <test-containers.version>1.19.8</test-containers.version>
-        <rest-service-common-library-version>2.0.7</rest-service-common-library-version>
+        <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
+        <test-containers.version>2.0.3</test-containers.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.junit/junit-bom -->
+        <junit-jupiter.version>6.0.3</junit-jupiter.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+        <mockito-junit-jupiter.version>5.22.0</mockito-junit-jupiter.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
+        <swagger-ui.version>5.32.0</swagger-ui.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.owasp.encoder/encoder -->
+        <encoder.version>1.2.3</encoder.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <httpclient.version>4.5.14</httpclient.version>
+        <!-- Source: https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+        <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.mockito/mockito-inline -->
+        <mockito-inline.version>5.2.0</mockito-inline.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-failsafe-plugin -->
+        <maven-failsafe-plugin.version>3.5.5</maven-failsafe-plugin.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
+        <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+        <tomcat-embed-core.version>11.0.18</tomcat-embed-core.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+        <assertj-core.version>3.27.7</assertj-core.version>
+        <!-- Source: https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+        <logback.version>1.5.32</logback.version>
+        <!-- Source: https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <guava.version>33.5.0-jre</guava.version>
+        <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
+        <jackson-bom.version>2.21.1</jackson-bom.version>
+
+        <!-- Companies House Internal Dependencies -->
+        <api-security-java.version>2.0.24</api-security-java.version>
+        <structured-logging.version>3.0.51</structured-logging.version>
+        <rest-service-common-library-version>2.0.10</rest-service-common-library-version>
         <api-helper-java-library-version>3.0.3</api-helper-java-library-version>
-        <junit-jupiter.version>5.10.0</junit-jupiter.version>
-        <mockito-junit-jupiter.version>5.10.0</mockito-junit-jupiter.version>
-        <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
+        <private-api-sdk-java.version>4.0.476</private-api-sdk-java.version>
+        <api-sdk-manager-java-library.version>3.0.16</api-sdk-manager-java-library.version>
+        <api-sdk-java.version>6.6.8</api-sdk-java.version>
+
+        <!-- Sonar Properties -->
+        <!--suppress XmlUnresolvedReference -->
         <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+        <!--suppress CheckTagEmptyBody -->
         <sonar.login></sonar.login>
+        <!--suppress CheckTagEmptyBody -->
         <sonar.password></sonar.password>
         <sonar.projectName>registered-email-address-api</sonar.projectName>
         <sonar.projectKey>uk.gov.companieshouse:registered-email-address-api</sonar.projectKey>
-        <swagger-ui.version>5.21.0</swagger-ui.version>
-        <encoder.version>1.2.3</encoder.version>
-        <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
-        <httpclient.version>4.5.14</httpclient.version>
-        <jakarta.servlet-api.version>6.1.0-M2</jakarta.servlet-api.version>
-        <mockito-inline.version>5.2.0</mockito-inline.version>
-        <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
-        <private-api-sdk-java.version>4.0.451</private-api-sdk-java.version>
-        <api-sdk-manager-java-library.version>3.0.10</api-sdk-manager-java-library.version>
-        <api-sdk-java.version>6.4.1</api-sdk-java.version>
-        <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
-        <commons-lang3.version>3.20.0</commons-lang3.version>
-        <tomcat-embed-core.version>11.0.18</tomcat-embed-core.version>
-        <assertj-core.version>3.27.7</assertj-core.version>
-        <logback.version>1.5.28</logback.version>
-        <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <guava.version>33.5.0-android</guava.version>
     </properties>
     <profiles>
         <profile>
@@ -67,6 +102,15 @@
     </profiles>
     <dependencyManagement>
         <dependencies>
+            <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-bom -->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
@@ -74,23 +118,19 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot-starter.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-context -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring-context.version}</version>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
             <dependency>
                 <groupId>org.webjars</groupId>
                 <artifactId>swagger-ui</artifactId>
                 <version>${swagger-ui.version}</version>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.junit/junit-bom -->
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
@@ -98,6 +138,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-core</artifactId>
@@ -109,6 +150,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-websocket -->
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-websocket</artifactId>
@@ -120,6 +162,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el -->
             <dependency>
                 <groupId>org.apache.tomcat.embed</groupId>
                 <artifactId>tomcat-embed-el</artifactId>
@@ -131,35 +174,55 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.assertj/assertj-core -->
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj-core.version}</version>
                 <scope>test</scope>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
                 <version>${logback.version}</version>
                 <scope>compile</scope>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
                 <scope>compile</scope>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>${commons-beanutils.version}</version>
                 <scope>compile</scope>
             </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
                 <scope>compile</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot-starter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
