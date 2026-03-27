@@ -32,34 +32,6 @@
                 <artifactId>swagger-ui</artifactId>
                 <version>${swagger-ui.version}</version>
             </dependency>
-<!--            &lt;!&ndash; Source: https://mvnrepository.com/artifact/org.assertj/assertj-core &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>org.assertj</groupId>-->
-<!--                <artifactId>assertj-core</artifactId>-->
-<!--                <version>${assertj-core.version}</version>-->
-<!--                <scope>test</scope>-->
-<!--            </dependency>-->
-<!--            &lt;!&ndash; Source: https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>commons-beanutils</groupId>-->
-<!--                <artifactId>commons-beanutils</artifactId>-->
-<!--                <version>${commons-beanutils.version}</version>-->
-<!--                <scope>compile</scope>-->
-<!--            </dependency>-->
-<!--            &lt;!&ndash; Source: https://mvnrepository.com/artifact/com.google.guava/guava &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>com.google.guava</groupId>-->
-<!--                <artifactId>guava</artifactId>-->
-<!--                <version>${guava.version}</version>-->
-<!--                <scope>compile</scope>-->
-<!--            </dependency>-->
-<!--            &lt;!&ndash; Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 &ndash;&gt;-->
-<!--            <dependency>-->
-<!--                <groupId>org.apache.commons</groupId>-->
-<!--                <artifactId>commons-lang3</artifactId>-->
-<!--                <version>${commons-lang3.version}</version>-->
-<!--                <scope>compile</scope>-->
-<!--            </dependency>-->
             <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
             <dependency>
                 <groupId>io.opentelemetry.instrumentation</groupId>
@@ -106,10 +78,6 @@
         <spring-boot-starter.version>4.0.4</spring-boot-starter.version>
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
-        <test-containers.version>2.0.4</test-containers.version>
-        <!-- Source: https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
-        <mockito-junit-jupiter.version>5.23.0</mockito-junit-jupiter.version>
         <!-- Source: https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
         <swagger-ui.version>5.32.1</swagger-ui.version>
         <!-- Source: https://mvnrepository.com/artifact/org.owasp.encoder/encoder -->
@@ -277,16 +245,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mongodb-test</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
