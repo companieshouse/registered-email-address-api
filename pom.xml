@@ -75,13 +75,13 @@
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
 
         <!-- Dependency Versions -->
-        <spring-boot-starter.version>4.0.4</spring-boot-starter.version>
+        <spring-boot-starter.version>4.0.5</spring-boot-starter.version>
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <!-- Source: https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
         <swagger-ui.version>5.32.1</swagger-ui.version>
         <!-- Source: https://mvnrepository.com/artifact/org.owasp.encoder/encoder -->
-        <encoder.version>1.2.3</encoder.version>
+        <encoder.version>1.4.0</encoder.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <httpclient.version>4.5.14</httpclient.version>
         <!-- Source: https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
@@ -96,8 +96,6 @@
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <!-- Source: https://mvnrepository.com/artifact/com.google.guava/guava -->
         <guava.version>33.5.0-jre</guava.version>
-        <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson/jackson-bom -->
-        <jackson-bom.version>2.21.2</jackson-bom.version>
         <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
         <opentelemetry.version>2.26.1</opentelemetry.version>
         <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
@@ -106,9 +104,9 @@
         <!-- Companies House Internal Dependencies -->
         <api-security-java.version>2.0.25</api-security-java.version>
         <structured-logging.version>3.0.52</structured-logging.version>
-        <rest-service-common-library-version>2.0.11</rest-service-common-library-version>
-        <api-helper-java-library-version>3.0.3</api-helper-java-library-version>
-        <private-api-sdk-java.version>4.0.490</private-api-sdk-java.version>
+        <rest-service-common-library.version>2.0.11</rest-service-common-library.version>
+        <api-helper-java-library.version>3.0.3</api-helper-java-library.version>
+        <private-api-sdk-java.version>4.0.492</private-api-sdk-java.version>
         <api-sdk-manager-java-library.version>3.0.18</api-sdk-manager-java-library.version>
         <api-sdk-java.version>6.6.13</api-sdk-java.version>
 
@@ -180,12 +178,12 @@
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>rest-service-common-library</artifactId>
-            <version>${rest-service-common-library-version}</version>
+            <version>${rest-service-common-library.version}</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-helper-java</artifactId>
-            <version>${api-helper-java-library-version}</version>
+            <version>${api-helper-java-library.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
