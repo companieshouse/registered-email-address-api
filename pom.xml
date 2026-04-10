@@ -116,6 +116,14 @@
                 <scope>runtime</scope>
             </dependency>
 
+            <!-- Source: https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>4.34.1</version>
+                <scope>compile</scope>
+            </dependency>
+
             <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
