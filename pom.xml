@@ -43,6 +43,8 @@
 
         <!-- Dependency Versions -->
         <spring-boot-starter.version>4.0.5</spring-boot-starter.version>
+        <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
+        <jackson3-bom.version>3.1.1</jackson3-bom.version>
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <!-- Source: https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
@@ -96,6 +98,7 @@
                 <artifactId>swagger-ui</artifactId>
                 <version>${swagger-ui.version}</version>
             </dependency>
+
             <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.instrumentation/opentelemetry-instrumentation-bom -->
             <dependency>
                 <groupId>io.opentelemetry.instrumentation</groupId>
@@ -104,6 +107,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry.proto/opentelemetry-proto -->
+            <dependency>
+                <groupId>io.opentelemetry.proto</groupId>
+                <artifactId>opentelemetry-proto</artifactId>
+                <version>1.10.0-alpha</version>
+                <scope>runtime</scope>
+            </dependency>
+
             <!-- Source: https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-bom -->
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -112,6 +124,20 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>tools.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson3-bom.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
             <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
