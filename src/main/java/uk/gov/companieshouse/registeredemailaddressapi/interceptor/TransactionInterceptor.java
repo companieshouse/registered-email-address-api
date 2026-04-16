@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.interceptor;
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.ERIC_REQUEST_ID_KEY;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_ID_KEY;
 import static uk.gov.companieshouse.registeredemailaddressapi.utils.Constants.TRANSACTION_ID_REGEX;
