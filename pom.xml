@@ -73,13 +73,13 @@
         <kotlin.version>2.3.20</kotlin.version>
 
         <!-- Companies House Internal Dependencies -->
-        <api-security-java.version>2.0.25</api-security-java.version>
-        <structured-logging.version>3.0.52</structured-logging.version>
+        <api-security-java.version>2.0.26</api-security-java.version>
+        <structured-logging.version>3.0.54</structured-logging.version>
         <rest-service-common-library.version>2.0.11</rest-service-common-library.version>
-        <api-helper-java-library.version>3.0.3</api-helper-java-library.version>
-        <private-api-sdk-java.version>4.0.492</private-api-sdk-java.version>
-        <api-sdk-manager-java-library.version>3.0.18</api-sdk-manager-java-library.version>
-        <api-sdk-java.version>6.6.13</api-sdk-java.version>
+        <api-helper-java-library.version>3.0.4</api-helper-java-library.version>
+        <private-api-sdk-java.version>4.0.494</private-api-sdk-java.version>
+        <api-sdk-manager-java-library.version>3.0.19</api-sdk-manager-java-library.version>
+        <api-sdk-java.version>6.6.15</api-sdk-java.version>
 
         <!-- Sonar Properties -->
         <!--suppress XmlUnresolvedReference -->
