@@ -42,7 +42,10 @@
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
 
         <!-- Dependency Versions -->
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
         <spring-boot-starter.version>4.0.5</spring-boot-starter.version>
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-framework-bom -->
+        <spring-framework.version>7.0.7</spring-framework.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
         <tomcat.version>11.0.21</tomcat.version>
         <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core -->
@@ -157,6 +160,15 @@
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-context</artifactId>
                 <version>1.80.0</version>
+            </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-framework-bom -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring-framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
