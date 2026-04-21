@@ -1,7 +1,7 @@
 package uk.gov.companieshouse.registeredemailaddressapi.interceptor;
 
 
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
