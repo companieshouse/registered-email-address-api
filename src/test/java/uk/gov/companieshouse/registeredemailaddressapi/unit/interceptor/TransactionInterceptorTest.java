@@ -43,7 +43,6 @@ class TransactionInterceptorTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @InjectMocks
     private TransactionInterceptor transactionInterceptor;
 
     @BeforeEach

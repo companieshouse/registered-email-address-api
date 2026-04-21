@@ -44,7 +44,6 @@ public class TransactionInterceptor implements HandlerInterceptor {
         this.objectMapper = objectMapper;
     }
 
-    @SuppressWarnings("DuplicatedCode")
     @Override
     public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws IOException {
         @SuppressWarnings("unchecked")
