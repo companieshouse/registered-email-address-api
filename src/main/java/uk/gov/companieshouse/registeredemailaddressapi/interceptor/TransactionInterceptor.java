@@ -20,8 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.companieshouse.registeredemailaddressapi.service.TransactionService;
 import uk.gov.companieshouse.registeredemailaddressapi.utils.ApiLogger;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
@@ -32,14 +31,20 @@ import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 @Component
 public class TransactionInterceptor implements HandlerInterceptor {
 
-    private final TransactionService transactionService;
     private static final Pattern TRANSACTION_ID_PATTERN = Pattern.compile(TRANSACTION_ID_REGEX);
 
+    private final TransactionService transactionService;
+
+    private final ObjectMapper objectMapper;
+
+
     @Autowired
-    public TransactionInterceptor(TransactionService transactionService) {
+    public TransactionInterceptor(TransactionService transactionService, ObjectMapper objectMapper) {
         this.transactionService = transactionService;
+        this.objectMapper = objectMapper;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws IOException {
         @SuppressWarnings("unchecked")
@@ -58,7 +63,6 @@ public class TransactionInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             var errorsList = Map.of("errors", Map.of("error", "Invalid transaction id"));
             response.setContentType("application/json");
-            var objectMapper = new ObjectMapper();
             response.getWriter().write(objectMapper.writeValueAsString(errorsList));
             return false;
         }

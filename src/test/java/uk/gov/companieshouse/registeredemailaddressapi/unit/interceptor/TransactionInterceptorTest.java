@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.registeredemailaddressapi.unit.interceptor;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -7,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.registeredemailaddressapi.exception.ServiceException;
 import uk.gov.companieshouse.registeredemailaddressapi.interceptor.TransactionInterceptor;
@@ -16,7 +18,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -37,8 +41,15 @@ class TransactionInterceptorTest {
     @Mock
     private HttpServletRequest mockHttpServletRequest;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @InjectMocks
     private TransactionInterceptor transactionInterceptor;
+
+    @BeforeEach
+    void setUp() {
+        transactionInterceptor = new TransactionInterceptor(transactionService, objectMapper);
+    }
 
     @Test
     void testPreHandleIsSuccessful() throws Exception {

@@ -53,7 +53,7 @@
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <!-- Source: https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
-        <swagger-ui.version>5.32.2</swagger-ui.version>
+        <swagger-ui.version>5.32.4</swagger-ui.version>
         <!-- Source: https://mvnrepository.com/artifact/org.owasp.encoder/encoder -->
         <encoder.version>1.4.0</encoder.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
@@ -80,9 +80,9 @@
         <structured-logging.version>3.0.54</structured-logging.version>
         <rest-service-common-library.version>2.0.11</rest-service-common-library.version>
         <api-helper-java-library.version>3.0.4</api-helper-java-library.version>
-        <private-api-sdk-java.version>4.0.494</private-api-sdk-java.version>
+        <private-api-sdk-java.version>5.0.0</private-api-sdk-java.version>
         <api-sdk-manager-java-library.version>3.0.19</api-sdk-manager-java-library.version>
-        <api-sdk-java.version>6.6.15</api-sdk-java.version>
+        <api-sdk-java.version>6.6.16</api-sdk-java.version>
 
         <!-- Sonar Properties -->
         <!--suppress XmlUnresolvedReference -->
@@ -189,7 +189,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-jackson2</artifactId>
+            <artifactId>spring-boot-starter-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -210,6 +210,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-opentelemetry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.21</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>

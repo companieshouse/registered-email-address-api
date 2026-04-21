@@ -3,11 +3,11 @@ package uk.gov.companieshouse.registeredemailaddressapi.integration.utils;
 import java.util.Random;
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
 import uk.gov.companieshouse.api.model.company.RegisteredEmailAddressJson;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -18,6 +18,14 @@ import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmail
 import uk.gov.companieshouse.registeredemailaddressapi.model.dto.RegisteredEmailAddressResponseData;
 
 public class Helper {
+
+    private final ObjectMapper mapper;
+
+    public Helper() {
+        mapper = JsonMapper.builder()
+                .configure(SerializationFeature.WRAP_ROOT_VALUE, false)
+                .build();
+    }
 
     public Transaction generateTransaction(){
         Transaction transaction = new Transaction();
@@ -75,11 +83,10 @@ public class Helper {
         registeredEmailAddressResponseDTO.setId(UUID.randomUUID().toString());
         return registeredEmailAddressResponseDTO;
     }
-    public String writeToJson(Object object) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+
+    public String writeToJson(Object object) throws JacksonException {
         ObjectWriter ow = mapper.writer();
         return ow.writeValueAsString(object);
-
     }
+
 }
