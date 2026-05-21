@@ -47,7 +47,7 @@
         <!-- Source: https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <!-- Source: https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
-        <swagger-ui.version>5.32.4</swagger-ui.version>
+        <swagger-ui.version>5.32.5</swagger-ui.version>
         <!-- Source: https://mvnrepository.com/artifact/org.owasp.encoder/encoder -->
         <encoder.version>1.4.0</encoder.version>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
@@ -144,6 +144,22 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+            <!-- Addresses https://www.cve.org/CVERecord?id=CVE-2026-41284 - ToDo - Can probably be removed after 03/06/2026 following Spring Boot 4.0.7 release          -->
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>11.0.22</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>11.0.22</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- END CVE           -->
         </dependencies>
     </dependencyManagement>
 
